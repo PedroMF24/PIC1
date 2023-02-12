@@ -1,6 +1,6 @@
 #include "ExpConstraints.h"
 
-ExpCons::ExpCons(Parameters& newPars) : Pars(newPars){
+ExpCons::ExpCons(Parameters& newPars) : Pars(newPars) {
     Check = 0;
 }
 
@@ -16,7 +16,7 @@ int ExpCons::EWBosons() {
     double MW = 80.433; // W boson mass
     double MZ = 91.19;  // Z boson mass
 
-    if (Pars.GetMH() + Pars.GetMC() >= MW && Pars.GetMA() + Pars.GetMC() >= MW && Pars.GetMA() + Pars.GetMH() >= MZ and 2*Pars.GetMC() >= MZ)
+    if (GetMH() + GetMC() >= MW && GetMA() + GetMC() >= MW && GetMA() + GetMH() >= MZ and 2*GetMC() >= MZ)
         return 1;
     else {
         printf("Problems with the EW Bosons mass condition\n");
@@ -30,7 +30,7 @@ int ExpCons::EWBosons() {
  * @return int 
  */
 int ExpCons::LEPAnalysis() {
-    if (Pars.GetMA() <= 100 && Pars.GetMH() <= 80 && abs(Pars.GetMA() - Pars.GetMH()) >= 8) {
+    if (GetMA() <= 100 && GetMH() <= 80 && abs(GetMA() - GetMH()) >= 8) {
         printf("Region ruled out by LEP Analysis\n");
         return 0;
     }

@@ -3,9 +3,10 @@
 
 #include "Parameters.h"
 
-class ExpCons : public Parameters {
+class ExpCons {
     public:
     ExpCons();
+    ExpCons(Parameters& newPars);
     ~ExpCons() = default;
 
 //     def EWBosons(MHX, MHC, MH3):
@@ -26,6 +27,7 @@ class ExpCons : public Parameters {
     int GetExpCons();
 
     private:
+    Parameters Pars;
     int Check;
 };
 #endif

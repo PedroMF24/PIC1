@@ -3,19 +3,32 @@
 
 #include "Parameters.h"
 
-class TheoCons : public Parameters {
+#include <math.h>
+
+class TheoCons {
     public:
-    TheoCons();
+    TheoCons() = default;
+    // TheoCons(Parameters& newPars);
     ~TheoCons() = default;
 
-    int BFB();
-    int TwoMins();
-    int Perturbativity();
+    // int BFB(double la1, double la2, double la3, double laL);
+    // int TwoMins(double la1, double la2, double Mh, double m22Squared);
+    // int ScatteringMatrixUnitary(double la1, double la2, double la3, double la4, double la5);
+    // int Perturbativity(double la2);
 
-    int CheckAllTheoCons();
+    int BFB(Parameters Pars);
+    int TwoMins(Parameters Pars);
+    int ScatteringMatrixUnitary(Parameters Pars);
+    int Perturbativity(Parameters Pars);
+
+    // int CheckAllTheoCons();
     int GetCheck();
 
+    // void GenNewPars();
+    // Parameters GetPars();
+
     private:
+    // Parameters Pars;
     int Check = 0;
 };
 #endif
