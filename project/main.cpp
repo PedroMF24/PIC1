@@ -10,7 +10,10 @@ int main()
     // TheoCons TC(Pars);
 
     IDM pic(Pars);
+    pic.StorePars(10000);
     pic.FirstPlot();
+    //cout << "Ended first plot!\n";
+    //pic.LimitsFromColliders();
 
     // TApplication app("app", nullptr, nullptr);
     // TCanvas *c = new TCanvas("c", "multigraph", 800, 800);

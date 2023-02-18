@@ -6,19 +6,22 @@
 #include "Parameters.h"
 #include "RootClass.h"
 
-class IDM : public TheoCons { //, public ExpCons
+class IDM : public TheoCons, public ExpCons {
     public:
     IDM();
     IDM(Parameters& Pars);
     ~IDM() = default;
 
     void GenNewPars();
-    void FirstPlot(int bit);
+    void StorePars(int nPoints);
+    void FilterParMap(vector<int> keepIndex);
+    void FirstPlot();
+    void LimitsFromColliders();
 
     void PrintParMap();
     void AddToMap();
     void SavePars(const string &filename);
-    void ClearParMap();
+    void ClearParMap(); // Passa a receber um mapa
     void ReadCSV(const string &filename);
 
     Parameters GetPars();

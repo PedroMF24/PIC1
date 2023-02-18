@@ -9,6 +9,15 @@
         "new": "cpp",
         "fstream": "cpp",
         "array": "cpp",
-        "string_view": "cpp"
-    }
+        "string_view": "cpp",
+        "optional": "cpp",
+        "istream": "cpp",
+        "ratio": "cpp",
+        "system_error": "cpp",
+        "functional": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "enabled"
 }

@@ -208,3 +208,32 @@ int TheoCons::GetCheck() {
 // Parameters TheoCons::GetPars() {
 //     return Pars;
 // }
+
+int TheoCons::BFB_Test(double la1, double la2, double la3, double laL) {
+    double aux1 = la3 + sqrt(la1*la2);
+    double aux2 = laL + sqrt(la1*la2); // la4 + la5 + aux1;
+    
+    int check = (la1 > 0 && la2 > 0 && aux1 > 0 && aux2 > 0) ? 1 : 0;
+    
+    if (check) {
+        // printf("Passed BFB\n");
+        return 1;
+    }
+    else {
+        // printf("Potencial is not bound from below\n");
+        return 0;
+    }
+}
+
+int TheoCons::Perturbativity_Test(double la2) {
+
+    int check = (la2 <= 4*M_PI/3) ? 1 : 0;
+
+    if (check) {
+        //printf("Passed Perturbativity\n");
+        return 1;
+    } else {
+        //printf("Did not pass Perturbativity\n");
+        return 0;
+    }
+}

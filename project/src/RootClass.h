@@ -6,6 +6,11 @@
 #include <vector>
 #include <string>
 
+#include <map>
+#include <algorithm>
+#include <iterator>
+#include <functional>
+
 #include "TH1F.h"
 #include "TGraph.h"
 #include "TMultiGraph.h"

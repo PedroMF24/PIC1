@@ -21,6 +21,9 @@ class TheoCons {
     int ScatteringMatrixUnitary(Parameters Pars);
     int Perturbativity(Parameters Pars);
 
+    int BFB_Test(double la1, double la2, double la3, double laL);
+    int Perturbativity_Test(double la2);
+
     // int CheckAllTheoCons();
     int GetCheck();
 

@@ -1,9 +1,5 @@
 #include "ExpConstraints.h"
 
-ExpCons::ExpCons(Parameters& newPars) : Pars(newPars){
-    Check = 0;
-}
-
 // CONSTRAINTS
 
 
@@ -12,7 +8,7 @@ ExpCons::ExpCons(Parameters& newPars) : Pars(newPars){
  * 
  * @return int 
  */
-int ExpCons::EWBosons() {
+int ExpCons::EWBosons(Parameters Pars) {
     double MW = 80.433; // W boson mass
     double MZ = 91.19;  // Z boson mass
 
@@ -29,7 +25,7 @@ int ExpCons::EWBosons() {
  * 
  * @return int 
  */
-int ExpCons::LEPAnalysis() {
+int ExpCons::LEPAnalysis(Parameters Pars) {
     if (Pars.GetMA() <= 100 && Pars.GetMH() <= 80 && abs(Pars.GetMA() - Pars.GetMH()) >= 8) {
         printf("Region ruled out by LEP Analysis\n");
         return 0;
@@ -38,14 +34,41 @@ int ExpCons::LEPAnalysis() {
         return 1;
 }
 
+// int TheoCons::TwoMins(Parameters Pars) {
+//     double aux1 = (Pars.GetMh()*Pars.GetMh())/sqrt(Pars.Getla1()); 
+//     double aux2 = Pars.Getm22Squared()/sqrt(Pars.Getla2());
+
+//     int check = (aux1 >= aux2) ? 1 : 0;
+//     if (check) {
+//         printf("Passed 2 mins\n");
+//         return 1;
+//     }
+//     else {
+//         printf("Inert vacuum is not garanteed to be global, failed 'TwoMins'\n");
+//         return 0;
+//     }
+// }
+
+int ExpCons::HiggsBoundsSignals(double MC, double Mh, double laL) {
+    double ratio = MC/Mh;
+    double limit = 0.2*laL + 0.75;
+    if (ratio >= limit) {
+        // printf("Passed HBS\n");
+        return 1;   
+    } else {
+        printf("Did not pass Higgs Bounds/Higgs Signals Constraint\n");
+        return 0;
+    }
+}
+
 /**
  * @brief Verify if all selected constraints are being met
  * 
  * @return int 
  */
-int ExpCons::CheckAllExpCons() {
+int ExpCons::CheckAllExpCons(Parameters Pars) {
     Check = 0;
-    Check = ((EWBosons() & LEPAnalysis()) == 1) ? 1 : 0;
+    Check = ((EWBosons(Pars) & LEPAnalysis(Pars)) == 1) ? 1 : 0;
 
     if (Check)
         printf("Passed ExpCons\n");

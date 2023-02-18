@@ -5,9 +5,10 @@
 
 class ExpCons {
     public:
-    ExpCons();
-    ExpCons(Parameters& newPars);
+    ExpCons() = default;
     ~ExpCons() = default;
+
+    int HiggsBoundsSignals(double MC, double Mh, double laL);
 
 //     def EWBosons(MHX, MHC, MH3):
 //     MW = 80.433 # W boson mass
@@ -20,14 +21,13 @@ class ExpCons {
 //         quit()
 //         # return 0
 
-    int EWBosons();
-    int LEPAnalysis();
-    int CheckAllExpCons();
+    int EWBosons(Parameters Pars);
+    int LEPAnalysis(Parameters Pars);
+    int CheckAllExpCons(Parameters Pars);
 
     int GetExpCons();
 
     private:
-    Parameters Pars;
     int Check;
 };
 #endif

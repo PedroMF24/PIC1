@@ -12,9 +12,9 @@ Parameters::Parameters()
     la2 = 0; // lambda_2
     laL = 0; // la3 + la4 + la5
 
-    cout << "Parameter constructor MH before GenPars " << GetMH() << endl;
+    // cout << "Parameter constructor MH before GenPars " << GetMH() << endl;
     GenPars(); // Initialize values
-    cout << "Parameters constructor MH after GenPars " << GetMH() << endl;
+    // cout << "Parameters constructor MH after GenPars " << GetMH() << endl;
 
 }
 
@@ -69,7 +69,7 @@ void Parameters::ScanSetup()
 {
 
     la2 = Rd.UniDist(0,4.5); // (-4*M_PI, 4*M_PI); // Perturbativity
-    laL = Rd.UniDist(-1.5,2);
+    laL = Rd.UniDist(-1.5,2); // -1.5,2 // -2,4*M_PI -> For HBS
 
     MH = Rd.UniDist(0,1000);
     // cout << "**MH " << MH << endl;
