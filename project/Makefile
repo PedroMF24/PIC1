@@ -15,6 +15,7 @@ EXES := $(patsubst %.cpp, bin/%.exe, $(notdir $(wildcard main/*.cpp)) )
 
 ROOT_INC := -I $(shell root-config --incdir)
 ROOT_LIB := $(shell root-config --libs)
+LDFLAGS+=-L$(LIBDIR) -l2HDMC -lgsl -lgslcblas -lm
 
 VPATH = main:src
 

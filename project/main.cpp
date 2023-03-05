@@ -3,15 +3,64 @@
 #include "src/RootClass.h"
 #include "src/Parameters.h"
 #include "src/IDM.h"
+#include "src/SM.h"
+
+// int main() {
+//     StandardModel SM;
+//     cout << SM.Get("pi");
+// }
+
 
 int main()
 {
-    Parameters Pars;
-    // TheoCons TC(Pars);
+    vector<double> S;
+    vector<double> T;
 
+    Parameters Pars;
     IDM pic(Pars);
-    pic.StorePars(10000);
-    pic.FirstPlot();
+    pic.StorePars(1000);
+    pic.SXT();
+
+
+
+    // STORE PARAMETERS TO TEST STU
+    // Parameters Pars;
+    // IDM pic(Pars);
+    // pic.StorePars(5); // Dei store no ParMap
+    // pic.WriteMapToFile("data/STU_test.dat"); // Escrevi no ficheiro
+    // pic.ReadDAT("data/STU_test.dat"); // Li e dei store outra vez, ptt tenho de limpar antes dentro de Read
+    // vector<double> test = pic.GetParMapVal("MH");
+
+    // for (auto &val : test)
+    // {
+    //     cout << val << " ";
+    // }
+
+    // READS AND STORES SUCCESSFULLY
+    // Parameters Pars;
+    // IDM pic(Pars);
+    // pic.ReadDAT("data/STU_test.dat");
+    // vector<double> test = pic.GetParMapVal("MH");
+    // for (auto &val : test)
+    // {
+    //     cout << val << " ";
+    // }
+
+
+
+    // ==================================================================
+    
+
+    // Parameters Pars;
+    // // TheoCons TC(Pars);
+
+    // IDM pic(Pars);
+    // pic.StorePars(20);
+    // // pic.WriteMapToFile("data/dat_test.dat");
+    // pic.FirstPlot();
+
+
+
     //cout << "Ended first plot!\n";
     //pic.LimitsFromColliders();
 
@@ -89,6 +138,7 @@ int main()
 
     return 0;
 }
+
 
     // Parameters P1, P2;
     // P1.ImportPars("data/dataTest.par");

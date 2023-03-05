@@ -13,7 +13,7 @@ Parameters::Parameters()
     laL = 0; // la3 + la4 + la5
 
     // cout << "Parameter constructor MH before GenPars " << GetMH() << endl;
-    GenPars(); // Initialize values
+    GenPars(1); // Initialize values
     // cout << "Parameters constructor MH after GenPars " << GetMH() << endl;
 
 }
@@ -77,8 +77,9 @@ void Parameters::ScanSetup()
     MA = Rd.UniDist(0,1000);
     MC = Rd.UniDist(70,1000); // IDM revisited >80
 
+    // Eq 9 paper principal: strong bounds provided by the total width of the electroweak gauge bosons
     while (MH >= MA || MH >= MC || (MC - MA < 0.1))
-    {
+    {   
         MH = Rd.UniDist(0,1000);
         // cout << "**MH " << MH << endl;
         // cout << MH << endl;
@@ -88,7 +89,7 @@ void Parameters::ScanSetup()
 }
 
 
-void Parameters::GenPars()
+void Parameters::GenPars(int scan_setup)
 {
     // TRandom3* rnd = new TRandom3(0);
     // MH = rnd->Rndm()*1000;
@@ -96,7 +97,16 @@ void Parameters::GenPars()
     // MC = rnd->Rndm()*1000;
     // la2 = rnd->Rndm()*1000;
     // laL = rnd->Rndm()*1000;
-    ScanSetup();
+    if (scan_setup)
+        ScanSetup();
+    else {
+        MH = Rd.UniDist(0,1000);
+        MA = Rd.UniDist(0,1000);
+        MC = Rd.UniDist(0,1000);
+        la2 = Rd.UniDist(0,4.5); // (-4*M_PI, 4*M_PI); // Perturbativity
+        laL = Rd.UniDist(-1.5,2);
+    }
+
 
     // MH = Rd.UniDist(0,1000);
     // MA = Rd.UniDist(0,1000);
@@ -104,7 +114,7 @@ void Parameters::GenPars()
     // la2 = Rd.UniDist(0,4.5); // (-4*M_PI, 4*M_PI); // Perturbativity
     // laL = Rd.UniDist(-1.5,2);
 
-    m22Squared = v*v*laL - 4*MA*MA -  2*MH*MH; // v*v*laL - 2*MH*MH;
+    m22Squared = v*v*laL - 2*MH*MH; // v*v*laL - 4*MA*MA -  2*MH*MH;
     
     la3 = laL + 2*(MC*MC - MH*MH)/(v*v);
     la4 = (MA*MA -2*MC*MC + MH*MH)/(v*v); // laL + 2*(MC*MC - MH*MH)/(v*v)

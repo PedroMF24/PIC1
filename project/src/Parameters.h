@@ -27,7 +27,7 @@ class Parameters : public MyRandom {
     friend std::ostream& operator<<(ostream& s, const Parameters& p);
 
     void ScanSetup();
-    void GenPars();
+    void GenPars(int scan_setup);
     void ImportPars(const string &filename);
     void SetPars();
 

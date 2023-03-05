@@ -1,5 +1,10 @@
 #include "TheoConstraints.h"
 
+int TheoCons::CheckResult(int check_bit) {
+    int result = (check_bit == 1) ? 1 : 0;
+    return result;
+}
+
 int TheoCons::BFB(Parameters Pars) {
     double aux1 = Pars.Getla3() + sqrt(Pars.Getla1()*Pars.Getla2());
     double aux2 = Pars.GetlaL() + sqrt(Pars.Getla1()*Pars.Getla2()); // Pars.Getla4() + Pars.Getla5() + aux1;
@@ -209,6 +214,7 @@ int TheoCons::GetCheck() {
 //     return Pars;
 // }
 
+// CORRECT
 int TheoCons::BFB_Test(double la1, double la2, double la3, double laL) {
     double aux1 = la3 + sqrt(la1*la2);
     double aux2 = laL + sqrt(la1*la2); // la4 + la5 + aux1;
@@ -225,9 +231,11 @@ int TheoCons::BFB_Test(double la1, double la2, double la3, double laL) {
     }
 }
 
-int TheoCons::Perturbativity_Test(double la2) {
+int TheoCons::BoundFromBelow(double la1, double la2, double la3, double laL, double Mh, double m22Squared) {
+    int auxBFB = BFB_Test(la1, la2, la3, laL);
+    int aux2Min = TwoMins_Test(la1, la2, Mh, m22Squared);
 
-    int check = (la2 <= 4*M_PI/3) ? 1 : 0;
+    int check = auxBFB;// && aux2Min;
 
     if (check) {
         //printf("Passed Perturbativity\n");
@@ -237,3 +245,414 @@ int TheoCons::Perturbativity_Test(double la2) {
         return 0;
     }
 }
+
+int TheoCons::QuarticCouplings(double la1, double la2, double la3, double laL) {
+    // Quartic couplings must be perturbative
+    int aux1 = (la1 <= 4*M_PI/3) ? 1 : 0;
+    int aux2 = (la2 <= 4*M_PI/3) ? 1 : 0;
+    int aux3 = (la3 <= 4*M_PI) ? 1 : 0;
+    int aux4 = (laL <= 4*M_PI) ? 1 : 0;
+
+    int check =  aux1 && aux2 && aux4; // && aux3; // PROBLEMA NO AUX3
+
+    if (check) {
+        //printf("Passed Perturbativity\n");
+        return 1;
+    } else {
+        //printf("Did not pass Perturbativity\n");
+        return 0;
+    }
+}
+
+int TheoCons::ScatteringMatrixUnitary_Test(double la1, double la2, double la3, double la4, double la5) {
+
+    int result = 1;
+
+    double L21EvenP = 0.5*(la1 + la2 + sqrt(pow(la1 - la2,2) + 4*abs(la5*la5)));
+    double L21EvenM = 0.5*(la1 + la2 - sqrt(pow(la1 - la2,2) + 4*abs(la5*la5)));
+
+    double  L01EvenP = 0.5*(la1 + la2 + sqrt(pow(la1 - la2,2) + 4*la4*la4));
+    double  L01EvenM = 0.5*(la1 + la2 - sqrt(pow(la1 - la2,2) + 4*la4*la4));
+    
+    double L00EvenP = 0.5*( 3*(la1 + la2) + sqrt( 9*pow(la1-la2,2) +4*pow(2*la3 + la4,2) ) );
+    double L00EvenM = 0.5*( 3*(la1 + la2) - sqrt( 9*pow(la1-la2,2) +4*pow(2*la3 + la4,2) ) );
+    
+    double L21Odd = la3 + la4;
+    double L20Odd = la3 - la4;
+
+    double L01OddP = la3 + abs(la5);
+    double L01OddM = la3 - abs(la5);
+
+    double L00OddP = la3 + 2*la4 + 3*abs(la5);
+    double L00OddM = la3 + 2*la4 - 3*abs(la5);
+
+    double Eigenvalues[] = {L21EvenP, L21EvenM, L01EvenP, L01EvenM, L00EvenP, L00EvenM, L21Odd, L20Odd, L01OddP, L01OddM, L00OddP, L00OddM};
+
+    for (auto &i : Eigenvalues)
+    {
+        if (abs(i) > 8*M_PI) {
+            result = 0;
+            break;
+        }            
+    }
+
+    if (result == 1) {
+        // printf("Passed SMU\n");
+    } else {
+        // printf("Did not pass SMU\n");
+    }
+    return result;
+}
+
+int TheoCons::TwoMins_Test(double la1, double la2, double Mh, double m22Squared) {
+    double aux1 = (Mh*Mh)/sqrt(la1); 
+    double aux2 = m22Squared/sqrt(la2);
+
+    int check = (aux1 >= aux2) ? 1 : 0;
+    if (check) {
+        // printf("Passed 2 mins\n");
+        return 1;
+    } else {
+        // printf("Inert vacuum is not garanteed to be global, failed 'TwoMins'\n");
+        return 0;
+    }
+}
+
+int TheoCons::Perturbativity_Test(double la1, double la2, double la3, double la4, double la5, double laL) {
+    // int auxSMU = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
+    int auxQC = QuarticCouplings(la1, la2, la3, laL);
+
+    int check = auxQC; //&& auxSMU;
+    if (check) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+
+void TheoCons::InitSTUMatrices(double ImVdagV[4][4], complex<double> UdagU[2][2], complex<double> VdagV[4][4], complex<double> UdagV[2][4]) {
+    // Matrix UDagU
+    // For the Inert 2HDM is the identity matrix in 2x2
+	for (int j = 0; j < 2; j++) {
+		for (int k = 0; k < 2; k++) {
+			if (j == k) {
+				UdagU[j][k] = 1.0;
+			}
+			else {
+				UdagU[j][k] = 0.0;
+			}
+		}
+	}
+
+    // Matrix UDagV
+    // 2x4 complex matrix
+    for (int j = 0; j < 2; j++) {
+        for (int k = 0; k < 2; k++) {
+                UdagV[j][k] = 0.0;
+        }
+    }
+    UdagV[0][0] = complex<double>(0.0, 1.0);
+    UdagV[0][1] = 1.0;
+    UdagV[0][2] = 0.0;
+    UdagV[0][3] = 0.0;
+    UdagV[1][0] = 0.0;
+    UdagV[1][1] = 0.0;
+    UdagV[1][2] = 1.0;
+    UdagV[1][3] = complex<double>(0.0, 1.0);
+
+    // Matrix ImVdagV
+    // 4x4 real matrix
+    // Set all the values to 0
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+                ImVdagV[i][j] = 0;
+        }
+    }
+    // Set specific values
+    ImVdagV[0][1] = -1;
+    ImVdagV[1][0] = 1;
+    ImVdagV[2][3] = 1;
+    ImVdagV[3][2] = -1;
+
+    // Matrix VdagV
+    // 4x4 complex matrix
+    // Set matrix to identity
+    for (int j = 0; j < 4; j++) {
+        for (int k = 0; k < 4; k++) {
+                if (j == k) {
+                VdagV[j][k] = 1.0;
+                }
+                else {
+                VdagV[j][k] = 0.0;
+                }
+        }
+    }
+    VdagV[0][1] = complex<double>(0.0, -1.0);
+    VdagV[1][0] = complex<double>(0.0, 1.0);
+    VdagV[2][3] = complex<double>(0.0, 1.0);
+    VdagV[3][2] = complex<double>(0.0, -1.0);
+}
+
+void TheoCons::InitSTUVars(double mneu[4], double mch[2], double m11Sq, double MH, double MA, double MC) {
+    StandardModel model;
+    mneu[0] = model.GetSMValue("MZ");
+    mneu[1] = m11Sq;
+    mneu[2] = MH;
+    mneu[3] = MA;
+
+    mch[0] = model.GetSMValue("MW");
+    mch[1] = MC;
+}
+
+
+void TheoCons::CalculateSTU(double mneu[4], double mch[2], double ImVdagV[4][4], 
+        complex<double> UdagU[2][2], complex<double> VdagV[4][4], 
+        complex<double> UdagV[2][4], double& S, double& T, double& U) {
+
+    int nns = 4;
+    int ncs = 2;
+
+    int j, k;
+    double mW2, mZ2, mh2, z[nns], w[nns], zp[ncs], wp[ncs], wH, zH;
+    double sw2, cw2;
+    double g, alpha, G_F, mW, mZ, thetaW, mH, GW, GZ, pi;
+    // double model.Gstu, model.model.Ghatstu, model.Fbigstu;
+
+    StandardModel model;
+
+    // Common block data
+    mW = model.GetSMValue("MW");
+    G_F = model.GetSMValue("G_FERMI");
+    g = sqrt(8.0 * mW * mW * G_F / sqrt(2.0)); 
+    alpha = model.GetSMValue("ALPHA"); 
+    mZ = model.GetSMValue("MZ"); 
+    thetaW = asin(sqrt(model.GetSMValue("S2TW")));
+    mH = model.GetSMValue("MHIGGS"); 
+    GW = model.GetSMValue("GAW"); // 
+    GZ = model.GetSMValue("GAZ"); 
+    pi = acos(-1);
+    // int iboson = data[10];
+
+    mW2 = mW * mW;
+    mZ2 = mZ * mZ;
+    mh2 = mH * mH;
+    sw2 = sin(thetaW) * sin(thetaW);
+    cw2 = cos(thetaW) * cos(thetaW);
+
+    for (j = 0; j < nns; ++j)
+    {
+        z[j] = pow(mneu[j], 2) / mZ2;
+        w[j] = pow(mneu[j], 2) / mW2;
+    }
+
+    for (j = 0; j < ncs; ++j)
+    {
+        zp[j] = pow(mch[j], 2) / mZ2;
+        wp[j] = pow(mch[j], 2) / mW2;
+    }
+
+    zH = pow(mH, 2) / mZ2;
+    wH = pow(mH, 2) / mW2;
+
+    // Evaluate T from the formulas in arXiv: 0802.4353
+    T = 0.0;
+
+    for (j = 1; j < ncs; ++j)
+    {
+        for (k = 1; k < nns; ++k)
+        {
+            T += pow(abs(UdagV[j][k]), 2) * model.Fbigstu(pow(mch[j], 2), pow(mneu[k], 2));
+        }
+    }
+
+    for (j = 1; j < nns - 1; ++j)
+    {
+        for (k = j + 1; k < nns; ++k)
+        {
+            T -= pow(ImVdagV[j][k], 2) * model.Fbigstu(pow(mneu[j], 2), pow(mneu[k], 2));
+        }
+    }
+
+    for (j = 1; j < ncs - 1; ++j)
+    {
+        for (k = j + 1; k < ncs; ++k)
+        {
+            T -= 2.0 * pow(abs(UdagU[j][k]), 2) * model.Fbigstu(pow(mch[j], 2), pow(mch[k], 2));
+        }
+    }
+
+    for (j = 1; j < nns; ++j)
+    {
+        T += 3.0 * pow(ImVdagV[0][j], 2) * (model.Fbigstu(mZ2, pow(mneu[j], 2)) - model.Fbigstu(mW2, pow(mneu[j], 2)));
+    }
+
+    T -= 3.0 * (model.Fbigstu(mZ2, mh2) - model.Fbigstu(mW2, mh2));
+
+    // T *= (1.0 / (16.0 * pi * sw2 * mW2)); // sw? g^2/64pi^2?
+    T *= (g*g/(64*pi*pi*mW2));
+
+    // Evaluate S from the formulas in arXiv: 0802.4353
+    S = 0.0;
+
+    for (j = 1; j < ncs; ++j)
+    {
+        S += pow(2.0 * sw2 - real(UdagU[j][j]), 2) * model.Gstu(zp[j], zp[j]);
+    }
+
+    for (j = 1; j < ncs - 1; ++j)
+    {
+        for (k = j + 1; k < ncs; ++k)
+        {
+            S += 2.0 * pow(abs(UdagU[j][k]), 2) * model.Gstu(zp[j], zp[k]);
+        }
+    }
+
+    for (j = 1; j < nns - 1; ++j)
+    {
+        for (k = j + 1; k < nns; ++k)
+        {
+            S += pow(ImVdagV[j][k], 2) * model.Gstu(z[j], z[k]);
+        }
+    }
+
+    for (j = 1; j < ncs; ++j)
+    {
+        S -= 2.0 * real(UdagU[j][j]) * log(pow(mch[j], 2));
+    }
+
+    for (j = 1; j < nns; ++j)
+    {
+        S += real(VdagV[j][j]) * log(pow(mneu[j], 2));
+        S += pow(ImVdagV[0][j], 2) * model.Ghatstu(z[j]);
+    }
+
+        S -= model.Ghatstu(zH) + log(pow(mH, 2));
+
+        // S *= 1/(24*M_PI); // S *= (1.0 / (24.0 * pi * sw2));
+        S *= (g*g/(384*pi*pi*cw2));
+
+    // Evaluate U from the formulas in arXiv: 0802.4353
+        U = 0.0;
+
+    for (int j = 1; j < ncs; ++j) 
+    {
+        for (int k = 1; k < nns; ++k) 
+        {
+            U += pow(abs(UdagV[j][k]), 2) * model.Gstu(wp[j], w[k]);
+        }
+    }
+
+    for (int j = 1; j < ncs; ++j) 
+    {
+        U -= pow((2.0 * sw2 - real(UdagU[j][j])), 2) * model.Gstu(zp[j], zp[j]);
+    }
+
+    for (int j = 1; j < ncs - 1; ++j) 
+    {
+        for (int k = j + 1; k < ncs; ++k) 
+        {
+            U -= 2.0 * pow(abs(UdagU[j][k]), 2) * model.Gstu(zp[j], zp[k]);
+        }
+    }
+
+    for (int j = 1; j < nns - 1; ++j) 
+    {
+        for (int k = j + 1; k < nns; ++k) 
+        {
+            U -= pow(ImVdagV[j][k], 2) * model.Gstu(z[j], z[k]);
+        }
+    }
+
+    for (int j = 1; j < nns; ++j) {
+    U += pow(ImVdagV[1][j], 2) * (model.Ghatstu(w[j]) - model.Ghatstu(z[j]));
+    }
+
+    U -= model.Ghatstu(wH) + model.Ghatstu(zH);
+    U *= (1.0 / (24.0 * M_PI));
+}
+
+
+int TheoCons::STU_Check(double &S, double &T, double &U) {
+    const double Shat = 0.05;
+    const double That = 0.09;
+    const double Uhat = 0.01;
+
+    double xSTU[3] = {S - Shat, T - That, U - Uhat};
+    double aux_arr[3];
+    double ChiSqSTU = 0;
+
+    /*
+    * 
+    */
+
+    const double C_Inverse[3][3] = {{836.17, -952.128, -445.745},
+                            {-952.128, 1276.6, 696.809},
+                            {-445.745, 696.809, 506.383}};
+
+    // const double C_Inverse[3][3] = {{0.0121, 0.0129, -0.0071},
+    //                                 {0.0129, 0.0169, -0.0119},
+    //                                 {-0.0071, -0.0119, 0.0121}};
+
+    // Product of matrices
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            aux_arr[i] = C_Inverse[i][j] * xSTU[j];
+        }
+        ChiSqSTU += aux_arr[i] * xSTU[i];
+    }
+
+    // Inner product function does it better!
+    /*
+    * The arguments for the std::inner_product function are as follows:
+    * 1. The first two arguments are the two vectors (or arrays) to be multiplied.
+    * 2. The third argument is the matrix (or array) to be multiplied by the vectors.
+    * 3. The fourth argument is the initial value of the dot product (default is 0.0).
+    */
+    
+    ChiSqSTU = inner_product(xSTU, xSTU + 3, &C_Inverse[0][0], 0.0);
+    
+    int check = (ChiSqSTU <= 8.025) ? 1 : 0;
+    return check;
+}
+
+int TheoCons::STU_Test(double m11Sq, double MH, double MA, double MC) {
+
+    // STU Matrices
+    double ImVdagV[4][4];
+    complex<double> UdagU[2][2], VdagV[4][4], UdagV[2][4];
+
+    InitSTUMatrices(ImVdagV, UdagU, VdagV, UdagV);
+
+    double mneu[4], mch[2];
+    InitSTUVars(mneu, mch, m11Sq, MH, MA, MC);
+
+    double S, T, U;
+    CalculateSTU(mneu, mch, ImVdagV, UdagU, VdagV, UdagV, S, T, U);
+
+    return STU_Check(S, T, U);
+}
+
+vector<double> TheoCons::ST_graph_prep(double m11Sq, double MH, double MA, double MC) {
+    // STU Matrices
+    double ImVdagV[4][4];
+    complex<double> UdagU[2][2], VdagV[4][4], UdagV[2][4];
+
+    InitSTUMatrices(ImVdagV, UdagU, VdagV, UdagV);
+
+    double mneu[4], mch[2];
+    InitSTUVars(mneu, mch, m11Sq, MH, MA, MC);
+
+    double S, T, U;
+    CalculateSTU(mneu, mch, ImVdagV, UdagU, VdagV, UdagV, S, T, U);
+
+    vector<double> STU;
+    STU.push_back(S);
+    STU.push_back(T);
+    STU.push_back(U);
+
+    return STU;
+}
+

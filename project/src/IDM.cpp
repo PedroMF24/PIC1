@@ -1,7 +1,7 @@
 #include "IDM.h"
 
 IDM::IDM() {
-    Pars.GenPars();
+    Pars.GenPars(1);
 }
 
 IDM::IDM(Parameters& newPars) : Pars(newPars) {
@@ -39,8 +39,9 @@ Parameters IDM::GetPars() {
     return Pars;
 }
 
+// Not ready
 void IDM::GenNewPars() {
-    Pars.GenPars();
+    Pars.GenPars(1);
 }
 
 void IDM::AddToMap() {
@@ -58,7 +59,7 @@ void IDM::AddToMap() {
 void IDM::StorePars(int nPoints) {
     cout << "Generating and storing Parameters...\n";
     for (int i = 0; i < nPoints; i++) {
-        Pars.GenPars();
+        Pars.GenPars(1);
         AddToMap();
     }
 }
@@ -100,18 +101,21 @@ void IDM::FirstPlot() {
     grPert->SetTitle("Perturbativity");
 
     double la1 = Pars.Getla1();
+    double Mh = Pars.GetMh();
+
     int N = 0;
     int max = ParMap["MH"].size();
 
     for (int i = 0; i < max; i++) {
-
         double la2 = ParMap["la2"][i];
         double la3 = ParMap["la3"][i];
+        double la4 = ParMap["la4"][i];
+        double la5 = ParMap["la5"][i];
         double laL = ParMap["laL"][i];
+        double m22Squared = ParMap["m22Squared"][i];
 
-
-        int bfb = BFB_Test(la1, la2, la3, laL);
-        int Pert = Perturbativity_Test(la2);
+        int bfb = BoundFromBelow(la1, la2, la3, laL, Mh, m22Squared); // BFB_Test(la1, la2, la3, laL);
+        int Pert = Perturbativity_Test(la1, la2, la3, la4, la5, laL);
         // int twoMins = TwoMins(Pars);
 
         int check = bfb && Pert; // & twoMins;
@@ -131,7 +135,7 @@ void IDM::FirstPlot() {
             grBoth->AddPoint(la2, laL);
             // cout << "Zeros\n";
         } else {
-            cout << "Weirdge\n";
+            cout << "Should never get here\n";
         }
     }
 
@@ -414,40 +418,41 @@ void IDM::LimitsFromColliders() {
     app.Run();
 }
 
-// void IDM::SavePars(const string &filename) {
-//     //Open the output file
-//     ofstream outputFile(filename);
-//     if (!outputFile.is_open()) {
-//         fprintf(stderr, "**Can not open file to save parameters\n");
-//         exit(0);
-//     }
-//     //Write column headings
-// 	for (auto const& [key, value] : ParMap) 
-// 		outputFile << key << ",";
-// 	outputFile << "\n";
-// 	// write data
-// 	for (int i = 0; i < ParMap.begin()->second.size(); i++) {
-// 		for (auto const& [key, value] : ParMap) 
-// 			outputFile << value[i] << ",";
-// 		outputFile << "\n";
-// 	}
+/*
+void IDM::SavePars(const string &filename) {
+    //Open the output file
+    ofstream outputFile(filename);
+    if (!outputFile.is_open()) {
+        fprintf(stderr, "**Can not open file to save parameters\n");
+        exit(0);
+    }
+    //Write column headings
+	for (auto const& [key, value] : ParMap) 
+		outputFile << key << ",";
+	outputFile << "\n";
+	// write data
+	for (int i = 0; i < ParMap.begin()->second.size(); i++) {
+		for (auto const& [key, value] : ParMap) 
+			outputFile << value[i] << ",";
+		outputFile << "\n";
+	}
 
-//     // for (auto iter = ParMap.begin(); iter != ParMap.end(); ++iter) {
-//     //     string key = iter->first;
-//     //     outputFile << key << ",";
-//     // }
-//     // outputFile << "\n";
-//     // // write data
-//     // for (auto iter = ParMap.begin(); iter != ParMap.end(); ++iter) {
-//     //     vector<double> value = iter->second;
-//     //     for (int i = 0; i < value.size(); i++) 
-//     //         outputFile << value[i] << ",";
-//     //     outputFile << "\n";
-//     // }
+    // for (auto iter = ParMap.begin(); iter != ParMap.end(); ++iter) {
+    //     string key = iter->first;
+    //     outputFile << key << ",";
+    // }
+    // outputFile << "\n";
+    // // write data
+    // for (auto iter = ParMap.begin(); iter != ParMap.end(); ++iter) {
+    //     vector<double> value = iter->second;
+    //     for (int i = 0; i < value.size(); i++) 
+    //         outputFile << value[i] << ",";
+    //     outputFile << "\n";
+    // }
     
-//     //Close the file
-//     outputFile.close();
-// }
+    //Close the file
+    outputFile.close();
+}*/
 
 void IDM::SavePars(const string &filename) {
     //Open the output file
@@ -471,6 +476,7 @@ void IDM::SavePars(const string &filename) {
 }
 
 void IDM::ClearParMap() {
+    cout << "Clearing Parameter Map\n";
     // Save map just in case if it is not empty
     if (!ParMap.empty()) {
         SavePars("data/Saved.csv");
@@ -487,7 +493,9 @@ void IDM::ClearParMap() {
 }
 
 void IDM::ReadCSV(const string &filename) {
-    
+    ClearParMap();
+    printf("Reading %s into Parameter Map\n", filename.c_str());
+
     ifstream input(filename);
 
     if (!input.is_open()) {
@@ -523,4 +531,347 @@ void IDM::ReadCSV(const string &filename) {
 		cout << endl;
 	}
     */
+}
+
+/*
+void IDM::WriteDat(const string &filename) {
+
+    // Open and verify if it was opened correctly
+    ofstream file;
+    file.open(filename);
+    if (!file.is_open()) {
+        fprintf(stderr, "**Can not open DAT file to write\n");
+        exit(0);
+    }
+
+  // Get the size of the largest vector
+    int maxSize = 0;
+    map<string, vector<double>>::iterator it;
+    for (it = ParMap.begin(); it != ParMap.end(); ++it)
+        maxSize = max(maxSize, (int)it->second.size());
+
+    // Write the strings
+    for (it = ParMap.begin(); it != ParMap.end(); ++it)
+        file << it->first << "\t\t";
+    file << endl;
+    
+    // Write each element in a column
+    for (int i = 0; i < maxSize; i++) {
+        for (it = ParMap.begin(); it != ParMap.end(); ++it) {
+        if (i < it->second.size())
+            file << it->second[i] << "\t\t";
+        else
+            file << "0 ";
+        }
+        file << endl;
+    }
+    file.close();
+}
+*/
+
+void IDM::WriteElementToFile(string key, ofstream &file, int i) {
+    // use the find function to search for the key and get the element at that key if it exists
+    // map<string, vector<double>> myMap
+    auto found_key = ParMap.find(key);
+    if (found_key != ParMap.end())
+        file << found_key->second[i] << "\t"; 
+    // setprecision(n) to limit significant digits of number to n digits
+    // file << setprecision(5) << found_key->second[i] << "\t"; 
+}
+
+/**
+ * @brief Write ParMap to a .dat file formatted for Experimental constraints
+ * 
+ * @param filename 
+ */
+void IDM::WriteMapToFile(const string &filename) {
+    cout << "Writting Parameter Map to .dat file...\n";
+
+    ofstream file;
+    file.open(filename);
+
+    if (!file.is_open()) {
+        fprintf(stderr, "**Can not open .dat file to write\n");
+        exit(0);
+    }
+
+    // Get the size of the largest vector
+    int maxSize = 0;
+    map<string, vector<double>>::iterator it;
+    for (it = ParMap.begin(); it != ParMap.end(); ++it)
+		maxSize = max(maxSize, (int)it->second.size());
+
+    // Order of variables to be written in .dat file
+	// The name must be exactly correct, or the data will not appear in the file
+    string parNames[] = {"m11Sq", "MH", "MA", "MC", "la2", "laL", "la1", "la3", "la4", "la5"};
+	double m11Sq = Pars.Getla1()*Pars.Getv()*Pars.Getv(); // m11^2 = la1*v^2
+	double la1 = Pars.Getla1();
+	// Write the column names
+    for (auto &par : parNames)
+		file << par << "\t";
+	file << endl;
+
+    // Write each element in a column
+    for (int i = 0; i < maxSize; i++) {
+      	// file << "1 "; // Write the value for m11squared
+		for (auto &par : parNames)
+		{
+			if (par != "m11Sq" && par != "la1") {
+				WriteElementToFile(par, file, i);
+			} else if (par == "m11Sq") {
+				file << m11Sq << "\t";
+			} else if (par == "la1") {
+				file << la1 << "\t";
+			} else {
+				fprintf(stderr, "**Acessed entry while writting that should not exist\n");
+				exit(0);
+			}
+		}
+	
+
+    // writeElementToFile(ParMap, "la2", file, i);
+    // writeElementToFile(ParMap, "laL", file, i);
+    
+    // file << "2 "; // Write the constant value for la1
+    
+    // writeElementToFile(ParMap, "mh", file, i);
+    // writeElementToFile(ParMap, "ma", file, i);
+    // writeElementToFile(ParMap, "mc", file, i);
+    // writeElementToFile(ParMap, "la3", file, i);
+    // writeElementToFile(ParMap, "la4", file, i);
+    // writeElementToFile(ParMap, "la5", file, i);
+    
+		file << endl;
+    }
+    file.close();
+    cout << "Parameter Map written to " << filename << "\n";
+}
+
+
+void IDM::ReadDAT(const string &filename) {
+    ClearParMap();
+    printf("Reading %s into Parameter Map\n", filename.c_str());
+
+    ifstream input(filename);
+
+    if (!input.is_open()) {
+        fprintf(stderr, "**Can not open DAT file to read\n");
+        exit(0);
+    }
+
+	string line, col;
+	vector<string> header;
+
+    getline(input, line);
+	stringstream ss(line);
+	while (getline(ss, col, '\t')) {
+		header.push_back(col);
+	}
+
+	// Read values
+	while (getline(input, line)) {
+		stringstream ss(line);
+		int i = 0;
+		while (getline(ss, col, '\t')) {
+			ParMap[header[i]].push_back(stod(col));
+			i++;
+		}
+	}
+}
+
+vector<double> IDM::GetParMapVal(const string &name) {
+    auto it = ParMap.find(name);
+    if (it == ParMap.end()) {
+        fprintf(stderr, "**No ParMap parameter called %s was found\n", name.c_str());
+        exit(0);
+    }
+    return it->second;
+}
+
+/* ============================================================= */
+/*
+void IDM::IDMC_Test() {
+    cout << "Making FirstPlot...\n";
+    TApplication app("app", nullptr, nullptr);
+    TCanvas *c = new TCanvas("c", "FirstPlot", 800, 800);
+    TMultiGraph *mg = new TMultiGraph();
+
+    string name = "Title";
+    mg->SetTitle(name.c_str());
+
+    TGraph *grCheck = new TGraph();
+    grCheck->SetTitle("Allowed");
+    TGraph *grBFB = new TGraph();
+    grBFB->SetTitle("Positivity");
+
+    TGraph *grBoth = new TGraph();
+    grBoth->SetTitle("Both");
+
+    TGraph *grPert = new TGraph();
+    grPert->SetTitle("Perturbativity");
+
+    double la1 = Pars.Getla1();
+    double Mh = Pars.GetMh();
+
+    int N = 0;
+    int max = ParMap["MH"].size();
+
+    for (int i = 0; i < max; i++) {
+
+        double mh_in = Mh;
+        double mH_in = ParMap["MH"][i];
+        double mA_in = ParMap["MA"][i];
+        double mHp_in = ParMap["MC"][i];
+        double l2_in = ParMap["la2"][i];
+        double l3_in = ParMap["la3"][i];
+        double laL = ParMap["laL"][i];
+        // char *file = "data/test.txt";
+
+        if ((mh_in <= 0) || (mH_in <= 0) || (mA_in <= 0) || (mHp_in <= 0)) {
+            cout << "ERROR: All mass parameters must be positive\n";
+            exit(0);
+        }
+
+        THDM model;
+        SM sm;
+
+        bool pset = model.set_inert(mh_in, mH_in, mA_in, mHp_in, l2_in, l3_in);
+
+        if (!pset) {
+            cerr << "The parameters you have specified were not valid\n";
+            exit(0);
+        }
+
+        // Reference SM Higgs mass for EW precision observables
+        double mh_ref = 125.;
+        Constraints check(model);
+
+        // model.print_param_phys(); // 2HDM parameters in physical mass basis
+        // model.print_param_gen(); // 2HDM parameters in generic basis
+        // model.print_param_higgs(); // 2HDM parameters in Higgs basis
+
+        // check.print_all(mh_ref); // Constraints and Oblique Parameters
+
+        const HBHSResult *hbhsres_ptr = nullptr;
+        #if defined HiggsBounds
+        HBHS hbhs{};
+
+        const HBHSResult hbhs_result = hbhs.check(model);
+        hbhs_result.hb.print();
+        hbhs_result.hs.print();
+        hbhsres_ptr = &hbhs_result;
+        #endif
+
+        // model.write_LesHouches(file, true, true, true, hbhsres_ptr);
+
+        int bfb = model.check_stability();
+        int Pert = model.check_perturbativity();
+        int Check = bfb && Pert; // & twoMins;
+
+        if (bfb == 1 && Pert == 0)
+        {
+            grPert->AddPoint(l2_in, laL);
+        } else if (bfb == 0 && Pert == 1) 
+        {
+            grBFB->AddPoint(l2_in, laL);
+        } else if (Check) {
+            grCheck->AddPoint(l2_in, laL);
+            // keepIndex.push_back(i);
+            // AddToMap();
+            // cout << "Got here\n";
+        } else if (bfb == 0 && Pert == 0) {
+            grBoth->AddPoint(l2_in, laL);
+            // cout << "Zeros\n";
+        } else {
+            cout << "Should never get here\n";
+        }
+    }
+
+    grCheck->SetMarkerColor(2);
+    grCheck->SetMarkerStyle(20);
+
+    grBFB->SetMarkerColor(4);
+    grBFB->SetMarkerStyle(20);
+
+    grPert->SetMarkerColor(3);
+    grPert->SetMarkerStyle(20);
+
+    grBoth->SetMarkerColor(1);
+    grBoth->SetMarkerStyle(20);
+
+    mg->Add(grCheck);
+    mg->Add(grPert);
+    mg->Add(grBFB);
+    mg->Add(grBoth);
+    
+    mg->Draw("AP");
+
+    c->BuildLegend();
+
+    c->Update();
+
+    string dir = "bin/Plots/";
+    name.append("CopyParMapTest.png");
+    dir.append(name);
+    c->SaveAs(dir.c_str());
+
+    TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+    app.Run();
+}*/
+
+void IDM::SXT() {
+cout << "Making SXT graph...\n";
+    TApplication app("app", nullptr, nullptr);
+    TCanvas *c = new TCanvas("c", "SXT", 800, 800);
+
+    vector<int> keepIndex;
+
+    vector<double> S, T;
+    vector<double> aux;
+
+    double la1 = Pars.Getla1();
+    double m11Sq = Pars.GetMh()*Pars.GetMh();
+
+    int N = 0;
+    int max = ParMap["MH"].size();
+
+    for (int i = 0; i < max; i++) {
+
+        double MH = ParMap["MH"][i];
+        double MA = ParMap["MA"][i];
+        double MC = ParMap["MC"][i];
+
+        aux = ST_graph_prep(m11Sq, MH, MA, MC);
+        // cout << "S: " << aux[0] << " T: " << aux[1] << endl;
+        S.push_back(aux[0]);
+        T.push_back(aux[1]);
+        // int twoMins = TwoMins(Pars);
+    }
+
+    TGraph *gr = new TGraph(max, &S[0], &T[0]);
+
+    string name = "SXT_Coeffs";
+    gr->SetTitle(name.c_str());
+    gr->GetXaxis()->SetTitle("S");
+    gr->GetYaxis()->SetTitle("T");
+    
+
+    gr->SetMarkerColor(4);
+    gr->SetMarkerStyle(20);
+    
+    gr->Draw("AP");
+
+    // c->BuildLegend();
+
+    c->Update();
+
+    string dir = "bin/Plots/";
+    name.append(".png");
+    dir.append(name);
+    c->SaveAs(dir.c_str());
+
+    TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+    app.Run();
 }
