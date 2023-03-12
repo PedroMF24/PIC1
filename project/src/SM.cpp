@@ -6,9 +6,9 @@
  */
 StandardModel::StandardModel() {                // Units in GeV
     SMConstants["MW"] = 80.385;                 // W boson mass
-    SMConstants["GAW"] = 2.08430;                // 2.085; 
+    SMConstants["GAW"] = 2.08430;                // 2.085; Weak current coupling
     SMConstants["MZ"] = 91.1876;                // Z boson mass
-    SMConstants["GAZ"] = 2.49427;               // 2.4952;
+    SMConstants["GAZ"] = 2.49427;               // 2.4952; Neutral current coupling
     SMConstants["E_MASS"] = 0.510998928e-03;    // Electron mass
     SMConstants["MU_MASS"] = 1.056583715e-01;   // Mu mass
     SMConstants["TAU_MASS"] = 1.77682;          // Tau mass
@@ -181,7 +181,7 @@ double StandardModel::Gstu(double x, double y) {
     }
     else {
         Gstu = -16.0/3.0 + 5.0*(x+y) - 2.0*pow(x-y,2.0) + 3.0*((x*x+y*y)
-    /(x-y) - pow(x,2.0) + pow(y,2.0) + pow(x-y,3.0)/3.0)*log(x/y) + 
+    /(x-y) - x*x + y*y + pow(x-y,3.0)/3.0)*log(x/y) + 
     (1.0 - 2.0*(x+y) + pow(x-y,2.0))*
     fsmallstu(x+y-1.0,1.0-2.0*(x+y)+pow(x-y,2.0));
     }
@@ -206,37 +206,37 @@ double StandardModel::Ghatstu(double x) {
     return Ghatstu;
 }
 
-void solve_cubic_eq(complex<double>& x0, complex<double>& x1, complex<double>& x2, complex<double> poly[4]) {
+// void solve_cubic_eq(complex<double>& x0, complex<double>& x1, complex<double>& x2, complex<double> poly[4]) {
 
-    complex<double> zeta{-0.5, 0.8660254037844386};  // sqrt3(1)
-    complex<double> zeta2{-0.5,-0.8660254037844386};  // sqrt3(1)**2
-    double third = 0.3333333333333333;                    // 1/3
-    complex<double> a_1 = pow(poly[4], -1.0);
-    complex<double> E1 = -poly[3] * a_1;
-    complex<double> E2 = poly[2] * a_1;
-    complex<double> E3 = -poly[1] * a_1;
+//     complex<double> zeta{-0.5, 0.8660254037844386};  // sqrt3(1)
+//     complex<double> zeta2{-0.5,-0.8660254037844386};  // sqrt3(1)**2
+//     double third = 0.3333333333333333;                    // 1/3
+//     complex<double> a_1 = pow(poly[4], -1.0);
+//     complex<double> E1 = -poly[3] * a_1;
+//     complex<double> E2 = poly[2] * a_1;
+//     complex<double> E3 = -poly[1] * a_1;
 
-    complex<double> s0 = E1;
-    complex<double> E12 = E1 * E1;
-    complex<double> A = 2.0 * E1 * E12 - 9.0 * E1 * E2 + 27.0 * E3;  // s1^3 + s2^3
-    complex<double> B = E12 - 3.0 * E2;  // s1 s2
-    // quadratic equation: z^2-Az+B^3=0  where roots are equal to s1^3 and s2^3
-    complex<double> A2 = A * A;
-    complex<double> delta = sqrt(A2 - 4.0 * (B * B * B));
-    complex<double> s1;
-    if (real(conj(A) * delta) >= 0.0) { // scallar product to decide the sign yielding bigger magnitude
-        s1 = pow(0.5 * (A + delta), third);
-    } else {
-        s1 = pow(0.5 * (A - delta), third);
-    }
-    complex<double> s2;
-    if (s1 == complex<double>{0.0, 0.0}) {
-        s2 = complex<double>{0.0, 0.0};
-    } else {
-        s2 = B / s1;
-    }
+//     complex<double> s0 = E1;
+//     complex<double> E12 = E1 * E1;
+//     complex<double> A = 2.0 * E1 * E12 - 9.0 * E1 * E2 + 27.0 * E3;  // s1^3 + s2^3
+//     complex<double> B = E12 - 3.0 * E2;  // s1 s2
+//     // quadratic equation: z^2-Az+B^3=0  where roots are equal to s1^3 and s2^3
+//     complex<double> A2 = A * A;
+//     complex<double> delta = sqrt(A2 - 4.0 * (B * B * B));
+//     complex<double> s1;
+//     if (real(conj(A) * delta) >= 0.0) { // scallar product to decide the sign yielding bigger magnitude
+//         s1 = pow(0.5 * (A + delta), third);
+//     } else {
+//         s1 = pow(0.5 * (A - delta), third);
+//     }
+//     complex<double> s2;
+//     if (s1 == complex<double>{0.0, 0.0}) {
+//         s2 = complex<double>{0.0, 0.0};
+//     } else {
+//         s2 = B / s1;
+//     }
 
-    x0 = third * (s0 + s1 + s2);
-    x1 = third * (s0 + s1 * zeta2 + s2 * zeta);
-    x2 = third * (s0 + s1 * zeta + s2 * zeta2);  
-}
+//     x0 = third * (s0 + s1 + s2);
+//     x1 = third * (s0 + s1 * zeta2 + s2 * zeta);
+//     x2 = third * (s0 + s1 * zeta + s2 * zeta2);  
+// }

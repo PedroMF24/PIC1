@@ -10,18 +10,13 @@
 //     cout << SM.Get("pi");
 // }
 
-
 int main()
 {
-    vector<double> S;
-    vector<double> T;
 
     Parameters Pars;
     IDM pic(Pars);
-    pic.StorePars(1000);
+    pic.StorePars(10000);
     pic.SXT();
-
-
 
     // STORE PARAMETERS TO TEST STU
     // Parameters Pars;

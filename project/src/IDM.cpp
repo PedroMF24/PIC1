@@ -57,9 +57,10 @@ void IDM::AddToMap() {
 }
 
 void IDM::StorePars(int nPoints) {
+    ClearParMap();
     cout << "Generating and storing Parameters...\n";
     for (int i = 0; i < nPoints; i++) {
-        Pars.GenPars(1);
+        Pars.GenPars(1); // 1
         AddToMap();
     }
 }
@@ -667,13 +668,14 @@ void IDM::ReadDAT(const string &filename) {
 	while (getline(ss, col, '\t')) {
 		header.push_back(col);
 	}
-
+    
 	// Read values
 	while (getline(input, line)) {
 		stringstream ss(line);
 		int i = 0;
 		while (getline(ss, col, '\t')) {
 			ParMap[header[i]].push_back(stod(col));
+            cout << "header " << header[i] << " Value " << ParMap[header[i]][i] << endl; 
 			i++;
 		}
 	}
@@ -820,6 +822,40 @@ void IDM::IDMC_Test() {
     app.Run();
 }*/
 
+int MyST_Check(double &S, double &T) {
+
+    const double Shat = 0.05;
+    const double That = 0.09;
+
+    const double S_error = 0.11;
+    const double T_error = 0.13;
+    // const double U_error = 0.11;
+
+    double SUL = Shat + S_error;
+    double SLL = Shat - S_error;
+    double TUL = That + T_error;
+    double TLL = That - T_error;
+
+    int check = (S > SLL && S < SUL && T > TLL && T < TUL) ? 1 : 0;
+    return check;
+}
+
+vector<vector<double>> readProfSTU() {
+    ifstream infile("data/profSTUdata.dat");
+    vector<double> S;
+    vector<double> T;
+    double s, t;
+    while (infile >> s >> t) {
+        S.push_back(s);
+        T.push_back(t);
+    }
+    for (int i = 0; i < S.size(); i++) {
+        cout << S[i] << '\t' << T[i] << endl;
+    }
+    vector<vector<double>> res = {S, T};
+    return res;
+}
+
 void IDM::SXT() {
 cout << "Making SXT graph...\n";
     TApplication app("app", nullptr, nullptr);
@@ -827,31 +863,58 @@ cout << "Making SXT graph...\n";
 
     vector<int> keepIndex;
 
-    vector<double> S, T;
+    vector<double> Svec, Tvec;
+    Svec.clear();
+    Tvec.clear();
     vector<double> aux;
 
     double la1 = Pars.Getla1();
-    double m11Sq = Pars.GetMh()*Pars.GetMh();
+    double m11 = 125.1; // Pars.GetMh();
+
+    // vector<vector<double>> ST = readProfSTU();
 
     int N = 0;
-    int max = ParMap["MH"].size();
+    int max =  ParMap["MH"].size(); // ST[0].size(); // 
+    cout << "Max " << max << endl;
 
     for (int i = 0; i < max; i++) {
 
         double MH = ParMap["MH"][i];
         double MA = ParMap["MA"][i];
         double MC = ParMap["MC"][i];
-
-        aux = ST_graph_prep(m11Sq, MH, MA, MC);
-        // cout << "S: " << aux[0] << " T: " << aux[1] << endl;
-        S.push_back(aux[0]);
-        T.push_back(aux[1]);
+        // cout << "Values in SXT " << m11 << " " << MH << " " << MA << " " << MC << endl;
+        // aux = ST_graph_prep(m11, MH, MA, MC);
+        // double SVal = aux[0];
+        // double TVal = aux[1];
+        // // double UVal = aux[2];
+        // // cout << "S: " << aux[0] << " T: " << aux[1] << endl;
+        // cout << "SVAL e TVAL " << SVal << " " << TVal << endl;
+        // if (MyST_Check(SVal, TVal)) {
+        //     cout << " Checked" << endl;
+        //     S.push_back(SVal);
+        //     T.push_back(TVal);
+        // }
         // int twoMins = TwoMins(Pars);
+
+    /* Graph prep before */
+        double S, T, U;
+        S = T = U = 0;
+        ST(m11, MH, MA, MC, S, T, U);
+        Svec.push_back(S);
+        Tvec.push_back(T);
+        // // cout << "Antes " << S << endl;
+        // if (ST(m11, MH, MA, MC, S, T, U)) {
+        //     // cout << "Depois " << S << endl;
+        //     Svec.push_back(S);
+        //     Tvec.push_back(T);
+        // }
     }
 
-    TGraph *gr = new TGraph(max, &S[0], &T[0]);
+    int Npoints = Svec.size();
+    TGraph *gr = new TGraph(Npoints, &Svec[0], &Tvec[0]);
+    // TGraph *gr = new TGraph(max, &ST[0][0], &ST[1][0]);
 
-    string name = "SXT_Coeffs";
+    string name = "SXT_12-03";
     gr->SetTitle(name.c_str());
     gr->GetXaxis()->SetTitle("S");
     gr->GetYaxis()->SetTitle("T");

@@ -35,14 +35,17 @@ class TheoCons {
     int QuarticCouplings(double la1, double la2, double la3, double laL);
 
     // STU
-    void InitSTUMatrices(double ImVdagV[4][4], complex<double> UdagU[2][2], complex<double> VdagV[4][4], complex<double> UdagV[2][4]);
-    void InitSTUVars(double mneu[4], double mch[2], double m11Sq, double MH, double MA, double MC);
-    void CalculateSTU(double mneu[4], double mch[2], double ImVdagV[4][4], 
-        complex<double> UdagU[2][2], complex<double> VdagV[4][4], 
-        complex<double> UdagV[2][4], double& S, double& T, double& U);
+    void InitSTUVars(double (&mneu)[4], double (&mch)[2], double &m11, double &MH, double &MA, double &MC);
+    void InitSTUMatrices(double (&ImVdagV)[4][4], complex<double> (&UdagU)[2][2], complex<double> (&VdagV)[4][4], complex<double> (&UdagV)[2][4]);
+    // void InitSTUVars(double mneu[4], double mch[2], double m11, double MH, double MA, double MC);
+    void CalculateSTU(double (&mneu)[4], double (&mch)[2], double (&ImVdagV)[4][4], 
+        complex<double> (&UdagU)[2][2], complex<double> (&VdagV)[4][4], 
+        complex<double> (&UdagV)[2][4], double& S, double& T, double& U);
     int STU_Check(double &S, double &T, double &U);
-    int STU_Test(double m11Sq, double MH, double MA, double MC);
-    vector<double> ST_graph_prep(double m11Sq, double MH, double MA, double MC);
+    int ST(double m11, double MH, double MA, double MC, double &S, double &T, double &U);
+
+    int STU_Test(double m11, double MH, double MA, double MC);
+    vector<double> ST_graph_prep(double m11, double MH, double MA, double MC);
     
     // int CheckAllTheoCons();
     int GetCheck();
