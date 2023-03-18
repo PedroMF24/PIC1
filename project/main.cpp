@@ -13,10 +13,22 @@
 int main()
 {
 
-    Parameters Pars;
-    IDM pic(Pars);
-    pic.StorePars(10000);
-    pic.SXT();
+    // SXT alterado
+    
+    IDM idm;
+    idm.OverlapSXT(10000);
+
+    // SXT ANTIGO
+    // // Parameters Pars;
+    // // IDM pic(Pars);
+    // // pic.StorePars(10000);
+    // // pic.SXT();
+
+    // Parameters Pars;
+    // IDM pic(Pars);
+    // pic.StorePars(20);
+    // pic.WriteDat("data/Verify_STU.dat");
+    // pic.SXT();
 
     // STORE PARAMETERS TO TEST STU
     // Parameters Pars;

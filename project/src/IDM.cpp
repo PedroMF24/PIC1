@@ -1,7 +1,8 @@
 #include "IDM.h"
 
 IDM::IDM() {
-    Pars.GenPars(1);
+    // Pars.GenPars(1);
+    ClearParMap();
 }
 
 IDM::IDM(Parameters& newPars) : Pars(newPars) {
@@ -61,8 +62,27 @@ void IDM::StorePars(int nPoints) {
     cout << "Generating and storing Parameters...\n";
     for (int i = 0; i < nPoints; i++) {
         Pars.GenPars(1); // 1
+        // Mudar para while. if (Check all constraints) {AddToMap}
         AddToMap();
     }
+}
+
+vector<pair<double,double>> IDM::GetParsSTU(int nPoints) {
+    ClearParMap();
+    cout << "Generating and storing Parameters that pass STU...\n";
+    int i = 0;
+    vector<pair<double, double>> STVals; // ST.first = S, ST.second = T;
+    while ( i < nPoints) {
+        Pars.GenPars(0); // 1
+        // Mudar para while. if (Check all constraints) {AddToMap}
+        double S, T, U;
+        if (ST(Pars.GetMh(), Pars.GetMH(), Pars.GetMA(), Pars.GetMC(), S, T, U)) {
+            AddToMap();
+            STVals.push_back(make_pair(S,T));
+            i++;
+        }
+    }
+    return STVals;
 }
 
 /*
@@ -455,84 +475,85 @@ void IDM::SavePars(const string &filename) {
     outputFile.close();
 }*/
 
-void IDM::SavePars(const string &filename) {
-    //Open the output file
-    ofstream outputFile(filename);
-    if (!outputFile.is_open()) {
-        fprintf(stderr, "**Can not open file to save parameters\n");
-        exit(0);
-    }
-    //Write column headings
-	for (auto const &pair : ParMap) 
-		outputFile << pair.first << ",";
-	outputFile << "\n";
-	// write data
-	for (int i = 0; i < ParMap.begin()->second.size(); i++) {
-		for (auto const &pair : ParMap) 
-			outputFile << pair.second[i] << ",";
-		outputFile << "\n";
-	}
-    // Close the file
-    outputFile.close();
-}
+// void IDM::SavePars(const string &filename) {
+//     //Open the output file
+//     ofstream outputFile(filename);
+//     if (!outputFile.is_open()) {
+//         fprintf(stderr, "**Can not open file to save parameters\n");
+//         exit(0);
+//     }
+//     //Write column headings
+// 	for (auto const &pair : ParMap) 
+// 		outputFile << pair.first << ",";
+// 	outputFile << "\n";
+// 	// write data
+// 	for (int i = 0; i < ParMap.begin()->second.size(); i++) {
+// 		for (auto const &pair : ParMap) 
+// 			outputFile << pair.second[i] << ",";
+// 		outputFile << "\n";
+// 	}
+//     // Close the file
+//     outputFile.close();
+// }
 
 void IDM::ClearParMap() {
     cout << "Clearing Parameter Map\n";
     // Save map just in case if it is not empty
     if (!ParMap.empty()) {
-        SavePars("data/Saved.csv");
-    }
-    // Clear map
-    ParMap.clear();
-    // Initialize map
-    vector<string> parNames = {"la2", "la3", "la4", "la5", "laL", "MH", "MC", "MA", "m22Squared"};
-    vector<double> values;
-    values.clear();
-    // Insert pairs of [Key,Values] of the parameters   
-    for (auto &i : parNames)
-        ParMap.insert(make_pair(i,values));
+        SavePars("data/Saved.csv", ParMap);
+        // Clear map
+        ParMap.clear();
+        // Initialize map
+        vector<string> parNames = {"la2", "la3", "la4", "la5", "laL", "MH", "MC", "MA", "m22Squared"};
+        vector<double> values;
+        values.clear();
+        // Insert pairs of [Key,Values] of the parameters   
+        for (auto &i : parNames)
+            ParMap.insert(make_pair(i,values));
+    } else 
+        return;
 }
 
-void IDM::ReadCSV(const string &filename) {
-    ClearParMap();
-    printf("Reading %s into Parameter Map\n", filename.c_str());
+// void IDM::ReadCSV(const string &filename) {
+//     ClearParMap();
+//     printf("Reading %s into Parameter Map\n", filename.c_str());
 
-    ifstream input(filename);
+//     ifstream input(filename);
 
-    if (!input.is_open()) {
-        fprintf(stderr, "**Can not open CSV file to read\n");
-        exit(0);
-    }
+//     if (!input.is_open()) {
+//         fprintf(stderr, "**Can not open CSV file to read\n");
+//         exit(0);
+//     }
 
-	string line, col;
-	vector<string> header;
+// 	string line, col;
+// 	vector<string> header;
 
-        getline(input, line);
-		stringstream ss(line);
-		while (getline(ss, col, ',')) {
-			header.push_back(col);
-		}
+//         getline(input, line);
+// 		stringstream ss(line);
+// 		while (getline(ss, col, ',')) {
+// 			header.push_back(col);
+// 		}
 
-		// Read values
-		while (getline(input, line)) {
-			stringstream ss(line);
-			int i = 0;
-			while (getline(ss, col, ',')) {
-				ParMap[header[i]].push_back(stod(col));
-				i++;
-			}
-		}
-    // Print map after reading
-	/*
-    for (auto &pair : ParMap) {
-		cout << pair.first << ": ";
-		for (auto& value : pair.second) {
-			cout << value << " ";
-		}
-		cout << endl;
-	}
-    */
-}
+// 		// Read values
+// 		while (getline(input, line)) {
+// 			stringstream ss(line);
+// 			int i = 0;
+// 			while (getline(ss, col, ',')) {
+// 				ParMap[header[i]].push_back(stod(col));
+// 				i++;
+// 			}
+// 		}
+//     // Print map after reading
+// 	/*
+//     for (auto &pair : ParMap) {
+// 		cout << pair.first << ": ";
+// 		for (auto& value : pair.second) {
+// 			cout << value << " ";
+// 		}
+// 		cout << endl;
+// 	}
+//     */
+// }
 
 /*
 void IDM::WriteDat(const string &filename) {
@@ -567,9 +588,9 @@ void IDM::WriteDat(const string &filename) {
         file << endl;
     }
     file.close();
-}
-*/
+}*/
 
+/*
 void IDM::WriteElementToFile(string key, ofstream &file, int i) {
     // use the find function to search for the key and get the element at that key if it exists
     // map<string, vector<double>> myMap
@@ -578,13 +599,14 @@ void IDM::WriteElementToFile(string key, ofstream &file, int i) {
         file << found_key->second[i] << "\t"; 
     // setprecision(n) to limit significant digits of number to n digits
     // file << setprecision(5) << found_key->second[i] << "\t"; 
-}
+}*/
 
 /**
  * @brief Write ParMap to a .dat file formatted for Experimental constraints
  * 
  * @param filename 
  */
+/*
 void IDM::WriteMapToFile(const string &filename) {
     cout << "Writting Parameter Map to .dat file...\n";
 
@@ -604,8 +626,9 @@ void IDM::WriteMapToFile(const string &filename) {
 
     // Order of variables to be written in .dat file
 	// The name must be exactly correct, or the data will not appear in the file
-    string parNames[] = {"m11Sq", "MH", "MA", "MC", "la2", "laL", "la1", "la3", "la4", "la5"};
-	double m11Sq = Pars.Getla1()*Pars.Getv()*Pars.Getv(); // m11^2 = la1*v^2
+    string parNames[] = {"mh", "MH", "MA", "MC", "la2", "laL", "la1", "la3", "la4", "la5"}; // "m11Sq"
+	// double m11Sq = Pars.Getla1()*Pars.Getv()*Pars.Getv(); // m11^2 = la1*v^2
+    double mh = Pars.GetMh();
 	double la1 = Pars.Getla1();
 	// Write the column names
     for (auto &par : parNames)
@@ -617,10 +640,10 @@ void IDM::WriteMapToFile(const string &filename) {
       	// file << "1 "; // Write the value for m11squared
 		for (auto &par : parNames)
 		{
-			if (par != "m11Sq" && par != "la1") {
+			if (par != "mh" && par != "la1") {
 				WriteElementToFile(par, file, i);
-			} else if (par == "m11Sq") {
-				file << m11Sq << "\t";
+			} else if (par == "mh") {
+				file << mh << "\t";
 			} else if (par == "la1") {
 				file << la1 << "\t";
 			} else {
@@ -648,7 +671,7 @@ void IDM::WriteMapToFile(const string &filename) {
     cout << "Parameter Map written to " << filename << "\n";
 }
 
-
+*//*
 void IDM::ReadDAT(const string &filename) {
     ClearParMap();
     printf("Reading %s into Parameter Map\n", filename.c_str());
@@ -679,7 +702,7 @@ void IDM::ReadDAT(const string &filename) {
 			i++;
 		}
 	}
-}
+}*/
 
 vector<double> IDM::GetParMapVal(const string &name) {
     auto it = ParMap.find(name);
@@ -840,23 +863,42 @@ int MyST_Check(double &S, double &T) {
     return check;
 }
 
-vector<vector<double>> readProfSTU() {
-    ifstream infile("data/profSTUdata.dat");
-    vector<double> S;
-    vector<double> T;
-    double s, t;
-    while (infile >> s >> t) {
-        S.push_back(s);
-        T.push_back(t);
-    }
-    for (int i = 0; i < S.size(); i++) {
-        cout << S[i] << '\t' << T[i] << endl;
-    }
-    vector<vector<double>> res = {S, T};
-    return res;
-}
+// vector<vector<double>> 
 
-void IDM::SXT() {
+// vector<pair<double,double>> readProfSTU() {
+// cout << "Reading professor STU data...\n";
+//     ifstream infile("data/STU/check/profSTUdata.dat");
+//     vector<pair<double,double>> res;
+//     double s, t;
+//     while (infile >> s >> t) {
+//         res.push_back(make_pair(s,t));
+//     }
+//     return res;
+// }
+
+// T = 0 se massas de escalares forem iguais
+// quao diferentes massas podem ser
+
+// void WriteSTUPars(vector<pair<double,double>> values, const string &filename) {
+//     // Open and verify if it was opened correctly
+//     cout << "Writting STU approved Parameters in file..." << endl;
+//     ofstream file;
+//     file.open(filename);
+//     if (!file.is_open()) {
+//         fprintf(stderr, "**Can not open DAT file to write\n");
+//         exit(0);
+//     }
+//     file << "S" << "\t" << "T" << endl;
+
+//     // Write each element in a column
+//     for (auto &pair : values)
+//     {
+//         file << pair.first << "\t" << pair.second << endl;
+//     }
+//     file.close();
+// }
+
+void IDM::SXT(int nPoints) {
 cout << "Making SXT graph...\n";
     TApplication app("app", nullptr, nullptr);
     TCanvas *c = new TCanvas("c", "SXT", 800, 800);
@@ -877,11 +919,16 @@ cout << "Making SXT graph...\n";
     int max =  ParMap["MH"].size(); // ST[0].size(); // 
     cout << "Max " << max << endl;
 
+/*
     for (int i = 0; i < max; i++) {
 
         double MH = ParMap["MH"][i];
         double MA = ParMap["MA"][i];
         double MC = ParMap["MC"][i];
+
+        double la2 = ParMap["la2"][i];
+        double la3 = ParMap["la3"][i];
+
         // cout << "Values in SXT " << m11 << " " << MH << " " << MA << " " << MC << endl;
         // aux = ST_graph_prep(m11, MH, MA, MC);
         // double SVal = aux[0];
@@ -896,25 +943,38 @@ cout << "Making SXT graph...\n";
         // }
         // int twoMins = TwoMins(Pars);
 
-    /* Graph prep before */
-        double S, T, U;
-        S = T = U = 0;
-        ST(m11, MH, MA, MC, S, T, U);
-        Svec.push_back(S);
-        Tvec.push_back(T);
+    // Graph prep before 
+        // double S, T, U;
+        // S = T = U = 0;
+        // ST(m11, MH, MA, MC, S, T, U);
+        // Svec.push_back(S);
+        // Tvec.push_back(T);
         // // cout << "Antes " << S << endl;
-        // if (ST(m11, MH, MA, MC, S, T, U)) {
-        //     // cout << "Depois " << S << endl;
-        //     Svec.push_back(S);
-        //     Tvec.push_back(T);
-        // }
+        if (ST(m11, MH, MA, MC, S, T, U)) {
+            cout << "(S,T) = (" << S << ", " << T <<  ") para (MH,MA,MC,la2,la3) = "  
+            << MH << ", " << MA << ", " << MC << ", " << la2 << ", " << la3 << ")" << endl;
+            Svec.push_back(S);
+            Tvec.push_back(T);
+        }
     }
+    */
+
+    vector<pair<double, double>> Values = GetParsSTU(nPoints);
+    WriteSTUPars(Values, "data/STU/STU_Points.dat");
+    WriteDat("data/STU/STU_PointsPars.dat", ParMap);
+
+    for (int i = 0; i < nPoints; i++)
+    {
+        Svec.push_back(Values[i].first);
+        Tvec.push_back(Values[i].second);
+    }
+    
 
     int Npoints = Svec.size();
     TGraph *gr = new TGraph(Npoints, &Svec[0], &Tvec[0]);
     // TGraph *gr = new TGraph(max, &ST[0][0], &ST[1][0]);
 
-    string name = "SXT_12-03";
+    string name = "SXT_13-03";
     gr->SetTitle(name.c_str());
     gr->GetXaxis()->SetTitle("S");
     gr->GetYaxis()->SetTitle("T");
@@ -924,6 +984,84 @@ cout << "Making SXT graph...\n";
     gr->SetMarkerStyle(20);
     
     gr->Draw("AP");
+
+    // c->BuildLegend();
+
+    c->Update();
+
+    string dir = "bin/Plots/";
+    name.append(".png");
+    dir.append(name);
+    c->SaveAs(dir.c_str());
+
+    TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+    app.Run();
+}
+
+
+void IDM::OverlapSXT(int nPoints) {
+    TApplication app("app", nullptr, nullptr);
+    TCanvas *c = new TCanvas("c", "SXT", 1200, 800);
+
+    TMultiGraph *mg = new TMultiGraph();
+    string name = "S-T Plane";
+    mg->SetTitle(name.c_str());
+
+    vector<double> Svec, Tvec;
+    Svec.clear();
+    Tvec.clear();
+    vector<double> aux;
+
+    double la1 = Pars.Getla1();
+    double m11 = 125.1; // Pars.GetMh();
+
+    int N = 0;
+    int max =  ParMap["MH"].size(); // ST[0].size(); // 
+    cout << "Max " << max << endl;
+
+    vector<pair<double, double>> Values = GetParsSTU(nPoints);
+    WriteSTUPars(Values, "data/STU/STU_Points.dat");
+    WriteDat("data/STU/STU_PointsPars.dat", ParMap);
+
+    for (int i = 0; i < nPoints; i++)
+    {
+        Svec.push_back(Values[i].first);
+        Tvec.push_back(Values[i].second);
+    }
+
+    int Npoints = Svec.size();
+    TGraph *gr = new TGraph(Npoints, &Svec[0], &Tvec[0]);
+    // TGraph *gr = new TGraph(max, &ST[0][0], &ST[1][0]);
+    gr->SetTitle("SXT");
+    gr->SetMarkerColor(4);
+    gr->SetMarkerStyle(20);
+
+    Svec.clear();
+    Tvec.clear();
+    vector<pair<double, double>>  profValues = readProfSTU();
+    int ProfPoints = profValues.size();
+    for (auto &pair : profValues)
+    {
+        Svec.push_back(pair.first);
+        Tvec.push_back(pair.second);
+    }
+    
+    
+    TGraph *grprof = new TGraph(Svec.size(), &Svec[0], &Tvec[0]);
+    grprof->SetTitle("Elipse");
+    grprof->SetMarkerColor(2);
+    grprof->SetMarkerStyle(20);
+
+    mg->Add(grprof);
+    mg->Add(gr);
+
+
+    c->Update();
+
+    mg->GetXaxis()->SetTitle("S");
+    mg->GetYaxis()->SetTitle("T");
+    mg->Draw("AP");
 
     // c->BuildLegend();
 

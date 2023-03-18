@@ -5,6 +5,7 @@
 #include "ExpConstraints.h"
 #include "Parameters.h"
 #include "RootClass.h"
+#include "FileStream.h"
 
 #include <iomanip>
 
@@ -31,16 +32,18 @@ class IDM : public TheoCons, public ExpCons {
 
     void PrintParMap();
     void AddToMap();
-    void SavePars(const string &filename);
+    // void SavePars(const string &filename);
     void ClearParMap(); // Passa a receber um mapa
-    void ReadCSV(const string &filename);
-    void ReadDAT(const string &filename);
+    // void ReadCSV(const string &filename);
+    // void ReadDAT(const string &filename);
 
-    void WriteDat(const string &filename); // Write Map elements as they are to .dat file
-    void WriteElementToFile(string key, ofstream &file, int i); // Write parameters to run on experimental constraints 
-    void WriteMapToFile(const string &filename);
+    // void WriteDat(const string &filename); // Write Map elements as they are to .dat file
+    // void WriteElementToFile(string key, ofstream &file, int i); // Write parameters to run on experimental constraints 
+    // void WriteMapToFile(const string &filename);
 
-    void SXT();
+    void SXT(int nPoints);
+    vector<pair<double,double>> GetParsSTU(int nPoints);
+    void OverlapSXT(int nPoints);
 
     // void IDMC_Test();
 

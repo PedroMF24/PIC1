@@ -45,6 +45,8 @@ class Parameters : public MyRandom {
     double Getla4();
     double Getla5();
 
+    vector<string> GetParNames();
+
     private:
     double Mh = 125.1;
     double v = 246;
@@ -63,16 +65,8 @@ class Parameters : public MyRandom {
     double la4 = 0;
     double la5 = 0;
 
+    vector<string> ParNames = {"mh", "MH", "MA", "MC", "la2", "laL", "la1", "la3", "la4", "la5"};
+
     MyRandom Rd;
 };
-
-
-// class IDM_Pars {
-// public:
-//     IDM_Pars() = default;
-//     ~IDM_Pars() = default;
-// private:
-//     Parameters Pars;
-// };
-
 #endif

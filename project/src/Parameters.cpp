@@ -11,7 +11,12 @@ Parameters::Parameters()
     MC = 0; // MHC Charged Higgs
     la2 = 0; // lambda_2
     laL = 0; // la3 + la4 + la5
-
+    
+    // for (auto &name : ParNames)
+    // {
+    //     cout << name << endl;
+    // }
+    
     // cout << "Parameter constructor MH before GenPars " << GetMH() << endl;
     GenPars(1); // Initialize values
     // cout << "Parameters constructor MH after GenPars " << GetMH() << endl;
@@ -103,8 +108,8 @@ void Parameters::GenPars(int scan_setup)
         MH = Rd.UniDist(0,1000);
         MA = Rd.UniDist(0,1000);
         MC = Rd.UniDist(0,1000);
-        la2 = Rd.UniDist(0,4.5); // (-4*M_PI, 4*M_PI); // Perturbativity
-        laL = Rd.UniDist(-1.5,2);
+        la2 = Rd.UniDist(-500,500); // (-4*M_PI, 4*M_PI); // Perturbativity
+        laL = Rd.UniDist(-500,500);
     }
 
 
@@ -167,6 +172,10 @@ void Parameters::SetPars() {
 }
 
 // GETTERS
+
+vector<string> Parameters::GetParNames(){
+    return ParNames;
+}
 
 double Parameters::GetMh() {
     return Mh;
