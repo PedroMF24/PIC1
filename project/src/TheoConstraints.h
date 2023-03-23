@@ -44,7 +44,8 @@ class TheoCons {
     int STU_Check(double &S, double &T, double &U);
     int ST(double m11, double MH, double MA, double MC, double &S, double &T, double &U);
 
-    int STU_Test(double m11, double MH, double MA, double MC);
+    int STU_Test(double m11, double MH, double MA, double MC, double &S, double &T, double &U);
+    // int STU_Test(double m11, double MH, double MA, double MC);
     vector<double> ST_graph_prep(double m11, double MH, double MA, double MC);
     
     // int CheckAllTheoCons();

@@ -391,6 +391,7 @@ void TheoCons::InitSTUMatrices(double (&ImVdagV)[4][4], complex<double> (&UdagU)
     VdagV[3][2] = complex<double>(0.0, -1.0);
 }
 
+// Check if m11 is good
 void TheoCons::InitSTUVars(double (&mneu)[4], double (&mch)[2], double &m11, double &MH, double &MA, double &MC) {
     StandardModel model;
     mneu[0] = model.GetSMValue("MZ");
@@ -705,6 +706,46 @@ int TheoCons::ST(double m11, double MH, double MA, double MC, double &S, double 
 
     // Calculate ST
     if (Corr > 0) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int TheoCons::STU_Test(double m11, double MH, double MA, double MC, double &S, double &T, double &U) {
+
+    double ImVdagV[4][4];
+    complex<double> UdagU[2][2], VdagV[4][4], UdagV[2][4];
+    double Corr;
+    double a1, a2, a3, a4, a5, a6;
+    double UU, ST;
+    UU = ST = 0;
+
+    // Define common variables
+    double mneu[4], mch[2];
+    InitSTUVars(mneu, mch, m11, MH, MA, MC);
+    // cout << "Depois de init " << mch[1] << " " << mneu[1] << endl;
+
+    // Call Evaluate_Matrices and Calculate_STU functions
+    InitSTUMatrices(ImVdagV, UdagU, VdagV, UdagV);
+    CalculateSTU(mneu, mch, ImVdagV, UdagU, VdagV, UdagV, S, T, U);
+
+    // Define a1 to a6 constants
+    a1 = -0.34215919;
+    a2 = 0.77604111;
+    a3 = -0.52618813;
+    a4 = -0.03202802;
+    a5 = 0.05277964;
+    a6 = 0.00136192;
+
+    // Calculate Corr
+    Corr = a1 * pow(S, 2) + a2 * S * T + a3 * pow(T, 2) + a4 * S + a5 * T + a6;
+
+    // U check
+    double ULL = 0.03-0.1;
+    double UUL = 0.03+0.1;
+
+    if (U >= ULL && U<= UUL && Corr > 0) {
         return 1;
     } else {
         return 0;

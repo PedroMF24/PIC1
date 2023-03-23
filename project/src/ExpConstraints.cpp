@@ -2,7 +2,36 @@
 
 // CONSTRAINTS
 
+int WZDecayWidths(double MH, double MA) {
+    double mz = 90.1;
+    int check = 1;
+    if (MH >= 0 && MH <= 41) {
+        check = (MA >= 100) ? 1 : 0;
+    } else if (MH >= 41 && MH <= 45) {
+        check = ((MA >= mz - MH && MA <= MH + 8) || MA >= 100) ? 1 : 0;
+    } else if (MH >= 45 && MH <= 80) {
+        check = ((MA >= MH && MA <= MH + 8) || MA >= 100) ? 1 : 0;
+    }
+    return check;
+}
 
+int ChargedHLifetime(double MH, double MA, double MC) {
+    int check = ((MA >= MC) && (MC - MH <= 0.1)) ? 0 : 1;
+    return check;
+}
+
+int HiggsWidth(double laL) {
+    int check = (abs(laL) <= 0.1) ? 1 : 0;
+    return check;
+}
+
+int DMData(double MH) {
+    int check = (MH >= 45) ? 1 : 0;
+    return check;
+}
+
+
+// ==========================================================================
 /**
  * @brief Check relation to Eletroweak bosons
  * 

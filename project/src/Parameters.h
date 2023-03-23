@@ -67,6 +67,6 @@ class Parameters : public MyRandom {
 
     vector<string> ParNames = {"mh", "MH", "MA", "MC", "la2", "laL", "la1", "la3", "la4", "la5"};
 
-    MyRandom Rd;
+    // MyRandom Rd;
 };
 #endif

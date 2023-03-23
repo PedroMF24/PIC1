@@ -70,26 +70,48 @@ ostream& operator<< (std::ostream& s, const Parameters& p) {
     return s;
 }
 
+// void Parameters::ScanSetup()
+// {
+
+//     la2 = UniDist(0,4.5); // (-4*M_PI, 4*M_PI); // Perturbativity
+//     laL = UniDist(-1.5,2); // -1.5,2 // -2,4*M_PI -> For HBS
+
+//     MH = UniDist(0,1000);
+//     // cout << "**MH " << MH << endl;
+//     // cout << MH << endl;
+//     MA = UniDist(0,1000);
+//     MC = UniDist(70,1000); // IDM revisited >80
+
+//     // Eq 9 paper principal: strong bounds provided by the total width of the electroweak gauge bosons
+//     while (MH >= MA || MH >= MC || (MC - MA < 0.1))
+//     {   
+//         MH = UniDist(0,1000);
+//         // cout << "**MH " << MH << endl;
+//         // cout << MH << endl;
+//         MA = UniDist(0,1000);
+//         MC = UniDist(70,1000); // IDM revisited >80
+//     }
+// }
+
 void Parameters::ScanSetup()
 {
+    // la2 = UniDist(0,4.5);
+    la2 = UniDist(0,4.5); // (-4*M_PI, 4*M_PI); // Perturbativity
+    laL = UniDist(-1.5,2); // -1.5,2 // -2,4*M_PI -> For HBS
 
-    la2 = Rd.UniDist(0,4.5); // (-4*M_PI, 4*M_PI); // Perturbativity
-    laL = Rd.UniDist(-1.5,2); // -1.5,2 // -2,4*M_PI -> For HBS
-
-    MH = Rd.UniDist(0,1000);
-    // cout << "**MH " << MH << endl;
-    // cout << MH << endl;
-    MA = Rd.UniDist(0,1000);
-    MC = Rd.UniDist(70,1000); // IDM revisited >80
+    MH = UniDist(0,1000);
+    MA = UniDist(0,1000);
+    MC = UniDist(70,1000); // IDM revisited >80
 
     // Eq 9 paper principal: strong bounds provided by the total width of the electroweak gauge bosons
+    // DMC  mass MH has to be bigger than the other masses
     while (MH >= MA || MH >= MC || (MC - MA < 0.1))
     {   
-        MH = Rd.UniDist(0,1000);
+        MH = UniDist(0,1000);
         // cout << "**MH " << MH << endl;
         // cout << MH << endl;
-        MA = Rd.UniDist(0,1000);
-        MC = Rd.UniDist(70,1000); // IDM revisited >80
+        MA = UniDist(0,1000);
+        MC = UniDist(70,1000); // IDM revisited >80
     }
 }
 
@@ -105,19 +127,19 @@ void Parameters::GenPars(int scan_setup)
     if (scan_setup)
         ScanSetup();
     else {
-        MH = Rd.UniDist(0,1000);
-        MA = Rd.UniDist(0,1000);
-        MC = Rd.UniDist(0,1000);
-        la2 = Rd.UniDist(-500,500); // (-4*M_PI, 4*M_PI); // Perturbativity
-        laL = Rd.UniDist(-500,500);
+        MH = UniDist(0,1000);
+        MA = UniDist(0,1000);
+        MC = UniDist(0,1000);
+        la2 = UniDist(-500,500); // (-4*M_PI, 4*M_PI); // Perturbativity
+        laL = UniDist(-500,500);
     }
 
 
-    // MH = Rd.UniDist(0,1000);
-    // MA = Rd.UniDist(0,1000);
-    // MC = Rd.UniDist(0,1000);
-    // la2 = Rd.UniDist(0,4.5); // (-4*M_PI, 4*M_PI); // Perturbativity
-    // laL = Rd.UniDist(-1.5,2);
+    // MH = UniDist(0,1000);
+    // MA = UniDist(0,1000);
+    // MC = UniDist(0,1000);
+    // la2 = UniDist(0,4.5); // (-4*M_PI, 4*M_PI); // Perturbativity
+    // laL = UniDist(-1.5,2);
 
     m22Squared = v*v*laL - 2*MH*MH; // v*v*laL - 4*MA*MA -  2*MH*MH;
     

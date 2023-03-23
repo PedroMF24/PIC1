@@ -1,11 +1,16 @@
 #ifndef __IDM__
 #define __IDM__
 
+
+#include "Parameters.h"
 #include "TheoConstraints.h"
 #include "ExpConstraints.h"
-#include "Parameters.h"
 #include "RootClass.h"
 #include "FileStream.h"
+
+
+// #include "TheoConstraints.h"
+// #include "ExpConstraints.h"
 
 #include <iomanip>
 
@@ -18,17 +23,24 @@
 // #include "THDM.h"
 // #include "Util.h"
 
-class IDM : public TheoCons, public ExpCons {
+class IDM : public TheoCons, 
+            public ExpCons 
+{
     public:
     IDM();
     IDM(Parameters& Pars);
     ~IDM() = default;
 
     void GenNewPars();
-    void StorePars(int nPoints);
+    void StoreParsTest(int nPoints);
+    void StoreCheckedPars(int nPoints);
+
     void FilterParMap(vector<int> keepIndex);
     void FirstPlot();
+    
     void LimitsFromColliders();
+
+    int CheckAllCons();
 
     void PrintParMap();
     void AddToMap();
@@ -49,6 +61,9 @@ class IDM : public TheoCons, public ExpCons {
 
     Parameters GetPars();
     vector<double> GetParMapVal(const string &name);
+
+
+    void TM_Test();
 
     private:
     // Parameters generator class and Parameter values

@@ -25,8 +25,10 @@ class RootClass {
     public:
     RootClass() = default;
     ~RootClass() = default;
-    void ScatterPlot(string Titlen, int nPoints);
+    void ScatterPlot(string Title, int nPoints);
     void FirstPlot(string Title);
+
+    // void SaveOutput();
 
     private:
 

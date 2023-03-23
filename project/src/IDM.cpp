@@ -57,14 +57,78 @@ void IDM::AddToMap() {
     ParMap["m22Squared"].push_back(Pars.Getm22Squared());
 }
 
-void IDM::StorePars(int nPoints) {
+void IDM::StoreParsTest(int nPoints) {
     ClearParMap();
     cout << "Generating and storing Parameters...\n";
     for (int i = 0; i < nPoints; i++) {
-        Pars.GenPars(1); // 1
+        Pars.GenPars(0); // 1
         // Mudar para while. if (Check all constraints) {AddToMap}
         AddToMap();
     }
+}
+
+// struct {
+//     // Couplings
+//     double la1;
+//     double la2;
+//     double la3;
+//     double la4;
+//     double la5;
+//     double laL;
+//     // Masses
+//     double Mh; // = mh = m11
+//     double MH;
+//     double MA;
+//     double MC;
+//     double m22;
+//     // vev
+//     double v;
+
+// } TempPars;
+
+void IDM::StoreCheckedPars(int nPoints) {
+    ClearParMap();
+    cout << "Generating and storing Parameters...\n";
+    int i = 0;
+    while (i < nPoints) {
+        Pars.GenPars(1);
+        // Check all constraints
+        if (CheckAllCons()) {
+            AddToMap();
+            i++;
+        }
+    }
+}
+
+int IDM::CheckAllCons() {
+
+    double Mh = 125.1;
+    double v = 246;
+    double la1 = Pars.Getla1(); // (Mh/v)**2
+
+    // Mass Basis
+    double MH = Pars.GetMH(); // MHX CDM
+    double MA = Pars.GetMA(); // MH3 It is A in IDM paper
+    double MC = Pars.GetMC(); // MHC Charged Higgs
+    double la2 = Pars.Getla2(); // lambda_2
+    double laL = Pars.GetlaL(); // la3 + la4 + la5
+
+    // Coupling Parameters Basis
+    double m22Squared = Pars.Getm22Squared();
+    double la3 = Pars.Getla3();
+    double la4 = Pars.Getla4();
+    double la5 = Pars.Getla5();
+
+    double S, T, U;
+
+    // Other conditions implicit in number generation
+    int BFB = BFB_Test(la1, la2, la3, laL);
+    int TM = TwoMins_Test(la1, la2, Mh, m22Squared);
+    // int SMU = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
+    int Pert = Perturbativity_Test(la1, la2, la3, la4, la5, laL);
+    int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11
+
+    return CheckResult(BFB && Pert && STU);
 }
 
 vector<pair<double,double>> IDM::GetParsSTU(int nPoints) {
@@ -97,6 +161,23 @@ void removePointFromMapVectors(map<string, vector<double>> &myMap, int pos) {
         }
     }
 }*/
+
+void IDM::TM_Test(){
+    int i = 0;
+    while (i < 20) {
+        Pars.GenPars(1);
+        double la1 = Pars.Getla1();
+        double la2 = Pars.Getla2();
+        double m22Sq = Pars.Getm22Squared();
+        double mhSq = Pars.GetMh()*Pars.GetMh();
+        double B = m22Sq/sqrt(la2);
+        double A = mhSq/sqrt(la1); 
+        cout << "A: " << A << " B: " << B;
+        double check = TwoMins_Test(la1, la2, sqrt(mhSq), m22Sq);
+        cout << "\tResult = " << check << endl;
+        i++;
+    }
+}
 
 
 void IDM::FirstPlot() {
@@ -974,7 +1055,7 @@ cout << "Making SXT graph...\n";
     TGraph *gr = new TGraph(Npoints, &Svec[0], &Tvec[0]);
     // TGraph *gr = new TGraph(max, &ST[0][0], &ST[1][0]);
 
-    string name = "SXT_13-03";
+    string name = "SXT_19-03";
     gr->SetTitle(name.c_str());
     gr->GetXaxis()->SetTitle("S");
     gr->GetYaxis()->SetTitle("T");
@@ -1014,7 +1095,8 @@ void IDM::OverlapSXT(int nPoints) {
     vector<double> aux;
 
     double la1 = Pars.Getla1();
-    double m11 = 125.1; // Pars.GetMh();
+    double Mh = 125.1; // Pars.GetMh();
+    double m11 = Mh*Mh;
 
     int N = 0;
     int max =  ParMap["MH"].size(); // ST[0].size(); // 

@@ -16,7 +16,8 @@ int main()
     // SXT alterado
     
     IDM idm;
-    idm.OverlapSXT(10000);
+    idm.TM_Test();
+
 
     // SXT ANTIGO
     // // Parameters Pars;

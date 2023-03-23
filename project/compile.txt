@@ -1,0 +1,1 @@
+g++ -o root root.cpp `root-config --cflags --glibs`
