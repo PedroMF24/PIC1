@@ -6,6 +6,9 @@
 
 #include <math.h>
 #include <complex.h>
+#include <functional>
+
+// using Condition = pair<string, function<int(const Parameters&)>>; 
 
 class TheoCons {
     public:
@@ -19,10 +22,11 @@ class TheoCons {
     // int ScatteringMatrixUnitary(double la1, double la2, double la3, double la4, double la5);
     // int Perturbativity(double la2);
 
-    int BFB(Parameters Pars);
-    int TwoMins(Parameters Pars);
-    int ScatteringMatrixUnitary(Parameters Pars);
-    int Perturbativity(Parameters Pars);
+    // vector<Condition> MakeTheoConsVector();
+    int BFB(Parameters& Pars);
+    int TwoMins(Parameters& Pars);
+    int ScatteringMatrixUnitary(Parameters& Pars);
+    int Perturbativity(Parameters& Pars);
 
     // Potencial bound from below
     int BoundFromBelow(double la1, double la2, double la3, double laL, double Mh, double m22Squared);

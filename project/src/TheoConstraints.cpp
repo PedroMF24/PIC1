@@ -5,7 +5,11 @@ int TheoCons::CheckResult(int check_bit) {
     return result;
 }
 
-int TheoCons::BFB(Parameters Pars) {
+// vector<Condition> TheoCons::MakeTheoConsVector() {
+//     vector<Condition> TConsVec = {{"BFB", BFB}, {"2Mins", TwoMins}, {"Unitary", ScatteringMatrixUnitary}, {"Perturbativity", Perturbativity}}; 
+// }
+
+int TheoCons::BFB(Parameters& Pars) {
     double aux1 = Pars.Getla3() + sqrt(Pars.Getla1()*Pars.Getla2());
     double aux2 = Pars.GetlaL() + sqrt(Pars.Getla1()*Pars.Getla2()); // Pars.Getla4() + Pars.Getla5() + aux1;
     
@@ -21,7 +25,7 @@ int TheoCons::BFB(Parameters Pars) {
     }
 }
 
-int TheoCons::TwoMins(Parameters Pars) {
+int TheoCons::TwoMins(Parameters& Pars) {
     double aux1 = (Pars.GetMh()*Pars.GetMh())/sqrt(Pars.Getla1()); 
     double aux2 = Pars.Getm22Squared()/sqrt(Pars.Getla2());
 
@@ -36,7 +40,7 @@ int TheoCons::TwoMins(Parameters Pars) {
     }
 }
 // CORRECT
-int TheoCons::ScatteringMatrixUnitary(Parameters Pars) {
+int TheoCons::ScatteringMatrixUnitary(Parameters& Pars) {
 
     int result = 1;
 
@@ -87,7 +91,7 @@ int TheoCons::ScatteringMatrixUnitary(Parameters Pars) {
     return result;
 }
 
-int TheoCons::Perturbativity(Parameters Pars) {
+int TheoCons::Perturbativity(Parameters& Pars) {
 
     int check = (Pars.Getla2() <= 4*M_PI/3) ? 1 : 0;
     // Also for la1?

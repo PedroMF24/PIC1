@@ -98,6 +98,7 @@ void IDM::StoreCheckedPars(int nPoints) {
             i++;
         }
     }
+    WriteMapToFile("data/PassedTeoCons/PassedTeoCons.dat", ParMap, Pars);
 }
 
 int IDM::CheckAllCons() {
@@ -124,11 +125,15 @@ int IDM::CheckAllCons() {
     // Other conditions implicit in number generation
     int BFB = BFB_Test(la1, la2, la3, laL);
     int TM = TwoMins_Test(la1, la2, Mh, m22Squared);
-    // int SMU = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
+    int SMU = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
     int Pert = Perturbativity_Test(la1, la2, la3, la4, la5, laL);
     int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11
 
-    return CheckResult(BFB && Pert && STU);
+    return CheckResult(BFB && TM && SMU && Pert && STU);
+
+    /* =================================================================== */
+
+    // Perturbativity(Pars);
 }
 
 vector<pair<double,double>> IDM::GetParsSTU(int nPoints) {
@@ -578,10 +583,10 @@ void IDM::SavePars(const string &filename) {
 // }
 
 void IDM::ClearParMap() {
-    cout << "Clearing Parameter Map\n";
     // Save map just in case if it is not empty
     if (!ParMap.empty()) {
         SavePars("data/Saved.csv", ParMap);
+        cout << "Clearing Parameter Map...\n";
         // Clear map
         ParMap.clear();
         // Initialize map

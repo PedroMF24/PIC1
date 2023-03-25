@@ -31,19 +31,19 @@ class Parameters : public MyRandom {
     void ImportPars(const string &filename);
     void SetPars();
 
-    double GetMh();
-    double Getv();
-    double Getla1();
-    double Getla2();
-    double GetlaL();
-    double GetMH();
-    double GetMA();
-    double GetMC();
+    double GetMh() const;
+    double Getv() const;
+    double Getla1() const;
+    double Getla2() const;
+    double GetlaL() const;
+    double GetMH() const;
+    double GetMA() const;
+    double GetMC() const;
 
-    double Getm22Squared();
-    double Getla3();
-    double Getla4();
-    double Getla5();
+    double Getm22Squared() const;
+    double Getla3() const;
+    double Getla4() const;
+    double Getla5() const;
 
     vector<string> GetParNames();
 

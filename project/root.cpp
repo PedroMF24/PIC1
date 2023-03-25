@@ -39,14 +39,15 @@ class RootClass {
 
     // void GraphPlot(vector<double> x, vector<double> y, bool DrawBit, string ColorKey, string MarkerStyle, bool Add2Vec);
     void GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec);
-    void AddToGraphVector(TGraph *gr);
+    void AddToGraphVector(string Name, TGraph *gr);
     void FreeGraphVector();
     void MultiGraphPlot();
 
     void SaveOutput(TCanvas *c);
 
     void ClearLegend();
-    void ResetCanvas(int &x, int &y, TCanvas *c);
+    void ShowPlot(TCanvas *c, TApplication *app);
+    void ResetCanvas(TCanvas *c);
 
     private:
     string Title = "Title";
@@ -56,7 +57,8 @@ class RootClass {
     string outDir = "bin/Plots/";
     string outFileExt = ".png";
 
-    vector<TGraph *> grVec;
+    // TApplication *app;
+    vector<pair<string, TGraph *>> grVec;
 
     string DrawOpt = "AP";
 
@@ -84,28 +86,37 @@ void RootClass::SaveOutput(TCanvas *c) {
     cout << "Saving " << Title << " in " << OutputPath << endl;
 }
 
-void RootClass::AddToGraphVector(TGraph *gr) {
-    grVec.push_back(gr);
+void RootClass::AddToGraphVector(string Name, TGraph *gr) {
+    grVec.emplace_back(Name, gr);
 }
 
 void RootClass::FreeGraphVector() {
     cout << "Freeing Graph Vector memory..." << endl;
     for (auto it = grVec.begin(); it != grVec.end(); ++it) {
-        delete *it;
+        delete it->second;
     }
     grVec.clear();
 }
 
 
 void RootClass::MultiGraphPlot() {
-
+    cout << "Making " << Title << " Multigraph..." << endl;
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
     TMultiGraph *mg = new TMultiGraph();
     mg->SetTitle(Title.c_str());
 
     int i = 0;
-    for (const auto& gr : grVec)
-        mg->Add(gr);
+
+    TLegend *legend = new TLegend(0.1,0.7,0.3,0.9);
+
+    for (const auto& pair : grVec) {
+        if (LegendBit) {
+            legend->SetHeader("Legend", "C"); // ,"C"
+            legend->AddEntry(pair.second, pair.first.c_str(),"p");
+            legend->Draw();
+        }
+        mg->Add(pair.second);
+    }
 
     mg->GetXaxis()->SetTitle(XAxis.c_str());
     mg->GetYaxis()->SetTitle(YAxis.c_str());
@@ -114,7 +125,7 @@ void RootClass::MultiGraphPlot() {
     if (SaveOutputBit)
         SaveOutput(c);
 
-    if (OpenWindowBit) {
+    if (1) { // OpenWindowBit
         TApplication app("app", nullptr, nullptr);
         TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
         rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
@@ -142,11 +153,49 @@ void RootClass::MultiGraphPlot() {
 //     }
 // }
 
-void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec) {
+
+/*
+void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec, TApplication* app) {
     cout << "Making " << Title << " graph..." << endl;
-    TApplication app("app", nullptr, nullptr);
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
     int nPoints = x.size();
+    TGraph *gr = new TGraph(nPoints, &x[0], &y[0]);
+    // rest of the code...
+    ShowPlot(c, app);
+}
+
+void RootClass::ShowPlot(TCanvas *c, TApplication* app) {
+    TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+    rc->Connect("CloseWindow()", "TApplication", app, "Terminate()");
+    app->Run();
+}
+
+int main() {
+    TApplication *app = new TApplication("app", nullptr, nullptr);
+    // rest of the code...
+    RootClass myObject;
+    myObject.GraphPlot(x, y, true, 1, 1, true, app);
+    // rest of the code...
+    delete app;
+    return 0;
+}
+
+*/
+
+void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec) {
+    cout << "Making " << Title << " graph..." << endl;
+    // if (OpenWindowBit) {
+    TApplication *app = nullptr;
+    if (OpenWindowBit) 
+        app = new TApplication("app", nullptr, nullptr);
+    // //     if (!app)
+    // //         app = new TApplication("app", nullptr, nullptr);
+    // // }
+    // }
+    cout << "ok?" << endl;
+    TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+    int nPoints = x.size();
+
     TGraph *gr = new TGraph(nPoints, &x[0], &y[0]);
 
     gr->SetTitle(Title.c_str());
@@ -156,8 +205,9 @@ void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int 
     gr->SetMarkerColor(ColorKey);
     gr->SetMarkerStyle(MarkerStyle);
 
+    
     if (Add2Vec)
-        grVec.push_back(gr);
+        grVec.emplace_back(Title, gr);
 
     if (DrawBit)
         gr->Draw(DrawOpt.c_str());
@@ -169,21 +219,35 @@ void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int 
         leg->Draw();
         // MakeLegend(leg, 0.1,0.7,0.48,0.9, "gr", "ola", "l");
     }
-        
 
     if (SaveOutputBit)
         SaveOutput(c);
 
-    //if (OpenWindowBit) {
-        // if (rc == nullptr) {
-        //     std::cerr << "Error: TRootCanvas pointer is null\n";
-        //     return;
-        // }
-        // TApplication app("app", nullptr, nullptr);
-        TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
-        rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
-        app.Run();
-    //}
+    // if (OpenWindowBit) {
+    //     TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+    //     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+    //     app.Run();
+    // }
+    // ResetCanvas(1,2,c);
+
+    cout << "gets here" << endl;
+    if (OpenWindowBit) 
+        ShowPlot(c, app);
+    cout << "explodes" << endl;
+
+    // ResetCanvas(c);
+}
+
+void RootClass::ShowPlot(TCanvas *c, TApplication *app) {
+    // TApplication app("app", nullptr, nullptr);
+    
+    TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+    cout << "in showplot" << endl;
+    app->Run();
+    // if (app) {
+    //     app->Run();
+    // }
 }
 
 // void RootClass::MakeLegend(TLegend *leg, int x1, int x2, int y1, int y2, string type, string entry, string opt) {
@@ -204,11 +268,11 @@ void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int 
 //     }
 // }
 
-void RootClass::ResetCanvas(int &x, int &y, TCanvas *c) {
+void RootClass::ResetCanvas(TCanvas *c) {
     c->Clear();
     delete c;
     // c->Resize(800, 800);
-    c = new TCanvas("c", "canvas", x, y);
+    // c = new TCanvas("c", "canvas", x, y);
 }
 
 
@@ -226,8 +290,18 @@ int main() {
     vector<double> w = {7.0, 8.0, 9.0};
     vector<double> z = {1.0, 5.0, 4.0};
 
+    /**
+     * @brief Test graph function
+     * 
+     */
+    // RootClass root;
+    // root.GraphPlot(x, y, true, 2, 20, false);
+    // cout << "Seg" << endl;
+
     RootClass root;
     root.GraphPlot(x, y, true, 2, 20, false);
-    cout << "Seg" << endl;
+    // root.GraphPlot(w, z, false, 3, 20, true);
+    // root.MultiGraphPlot();
+
     return 0;
 }

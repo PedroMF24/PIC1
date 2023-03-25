@@ -195,54 +195,54 @@ void Parameters::SetPars() {
 
 // GETTERS
 
-vector<string> Parameters::GetParNames(){
+vector<string> Parameters::GetParNames() {
     return ParNames;
 }
 
-double Parameters::GetMh() {
+double Parameters::GetMh() const {
     return Mh;
 }
 
-double Parameters::Getv() {
+double Parameters::Getv() const {
     return v;
 }
 
-double Parameters::Getla1() {
+double Parameters::Getla1() const {
     return la1;
 }
 
-double Parameters::GetMH() {
+double Parameters::GetMH() const {
     return MH;
 }
 
-double Parameters::GetMA() {
+double Parameters::GetMA() const {
     return MA;
 }
 
-double Parameters::GetMC() {
+double Parameters::GetMC() const {
     return MC;
 }
 
-double Parameters::Getla2() {
+double Parameters::Getla2() const {
     return la2;
 }
 
-double Parameters::GetlaL() {
+double Parameters::GetlaL() const {
     return laL;
 }
 
-double Parameters::Getm22Squared() {
+double Parameters::Getm22Squared() const {
     return m22Squared;
 }
 
-double Parameters::Getla3() {
+double Parameters::Getla3() const {
     return la3;
 }
 
-double Parameters::Getla4() {
+double Parameters::Getla4() const {
     return la4;
 }
 
-double Parameters::Getla5() {
+double Parameters::Getla5() const {
     return la5;
 }

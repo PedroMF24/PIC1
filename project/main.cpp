@@ -5,18 +5,41 @@
 #include "src/IDM.h"
 #include "src/SM.h"
 
+#include "src/StopWatch.h"
+
 // int main() {
 //     StandardModel SM;
 //     cout << SM.Get("pi");
 // }
 
+
+
+/*
+ * auto execution_time = measure_time(my_function, arg1, arg2, ...);
+
+    cout << "Execution time: " << execution_time << " ms" << endl;
+*/
+
+
 int main()
 {
 
-    // SXT alterado
-    
+    StopWatch clock;
+    clock.StartTimer();
+
+
     IDM idm;
-    idm.TM_Test();
+    idm.StoreCheckedPars(10000);
+
+
+    clock.StopTimer();
+    clock.PrintTime();
+
+
+    // idm.TM_Test();
+    
+    
+    
 
 
     // SXT ANTIGO
@@ -201,3 +224,52 @@ int main()
 
     // RootClass R;
     // R.ScatterPlot("Ola", 10000);
+
+
+/* Timer testing */
+
+// using namespace chrono;
+
+// template<typename F, typename... Args>
+// auto measure_time(F&& func, Args&&... args)
+// {
+//     auto start = chrono::high_resolution_clock::now();
+//     invoke(forward<F>(func), forward<Args>(args)...);
+//     auto end = chrono::high_resolution_clock::now();
+//     return chrono::duration_cast<chrono::milliseconds>(end - start).count();
+// }
+
+
+
+    // auto start = high_resolution_clock::now();
+
+    // IDM idm;
+    // idm.StoreCheckedPars(10000);
+    // // idm.TM_Test();
+
+    
+    // // your main code goes here
+
+    
+    // auto stop = high_resolution_clock::now();
+    // auto duration = duration_cast<microseconds>(stop - start);
+
+    // cout << "Execution time: " << duration.count() << " microseconds" << endl;
+
+/* Try to make a set_precision for decimal spaces */
+
+// string setprecision_decimal(double value, int precision)
+// {
+//     stringstream ss;
+//     ss << fixed << setprecision(precision) << value;
+//     string result = ss.str();
+//     if (precision > 0 && result.back() == '0') {
+//         // Remove trailing zeros if any
+//         size_t pos = result.find_last_not_of('0');
+//         if (pos != string::npos && result[pos] == '.') {
+//             pos--; // Keep the decimal point
+//         }
+//         result.erase(pos+1);
+//     }
+//     return result;
+// }

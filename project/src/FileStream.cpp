@@ -64,7 +64,7 @@ void WriteMapToFile(const string &filename, map<string, vector<double>> &ParMap,
 	double la1 = Pars.Getla1();
 	// Write the column names
     for (auto &par : Pars.GetParNames())
-		file << par << "\t";
+		file << par << " "; // \t
 	file << endl;
 
     // Write each element in a column
@@ -75,9 +75,9 @@ void WriteMapToFile(const string &filename, map<string, vector<double>> &ParMap,
 			if (par != "mh" && par != "la1") {
 				WriteElementToFile(par, file, i, ParMap);
 			} else if (par == "mh") {
-				file << mh << "\t";
+				file << mh << " "; // \t
 			} else if (par == "la1") {
-				file << la1 << "\t";
+				file << la1 << " "; // \t
 			} else {
 				fprintf(stderr, "**Acessed entry while writting that should not exist\n");
 				exit(0);
