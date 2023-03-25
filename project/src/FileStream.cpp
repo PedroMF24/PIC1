@@ -214,3 +214,99 @@ void SavePars(const string &filename, map<string, vector<double>> &ParMap) {
     // Close the file
     outputFile.close();
 }
+
+Graph ReadGraphData(const string& filename, const string& X, const string& Y) {
+    Graph gr;
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cerr << "Error: could not open file " << filename << endl;
+        return gr;
+    }
+
+    string line;
+    getline(file, line);
+    stringstream ss(line);
+    string header;
+    vector<string> headers;
+    while (ss >> header) {
+        headers.push_back(header);
+    }
+
+    int x_col = -1, y_col = -1;
+    for (int i = 0; i < headers.size(); i++) {
+        if (headers[i] == X) {
+            x_col = i;
+        }
+        if (headers[i] == Y) {
+            y_col = i;
+        }
+    }
+    if (x_col == -1) {
+        cerr << "Error: could not find column " << X << " in file " << filename << endl;
+        return gr;
+    }
+    if (y_col == -1) {
+        cerr << "Error: could not find column " << Y << " in file " << filename << endl;
+        return gr;
+    }
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string val;
+        int col = 0;
+        double x, y;
+        while (ss >> val) {
+            if (col == x_col) {
+                x = stod(val);
+            }
+            if (col == y_col) {
+                y = stod(val);
+            }
+            col++;
+        }
+        gr.x.push_back(x);
+        gr.y.push_back(y);
+    }
+    file.close();
+
+    return gr;
+}
+
+/*
+Graph ReadGraphData(const string& filename, const string& X, const string& Y) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        throw runtime_error("Could not open file " + filename);
+    }
+
+    // Read header line and find indices of columns for X and Y
+    string header;
+    getline(file, header);
+    istringstream iss(header);
+    vector<string> headers{istream_iterator<string>(iss), istream_iterator<string>()};
+    auto it1 = find(headers.begin(), headers.end(), X);
+    auto it2 = find(headers.begin(), headers.end(), Y);
+    if (it1 == headers.end() || it2 == headers.end()) {
+        throw runtime_error("Could not find specified column labels in file " + filename);
+    }
+    int index1 = distance(headers.begin(), it1);
+    int index2 = distance(headers.begin(), it2);
+
+    // Read data and populate Graph vectors
+    Graph g;
+    double value1, value2;
+    while (file >> value1) {
+        for (int i = 0; i < index2; i++) {
+            file.ignore(numeric_limits<streamsize>::max(), ' ');
+        }
+        file >> value2;
+        g.x.push_back(value1);
+        g.y.push_back(value2);
+        for (int i = index2 + 1; i < index1; i++) {
+            file.ignore(numeric_limits<streamsize>::max(), ' ');
+            file.ignore(numeric_limits<streamsize>::max(), ' ');
+        }
+    }
+
+    return g;
+}*/

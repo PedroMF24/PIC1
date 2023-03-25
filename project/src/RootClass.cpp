@@ -2,68 +2,280 @@
 
 using namespace std;
 
-vector<double> x,y;
 
-void RootClass::ScatterPlot(string Title, int nPoints)
-{
-    TApplication app("app", nullptr, nullptr);
-    TCanvas *c = new TCanvas("c", "multigraph", 800, 800);
-    TMultiGraph *mg = new TMultiGraph();
 
-    string name = Title;
-    mg->SetTitle(name.c_str());
-    int pNumber = 2;
 
-    TRandom3* rand = new TRandom3(0);
-
-    for (int i = 0; i < nPoints; i++)
-    {
-        x.push_back(rand->Rndm()*1000);
-        y.push_back(rand->Rndm()*1000);
-    }
-
-    TGraph *graph[pNumber+1];
-    // initialize graph[0] = null pointer
-    graph[0] = NULL; // Make it so that graph[1] corresponds to particle 1
-    // create pNumber TGraphs
-    for (int i = 1; i <= pNumber; i++)  
-        graph[i] = new TGraph();
-    // Add points of selected particles to graphs
-    for (int i = 0; i < x.size(); i++)   
-    {
-        //graph[1]->AddPoint(dt*i, mT[P1][i]);
-        //graph[2]->AddPoint(dt*i, mT[P2][i]);
-        if (x[i] > 500 && y[i] > 500)
-            graph[1]->AddPoint(x[i], y[i]);
-        else 
-            graph[2]->AddPoint(x[i], y[i]);
-    }
-    // Edit graphs
-    for (int i = 1; i <= pNumber ; i++) // 
-    {
-        // graph[i]->SetLineColor(i+1);
-        graph[i]->SetMarkerColor(i+1);
-        graph[i]->SetMarkerStyle(20);
-        // graph[i]->SetLineWidth(4);
-        // graph[i]->SetFillStyle(0);
-        mg->Add( graph[i] );
-    }   
-
-    mg->Draw("AP");
-
+void RootClass::SaveOutput(TCanvas *c) {
+    string OutputPath = outDir;
+    OutputPath.append(Title.c_str());
+    OutputPath.append(outFileExt.c_str());
     c->Update();
+    c->SaveAs(OutputPath.c_str());
+    cout << "Saving " << Title << " in " << OutputPath << endl;
+}
 
-    string dir = "bin/Plots/";
-    name.append(".png");
-    dir.append(name);
-    c->SaveAs(dir.c_str());
+void RootClass::AddToGraphVector(string Name, TGraph *gr) {
+    grVec.emplace_back(Name, gr);
+}
 
+void RootClass::FreeGraphVector() {
+    cout << "Freeing Graph Vector memory..." << endl;
+    for (auto it = grVec.begin(); it != grVec.end(); ++it) {
+        delete it->second;
+    }
+    grVec.clear();
+}
+
+
+void RootClass::MultiGraphPlot() {
+    cout << "Making " << Title << " Multigraph..." << endl;
+    TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+    TMultiGraph *mg = new TMultiGraph();
+    mg->SetTitle(Title.c_str());
+
+    int i = 0;
+
+    TLegend *legend = new TLegend(0.1,0.7,0.3,0.9);
+
+    for (const auto& pair : grVec) {
+        if (LegendBit) {
+            legend->SetHeader("Legend", "C"); // ,"C"
+            legend->AddEntry(pair.second, pair.first.c_str(),"p");
+            legend->Draw();
+        }
+        mg->Add(pair.second);
+    }
+
+    mg->GetXaxis()->SetTitle(XAxis.c_str());
+    mg->GetYaxis()->SetTitle(YAxis.c_str());
+    mg->Draw(DrawOpt.c_str());
+
+    if (SaveOutputBit)
+        SaveOutput(c);
+
+    if (1) { // OpenWindowBit
+        TApplication app("app", nullptr, nullptr);
+        TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+        rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+        app.Run();
+    }
+}
+
+
+// void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, string ColorKey, string MarkerStyle, bool Add2Vec) {
+//     cout << "Making " << Title << " graph..." << endl;
+//     int nPoints = x.size();
+//     TGraph *gr = new TGraph(nPoints, &x[0], &y[0]);
+//     gr->SetMarkerColor(ColorKey.c_str());
+//     gr->SetMarkerStyle(MarkerStyle.c_str());
+
+//     if (Add2Vec)
+//         grVec.push_back(gr);
+
+//     if (DrawBit)
+//         gr->Draw(DrawOpt.c_str());
+
+//     if (OpenWindowBit) {
+//         rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+//         app.Run();
+//     }
+// }
+
+
+/*
+void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec, TApplication* app) {
+    cout << "Making " << Title << " graph..." << endl;
+    TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+    int nPoints = x.size();
+    TGraph *gr = new TGraph(nPoints, &x[0], &y[0]);
+    // rest of the code...
+    ShowPlot(c, app);
+}
+
+void RootClass::ShowPlot(TCanvas *c, TApplication* app) {
+    TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+    rc->Connect("CloseWindow()", "TApplication", app, "Terminate()");
+    app->Run();
+}
+
+int main() {
+    TApplication *app = new TApplication("app", nullptr, nullptr);
+    // rest of the code...
+    RootClass myObject;
+    myObject.GraphPlot(x, y, true, 1, 1, true, app);
+    // rest of the code...
+    delete app;
+    return 0;
+}
+
+*/
+
+void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec) {
+    cout << "Making " << Title << " graph..." << endl;
+    // if (OpenWindowBit) {
+    TApplication *app = nullptr;
+    if (OpenWindowBit) 
+        app = new TApplication("app", nullptr, nullptr);
+    // //     if (!app)
+    // //         app = new TApplication("app", nullptr, nullptr);
+    // // }
+    // }
+    cout << "ok?" << endl;
+    TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+    int nPoints = x.size();
+
+    TGraph *gr = new TGraph(nPoints, &x[0], &y[0]);
+
+    gr->SetTitle(Title.c_str());
+    gr->GetXaxis()->CenterTitle();
+    gr->GetXaxis()->SetTitle(XAxis.c_str());
+    gr->GetYaxis()->SetTitle(YAxis.c_str());
+    gr->SetMarkerColor(ColorKey);
+    gr->SetMarkerStyle(MarkerStyle);
+
+    
+    if (Add2Vec)
+        grVec.emplace_back(Title, gr);
+
+    if (DrawBit)
+        gr->Draw(DrawOpt.c_str());
+
+    if(LegendBit) {
+        TLegend *leg = new TLegend(0.1,0.7,0.3,0.9);
+        leg->SetHeader("Legend", "C"); // ,"C"
+        leg->AddEntry(gr,"olaaa","lp");
+        leg->Draw();
+        // MakeLegend(leg, 0.1,0.7,0.48,0.9, "gr", "ola", "l");
+    }
+
+    if (SaveOutputBit)
+        SaveOutput(c);
+
+    // if (OpenWindowBit) {
+    //     TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+    //     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+    //     app.Run();
+    // }
+    // ResetCanvas(1,2,c);
+
+    cout << "gets here" << endl;
+    if (OpenWindowBit) 
+        ShowPlot(c, app);
+    cout << "explodes" << endl;
+
+    // ResetCanvas(c);
+}
+
+void RootClass::ShowPlot(TCanvas *c, TApplication *app) {
+    // TApplication app("app", nullptr, nullptr);
+    
     TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
-    app.Run();
+    cout << "in showplot" << endl;
+    app->Run();
+    // if (app) {
+    //     app->Run();
+    // }
 }
 
-void RootClass::FirstPlot(string Title) 
-{
-    
+// void RootClass::MakeLegend(TLegend *leg, int x1, int x2, int y1, int y2, string type, string entry, string opt) {
+//     // if (!leg)
+//     //     leg = new TLegend(x1, x2, y1, y2); // 0.1,0.7,0.48,0.9
+//     leg->SetHeader(Title.c_str(), "C"); // option "C" allows to center the header
+//     // leg->AddEntry(h1,"Histogram filled with random numbers","f");
+//     // leg->AddEntry("f1","Function abs(#frac{sin(x)}{x})","l");
+//     // leg->AddEntry("gr","Graph with error bars","lep");
+//     leg->AddEntry(type.c_str(), entry.c_str(), opt.c_str());
+//     leg->Draw();
+// }
+
+// void RootClass::ClearLegend(TLegend *leg) {
+//     if (leg) {
+//         delete leg; // free memory if it was allocated
+//         leg = nullptr; // set pointer to null
+//     }
+// }
+
+void RootClass::ResetCanvas(TCanvas *c) {
+    c->Clear();
+    delete c;
+    // c->Resize(800, 800);
+    // c = new TCanvas("c", "canvas", x, y);
 }
+
+
+
+
+
+
+/**
+ * @brief 
+ * 
+ */
+
+
+// vector<double> x,y;
+
+// void RootClass::ScatterPlot(string Title, int nPoints)
+// {
+//     TApplication app("app", nullptr, nullptr);
+//     TCanvas *c = new TCanvas("c", "multigraph", 800, 800);
+//     TMultiGraph *mg = new TMultiGraph();
+
+//     string name = Title;
+//     mg->SetTitle(name.c_str());
+//     int pNumber = 2;
+
+//     TRandom3* rand = new TRandom3(0);
+
+//     for (int i = 0; i < nPoints; i++)
+//     {
+//         x.push_back(rand->Rndm()*1000);
+//         y.push_back(rand->Rndm()*1000);
+//     }
+
+//     TGraph *graph[pNumber+1];
+//     // initialize graph[0] = null pointer
+//     graph[0] = NULL; // Make it so that graph[1] corresponds to particle 1
+//     // create pNumber TGraphs
+//     for (int i = 1; i <= pNumber; i++)  
+//         graph[i] = new TGraph();
+//     // Add points of selected particles to graphs
+//     for (int i = 0; i < x.size(); i++)   
+//     {
+//         //graph[1]->AddPoint(dt*i, mT[P1][i]);
+//         //graph[2]->AddPoint(dt*i, mT[P2][i]);
+//         if (x[i] > 500 && y[i] > 500)
+//             graph[1]->AddPoint(x[i], y[i]);
+//         else 
+//             graph[2]->AddPoint(x[i], y[i]);
+//     }
+//     // Edit graphs
+//     for (int i = 1; i <= pNumber ; i++) // 
+//     {
+//         // graph[i]->SetLineColor(i+1);
+//         graph[i]->SetMarkerColor(i+1);
+//         graph[i]->SetMarkerStyle(20);
+//         // graph[i]->SetLineWidth(4);
+//         // graph[i]->SetFillStyle(0);
+//         mg->Add( graph[i] );
+//     }   
+
+//     mg->Draw("AP");
+
+//     c->Update();
+
+//     string dir = "bin/Plots/";
+//     name.append(".png");
+//     dir.append(name);
+//     c->SaveAs(dir.c_str());
+
+//     TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+//     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+//     app.Run();
+// }
+
+// void RootClass::FirstPlot(string Title) 
+// {
+    
+// }

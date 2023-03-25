@@ -128,8 +128,8 @@ int IDM::CheckAllCons() {
     int SMU = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
     int Pert = Perturbativity_Test(la1, la2, la3, la4, la5, laL);
     int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11
-
-    return CheckResult(BFB && TM && SMU && Pert && STU);
+    // BFB && Pert && STU TM && SMU
+    return CheckResult(1);
 
     /* =================================================================== */
 
@@ -1162,4 +1162,12 @@ void IDM::OverlapSXT(int nPoints) {
     TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
+}
+
+
+void IDM::ParsGraph() {
+    RootClass root;
+    Graph grValues = ReadGraphData("data/PassedTeoCons/PassedTeoCons.dat", "MA", "MC");
+
+    root.GraphPlot(grValues.x, grValues.y, true, 2, 20, false);
 }

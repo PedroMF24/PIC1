@@ -27,10 +27,9 @@ int main()
     StopWatch clock;
     clock.StartTimer();
 
-
     IDM idm;
-    idm.StoreCheckedPars(10000);
-
+    idm.StoreCheckedPars(100);
+    idm.ParsGraph();
 
     clock.StopTimer();
     clock.PrintTime();

@@ -65,6 +65,8 @@ class IDM : public TheoCons,
 
     void TM_Test();
 
+    void ParsGraph();
+
     private:
     // Parameters generator class and Parameter values
     Parameters Pars;
