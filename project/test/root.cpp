@@ -192,7 +192,7 @@ void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int 
     // //         app = new TApplication("app", nullptr, nullptr);
     // // }
     // }
-    cout << "ok?" << endl;
+
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
     int nPoints = x.size();
 
@@ -230,10 +230,8 @@ void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int 
     // }
     // ResetCanvas(1,2,c);
 
-    cout << "gets here" << endl;
     if (OpenWindowBit) 
         ShowPlot(c, app);
-    cout << "explodes" << endl;
 
     // ResetCanvas(c);
 }

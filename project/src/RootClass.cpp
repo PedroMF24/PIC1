@@ -204,9 +204,25 @@ void RootClass::ResetCanvas(TCanvas *c) {
 }
 
 
+void RootClass::SetOutDir(string newOutDir) {
+    outDir = newOutDir;
+}
 
+void RootClass::SetOutFileExt(string newOutFileExt) {
+    outFileExt = newOutFileExt;
+}
 
+void RootClass::SetTitle(string newTitle) {
+    Title = newTitle;
+}
 
+void RootClass::SetXAxis(string newXAxis) {
+    XAxis = newXAxis;
+}
+
+void RootClass::SetYAxis(string newYAxis) {
+    YAxis = newYAxis;
+}
 
 /**
  * @brief 

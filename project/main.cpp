@@ -36,10 +36,6 @@ int main()
 
 
     // idm.TM_Test();
-    
-    
-    
-
 
     // SXT ANTIGO
     // // Parameters Pars;

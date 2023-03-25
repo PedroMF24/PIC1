@@ -26,12 +26,20 @@ using namespace std;
 class RootClass {
     public:
     RootClass() = default;
+    RootClass(bool newSaveOutputBit, bool newOpenWindowBit, bool newLegendBit);
     ~RootClass() = default;
+
     void ScatterPlot(string Title, int nPoints);
     void FirstPlot(string Title);
 
     void LinePlot(vector<double> x, vector<double> y);
     void ScatterPlot(vector<double> x, vector<double> y);
+
+    void SetOutDir(string newOutDir);
+    void SetOutFileExt(string newOutFileExt);
+    void SetTitle(string newTitle);
+    void SetXAxis(string newXAxis);
+    void SetYAxis(string newYAxis);
 
     // Histograms
     // Fits
