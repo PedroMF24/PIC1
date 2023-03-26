@@ -49,7 +49,7 @@ class RootClass {
     // Legends
     
     // Relative to the size of the graph, values range from 0 to 1
-    void MakeLegend(TLegend *leg, const double* LegendPos, vector<pair<TGraph *, string>> legend_entries, string opt);
+    void MakeLegend(TLegend *leg, const double* LegendPos, TGraph* gr, string opt);
 
     // void GraphPlot(vector<double> x, vector<double> y, bool DrawBit, string ColorKey, string MarkerStyle, bool Add2Vec);
     // void GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec);
@@ -68,10 +68,10 @@ class RootClass {
 
     string outDir = "bin/Plots/";
     string outFileExt = ".png";
-
+    
     // TApplication *app;
     // vector<pair<string, TGraph *>> grVec;
-    vector<pair<Graph, TGraph *>> grVec;
+    // vector<pair<Graph, TGraph *>> grVec;
 
     string DrawOpt = "AP";
 

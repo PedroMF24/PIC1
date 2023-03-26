@@ -38,7 +38,7 @@ public:
     bool GetOpenWindowBit() const ;
 
 private:
-    string Title;
+    string Title = "Test";
     string XAxisTitle = "X";
     vector<double> X;
     string YAxisTitle = "Y";
