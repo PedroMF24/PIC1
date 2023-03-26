@@ -35,7 +35,7 @@ void WriteElementToFile(string key, ofstream &file, int i, map<string, vector<do
     // map<string, vector<double>> myMap
     auto found_key = ParMap.find(key);
     if (found_key != ParMap.end())
-        file << found_key->second[i] << "\t"; 
+        file << found_key->second[i] << " "; 
     // setprecision(n) to limit significant digits of number to n digits
     // file << setprecision(5) << found_key->second[i] << "\t"; 
 }
@@ -104,7 +104,7 @@ void ReadDAT(const string &filename, map<string, vector<double>> &ParMap) {
 
     getline(input, line);
 	stringstream ss(line);
-	while (getline(ss, col, '\t')) {
+	while (getline(ss, col, ' ')) {
 		header.push_back(col);
 	}
     
@@ -112,7 +112,7 @@ void ReadDAT(const string &filename, map<string, vector<double>> &ParMap) {
 	while (getline(input, line)) {
 		stringstream ss(line);
 		int i = 0;
-		while (getline(ss, col, '\t')) {
+		while (getline(ss, col, ' ')) {
 			ParMap[header[i]].push_back(stod(col));
             cout << "header " << header[i] << " Value " << ParMap[header[i]][i] << endl; 
 			i++;
@@ -137,14 +137,14 @@ void WriteDat(const string &filename, map<string, vector<double>> &ParMap) {
 
     // Write the strings
     for (it = ParMap.begin(); it != ParMap.end(); ++it)
-        file << it->first << "\t\t";
+        file << it->first << " "; // \t\t
     file << endl;
     
     // Write each element in a column
     for (int i = 0; i < maxSize; i++) {
         for (it = ParMap.begin(); it != ParMap.end(); ++it) {
         if (i < it->second.size())
-            file << it->second[i] << "\t\t";
+            file << it->second[i] << " "; // \t\t
         else
             file << "0 ";
         }

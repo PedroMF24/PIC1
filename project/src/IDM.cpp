@@ -61,7 +61,7 @@ void IDM::StoreParsTest(int nPoints) {
     ClearParMap();
     cout << "Generating and storing Parameters...\n";
     for (int i = 0; i < nPoints; i++) {
-        Pars.GenPars(0); // 1
+        Pars.GenPars(1); // 1
         // Mudar para while. if (Check all constraints) {AddToMap}
         AddToMap();
     }
@@ -188,13 +188,16 @@ void IDM::TM_Test(){
 void IDM::FirstPlot() {
     cout << "Making FirstPlot...\n";
     TApplication app("app", nullptr, nullptr);
-    TCanvas *c = new TCanvas("c", "FirstPlot", 800, 800);
+    TCanvas *c = new TCanvas("c", "FirstPlot", 1200, 800);
     TMultiGraph *mg = new TMultiGraph();
 
     string name = "Title";
     mg->SetTitle(name.c_str());
 
-    vector<int> keepIndex;
+    /* IMPORTANT TO TO STOREPARSTEST FIRST */
+    WriteMapToFile("data/test/dat_test.dat", ParMap, Pars);
+
+    // vector<int> keepIndex;
 
     TGraph *grCheck = new TGraph();
     grCheck->SetTitle("Allowed");
@@ -206,6 +209,7 @@ void IDM::FirstPlot() {
 
     TGraph *grPert = new TGraph();
     grPert->SetTitle("Perturbativity");
+
 
     double la1 = Pars.Getla1();
     double Mh = Pars.GetMh();
@@ -235,7 +239,7 @@ void IDM::FirstPlot() {
             grBFB->AddPoint(la2, laL);
         } else if (check) {
             grCheck->AddPoint(la2, laL);
-            keepIndex.push_back(i);
+            // keepIndex.push_back(i);
             // AddToMap();
             // cout << "Got here\n";
         } else if (bfb == 0 && Pert == 0) {
@@ -246,7 +250,7 @@ void IDM::FirstPlot() {
         }
     }
 
-    FilterParMap(keepIndex);
+    // FilterParMap(keepIndex);
     // Zona de descarte
 
     // map<string, vector<double>> auxParMap;
@@ -280,10 +284,22 @@ void IDM::FirstPlot() {
     mg->Add(grPert);
     mg->Add(grBFB);
     mg->Add(grBoth);
+
+    mg->GetXaxis()->SetTitle("#lambda_{2}");
+    mg->GetXaxis()->CenterTitle();
+    mg->GetYaxis()->SetTitle("#lambda_{345}");
     
+
     mg->Draw("AP");
 
-    c->BuildLegend();
+    // c->BuildLegend();
+    TLegend *leg = new TLegend(0.9, 0.7, 0.99, 0.9);
+    leg->SetHeader("Constraints", "C");
+    leg->AddEntry(grCheck, "Allowed", "p");
+    leg->AddEntry(grBFB, "BFB", "p");
+    leg->AddEntry(grPert, "Pert", "p");
+    leg->AddEntry(grBoth, "Both", "p");
+    leg->Draw();
 
     c->Update();
 
@@ -1088,7 +1104,7 @@ cout << "Making SXT graph...\n";
 
 void IDM::OverlapSXT(int nPoints) {
     TApplication app("app", nullptr, nullptr);
-    TCanvas *c = new TCanvas("c", "SXT", 1200, 800);
+    TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
 
     TMultiGraph *mg = new TMultiGraph();
     string name = "S-T Plane";
@@ -1143,14 +1159,20 @@ void IDM::OverlapSXT(int nPoints) {
     mg->Add(grprof);
     mg->Add(gr);
 
-
     c->Update();
 
     mg->GetXaxis()->SetTitle("S");
+    mg->GetXaxis()->CenterTitle();
     mg->GetYaxis()->SetTitle("T");
     mg->Draw("AP");
 
     // c->BuildLegend();
+
+    TLegend *leg = new TLegend(0.9, 0.7, 0.99, 0.9);
+    leg->SetHeader("Constraints", "C");
+    leg->AddEntry(grprof, "Allowed", "p");
+    leg->AddEntry(gr, "Results", "p");
+    leg->Draw();
 
     c->Update();
 
@@ -1168,6 +1190,12 @@ void IDM::OverlapSXT(int nPoints) {
 void IDM::ParsGraph(const string& path, const string& Title, const string& xName, const string& yName) {
     Graph grValues = ReadGraphData(path, Title, xName, yName);
     RootClass root(grValues);
+    root.GraphPlot(true, 2, 20, true);
 
-    root.GraphPlot(true, 2, 20, false);
+    Graph gr2 = ReadGraphData(path, "Teste", "MH", "la2");
+    root.SetNewGraph(gr2);
+    root.GraphPlot(true, 2, 20, true);
+
+    
+    root.MultiGraphPlot("MultiName");
 }

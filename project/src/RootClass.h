@@ -32,6 +32,8 @@ class RootClass {
     // RootClass(bool newSaveOutputBit, bool newOpenWindowBit, bool newLegendBit);
     ~RootClass() = default;
 
+    void SetNewGraph(Graph newGraph);
+
     void ScatterPlot(string Title, int nPoints);
     void FirstPlot(string Title);
 
@@ -49,18 +51,20 @@ class RootClass {
     // Legends
     
     // Relative to the size of the graph, values range from 0 to 1
-    void MakeLegend(TLegend *leg, const double* LegendPos, TGraph* gr, string opt);
+    // void MakeLegend(TLegend *leg, const double* LegendPos, TGraph* gr, string opt);
+    void MakeLegend(TLegend *leg, const double* LegendPos, vector<pair<TGraph *, string>> legend_entries, string opt);
+
 
     // void GraphPlot(vector<double> x, vector<double> y, bool DrawBit, string ColorKey, string MarkerStyle, bool Add2Vec);
     // void GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec);
     void GraphPlot(bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec);
     void AddToGraphVector(Graph g, TGraph *gr);
     void FreeGraphVector();
-    void MultiGraphPlot();
+    void MultiGraphPlot(const string Title);
 
     void ClearLegend();
     void ShowPlot(TCanvas *c, TApplication *app);
-    void ResetCanvas(TCanvas *c);
+    void DeleteCanvas(TCanvas *c);
 
     private:
 
@@ -71,7 +75,7 @@ class RootClass {
     
     // TApplication *app;
     // vector<pair<string, TGraph *>> grVec;
-    // vector<pair<Graph, TGraph *>> grVec;
+    vector<pair<Graph, TGraph *>> grVec;
 
     string DrawOpt = "AP";
 

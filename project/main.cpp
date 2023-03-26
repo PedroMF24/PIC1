@@ -27,14 +27,29 @@ int main()
     StopWatch clock;
     clock.StartTimer();
 
+
+    // READ PARAMETERS THAT PASSED ALL TEO CONSTRAINTS
     IDM idm;
-    // idm.StoreCheckedPars(100);
-    idm.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Title", "MA", "MC");
+    idm.StoreCheckedPars(10000);
+    // idm.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Title", "MA", "MC");
+
+
+/*    // TEST IF FIRST PLOT IS OK
+    IDM pic;
+    pic.StoreParsTest(20000);
+    pic.FirstPlot();
+*/
+
+/*    // TEST IF STU IS OK
+    IDM pic;
+    pic.OverlapSXT(20000);
+*/
 
     clock.StopTimer();
     clock.PrintTime();
 
-
+    return 0;
+}
     // idm.TM_Test();
 
     // SXT ANTIGO
@@ -161,9 +176,6 @@ int main()
     // TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
     // rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     // app.Run();
-
-    return 0;
-}
 
 
     // Parameters P1, P2;

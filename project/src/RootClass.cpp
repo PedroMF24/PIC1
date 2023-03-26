@@ -7,6 +7,10 @@ RootClass::RootClass(Graph newGraph) {
     graph = newGraph;
 }
 
+void RootClass::SetNewGraph(Graph newGraph) {
+    graph = newGraph;
+}
+
 void RootClass::SaveOutput(TCanvas *c) {
     string OutputPath = outDir;
     // OutputPath.append(Title.c_str());
@@ -17,21 +21,26 @@ void RootClass::SaveOutput(TCanvas *c) {
     cout << "Saving " << graph.GetTitle() << " in " << OutputPath << endl;
 }
 
-// void RootClass::AddToGraphVector(Graph g, TGraph *gr) {
-//     grVec.emplace_back(g, gr);
-// }
+void RootClass::AddToGraphVector(Graph g, TGraph *gr) {
+    grVec.emplace_back(g, gr);
+}
 
-// void RootClass::FreeGraphVector() {
-//     cout << "Freeing Graph Vector memory..." << endl;
-//     for (auto it = grVec.begin(); it != grVec.end(); ++it) {
-//         delete it->second;
-//     }
-//     grVec.clear();
-// }
+void RootClass::FreeGraphVector() {
+    cout << "Freeing Graph Vector memory..." << endl;
+    for (auto it = grVec.begin(); it != grVec.end(); ++it) {
+        delete it->second;
+    }
+    grVec.clear();
+}
 
-/*
-void RootClass::MultiGraphPlot(const string Title, ) {
+
+void RootClass::MultiGraphPlot(const string Title) {
     cout << "Making " << Title << " Multigraph..." << endl;
+
+    TApplication *app = nullptr;
+    if (0) 
+        app = new TApplication("app", nullptr, nullptr);
+
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
     TMultiGraph *mg = new TMultiGraph();
     mg->SetTitle(Title.c_str());
@@ -45,7 +54,7 @@ void RootClass::MultiGraphPlot(const string Title, ) {
         exit(0);
     }
 
-    TLegend *leg;
+    TLegend *leg = nullptr;
     vector<pair<TGraph *, string>> legend_entries;
     for (const auto& pair : grVec) {
         if (pair.first.GetLegendBit()) {
@@ -53,23 +62,21 @@ void RootClass::MultiGraphPlot(const string Title, ) {
         }
         mg->Add(pair.second);
     }
-    if (MakeMultigraph legend) 
+    if (1) 
         MakeLegend(leg, LegendPos[3], legend_entries, "p");
 
-    mg->GetXaxis()->SetTitle(XAxis.c_str());
-    mg->GetYaxis()->SetTitle(YAxis.c_str());
+    mg->GetXaxis()->SetTitle("X");
+    mg->GetYaxis()->SetTitle("Y");
     mg->Draw(DrawOpt.c_str());
 
-    if (SaveOutputBit)
+    if (1)
         SaveOutput(c);
 
-    if (1) { // OpenWindowBit
-        TApplication app("app", nullptr, nullptr);
-        TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
-        rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
-        app.Run();
+    if (0) { // OpenWindowBit
+        ShowPlot(c, app);
     }
-}*/
+    DeleteCanvas(c);
+}
 
 
 // void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, string ColorKey, string MarkerStyle, bool Add2Vec) {
@@ -173,14 +180,14 @@ void RootClass::GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int 
     //     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     //     app.Run();
     // }
-    // ResetCanvas(1,2,c);
+    // DeleteCanvas(1,2,c);
 
     // cout << "gets here" << endl;
     if (OpenWindowBit) 
         ShowPlot(c, app);
     cout << "explodes" << endl;
 
-    // ResetCanvas(c);
+    // DeleteCanvas(c);
 }*/
 
 void RootClass::GraphPlot(bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec) {
@@ -210,8 +217,8 @@ void RootClass::GraphPlot(bool DrawBit, int ColorKey, int MarkerStyle, bool Add2
     gr->SetMarkerStyle(MarkerStyle);
 
     
-    // if (Add2Vec)
-    //     grVec.emplace_back(graph.GetTitle(), gr);
+    if (Add2Vec)
+        grVec.emplace_back(graph, gr);
 
     if (DrawBit)
         gr->Draw(DrawOpt.c_str());
@@ -228,7 +235,10 @@ void RootClass::GraphPlot(bool DrawBit, int ColorKey, int MarkerStyle, bool Add2
         //     cout << value << " " << endl;
         // }
         
-        MakeLegend(leg, LegendPos[3], gr, "lp"); // 
+        vector<pair<TGraph *, string>> legend_entries;
+        legend_entries.emplace_back(gr, graph.GetTitle());
+        MakeLegend(leg, LegendPos[3], legend_entries, "lp");
+        // MakeLegend(leg, LegendPos[3], gr, "lp"); // 
     }
 
     // {
@@ -243,14 +253,13 @@ void RootClass::GraphPlot(bool DrawBit, int ColorKey, int MarkerStyle, bool Add2
     //     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     //     app.Run();
     // }
-    // ResetCanvas(1,2,c);
+    // DeleteCanvas(1,2,c);
 
     // cout << "gets here" << endl;
     if (graph.GetOpenWindowBit()) 
         ShowPlot(c, app);
-    cout << "explodes" << endl;
-
-    // ResetCanvas(c);
+        
+    DeleteCanvas(c);
 }
 
 void RootClass::ShowPlot(TCanvas *c, TApplication *app) {
@@ -267,7 +276,7 @@ void RootClass::ShowPlot(TCanvas *c, TApplication *app) {
 
 // TLegend *leg, const double* LegendPos, vector<pair<TGraph *, string>> legend_entries, string opt
 // Use template here, probably... maye not all the uses of the MakeLegend will get TGraphs*
-void RootClass::MakeLegend(TLegend *leg, const double* LegendPos, TGraph* gr, string opt) {
+/*void RootClass::MakeLegend(TLegend *leg, const double* LegendPos, TGraph* gr, string opt) {
     if (!leg)
         leg = new TLegend(LegendPos[0], LegendPos[1], LegendPos[2], LegendPos[3]); // 0.1,0.7,0.48,0.9
     leg->SetHeader("Legend", "C"); // option "C" allows to center the header , graph.GetTitle().c_str()
@@ -278,6 +287,19 @@ void RootClass::MakeLegend(TLegend *leg, const double* LegendPos, TGraph* gr, st
         // leg->AddEntry(leg_entry.first, leg_entry.second.c_str(), opt.c_str());
     leg->AddEntry(gr, "ola", opt.c_str());
     leg->Draw();
+}*/
+
+void RootClass::MakeLegend(TLegend *leg, const double* LegendPos, vector<pair<TGraph *, string>> legend_entries, string opt) {
+    if (!leg)
+        leg = new TLegend(LegendPos[0], LegendPos[1], LegendPos[2], LegendPos[3]); // 0.1,0.7,0.48,0.9
+    leg->SetHeader("Legend", "C"); // option "C" allows to center the header , graph.GetTitle().c_str()
+    // leg->AddEntry(h1,"Histogram filled with random numbers","f");
+    // leg->AddEntry("f1","Function abs(#frac{sin(x)}{x})","l");
+    // leg->AddEntry("gr","Graph with error bars","lep");
+    for (auto &leg_entry : legend_entries) // leg_entry.first
+        leg->AddEntry(leg_entry.first, leg_entry.second.c_str(), opt.c_str());
+    // leg->AddEntry(gr, "ola", opt.c_str());
+    leg->Draw();
 }
 
 // void RootClass::ClearLegend(TLegend *leg) {
@@ -287,7 +309,7 @@ void RootClass::MakeLegend(TLegend *leg, const double* LegendPos, TGraph* gr, st
 //     }
 // }
 
-void RootClass::ResetCanvas(TCanvas *c) {
+void RootClass::DeleteCanvas(TCanvas *c) {
     c->Clear();
     delete c;
     // c->Resize(800, 800);

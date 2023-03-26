@@ -48,6 +48,6 @@ private:
 
     bool LegendBit = true;
     bool SaveOutputBit = true;
-    bool OpenWindowBit = true;
+    bool OpenWindowBit = false;
 };
 #endif
