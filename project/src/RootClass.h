@@ -12,6 +12,8 @@
 #include <functional>
 #include <unordered_map>
 
+#include "FileStream.h"
+
 #include "TH1F.h"
 #include "TGraph.h"
 #include "TMultiGraph.h"
@@ -25,32 +27,34 @@ using namespace std;
 
 class RootClass {
     public:
-    RootClass() = default;
-    RootClass(bool newSaveOutputBit, bool newOpenWindowBit, bool newLegendBit);
+    // RootClass() = default;
+    RootClass(Graph newGraph);
+    // RootClass(bool newSaveOutputBit, bool newOpenWindowBit, bool newLegendBit);
     ~RootClass() = default;
 
     void ScatterPlot(string Title, int nPoints);
     void FirstPlot(string Title);
 
-    void LinePlot(vector<double> x, vector<double> y);
-    void ScatterPlot(vector<double> x, vector<double> y);
+    void LinePlot(vector<double> &x, vector<double> &y);
+    void ScatterPlot(vector<double> &x, vector<double> &y);
 
     void SetOutDir(string newOutDir);
     void SetOutFileExt(string newOutFileExt);
-    void SetTitle(string newTitle);
-    void SetXAxis(string newXAxis);
-    void SetYAxis(string newYAxis);
+    // void SetTitle(string newTitle);
+    // void SetXAxis(string newXAxis);
+    // void SetYAxis(string newYAxis);
 
     // Histograms
     // Fits
     // Legends
     
     // Relative to the size of the graph, values range from 0 to 1
-    void MakeLegend(TLegend *leg, int x1, int x2, int y1, int y2, string type, string entry, string opt);
+    void MakeLegend(TLegend *leg, const double* LegendPos, vector<pair<TGraph *, string>> legend_entries, string opt);
 
     // void GraphPlot(vector<double> x, vector<double> y, bool DrawBit, string ColorKey, string MarkerStyle, bool Add2Vec);
-    void GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec);
-    void AddToGraphVector(string Name, TGraph *gr);
+    // void GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec);
+    void GraphPlot(bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec);
+    void AddToGraphVector(Graph g, TGraph *gr);
     void FreeGraphVector();
     void MultiGraphPlot();
 
@@ -59,21 +63,33 @@ class RootClass {
     void ResetCanvas(TCanvas *c);
 
     private:
-    string Title = "Title";
-    string XAxis = "X";
-    string YAxis = "Y";
+
+    Graph graph;
 
     string outDir = "bin/Plots/";
     string outFileExt = ".png";
 
     // TApplication *app;
-    vector<pair<string, TGraph *>> grVec;
+    // vector<pair<string, TGraph *>> grVec;
+    vector<pair<Graph, TGraph *>> grVec;
 
     string DrawOpt = "AP";
 
-    bool LegendBit = false;
-    bool SaveOutputBit = true;
-    bool OpenWindowBit = true;
+    const double LegendPos[4][4] = 
+    {{0.1,0.7,0.3,0.9},     // Fit left up
+    {0.7,0.7,0.9,0.9},      // Fit right up
+    {0.9,0.7,0.99,0.9},     // Fit side up
+    {0.9,0.7,0.99,0.9},     // Fit side up
+    };
+
+
+    /* TO USE WITH GRAPH STRUCT, NOT WITH CLASS */
+    // string Title = "Title";
+    // string XAxis = "X";
+    // string YAxis = "Y";
+    // bool LegendBit = false;
+    // bool SaveOutputBit = true;
+    // bool OpenWindowBit = true;
 
     // ColorPalette
     unordered_map<string, int> ColorPalette;

@@ -28,8 +28,8 @@ int main()
     clock.StartTimer();
 
     IDM idm;
-    idm.StoreCheckedPars(100);
-    idm.ParsGraph();
+    // idm.StoreCheckedPars(100);
+    idm.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Title", "MA", "MC");
 
     clock.StopTimer();
     clock.PrintTime();

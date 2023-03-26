@@ -65,7 +65,7 @@ class IDM : public TheoCons,
 
     void TM_Test();
 
-    void ParsGraph();
+    void ParsGraph(const string& path, const string& Title, const string& xName, const string& yName);
 
     private:
     // Parameters generator class and Parameter values

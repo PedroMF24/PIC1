@@ -8,6 +8,7 @@
 #include <iterator>
 
 #include "Parameters.h"
+#include "Graph.h"
 
 using namespace std;
 
@@ -18,13 +19,14 @@ using namespace std;
  * @param filename 
  */
 
-struct Graph
-{
-    string Name;
+// struct Graph
+// {
+//     string Title;
 
-    vector<double> x;
-    vector<double> y;
-};
+//     vector<double> x;
+//     vector<double> y;
+
+// };
 
 
 // Save Parameters to a .csv file
@@ -42,8 +44,8 @@ void WriteSTUPars(vector<pair<double,double>> &values, const string &filename);
 // Read ST professor elipse points
 vector<pair<double,double>> readProfSTU();
 
-// 
-Graph ReadGraphData(const string& filename, const string& X, const string& Y);
+// Graph
+Graph ReadGraphData(const string& filename, const string& Title, const string& X, const string& Y);
 
 // Write .dat file formatted for HiggsBounds
 void WriteElementToFile(string key, ofstream &file, int i, map<string, vector<double>> &ParMap);

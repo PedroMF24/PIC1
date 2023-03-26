@@ -128,8 +128,8 @@ int IDM::CheckAllCons() {
     int SMU = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
     int Pert = Perturbativity_Test(la1, la2, la3, la4, la5, laL);
     int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11
-    // BFB && Pert && STU TM && SMU
-    return CheckResult(1);
+    // BFB && Pert && STU && TM && SMU
+    return CheckResult(BFB && Pert && STU && TM && SMU);
 
     /* =================================================================== */
 
@@ -560,7 +560,7 @@ void IDM::SavePars(const string &filename) {
     //Close the file
     outputFile.close();
 }*/
-
+/*
 // void IDM::SavePars(const string &filename) {
 //     //Open the output file
 //     ofstream outputFile(filename);
@@ -580,7 +580,7 @@ void IDM::SavePars(const string &filename) {
 // 	}
 //     // Close the file
 //     outputFile.close();
-// }
+// }*/
 
 void IDM::ClearParMap() {
     // Save map just in case if it is not empty
@@ -599,47 +599,47 @@ void IDM::ClearParMap() {
     } else 
         return;
 }
+/*
+void IDM::ReadCSV(const string &filename) {
+    ClearParMap();
+    printf("Reading %s into Parameter Map\n", filename.c_str());
 
-// void IDM::ReadCSV(const string &filename) {
-//     ClearParMap();
-//     printf("Reading %s into Parameter Map\n", filename.c_str());
+    ifstream input(filename);
 
-//     ifstream input(filename);
+    if (!input.is_open()) {
+        fprintf(stderr, "**Can not open CSV file to read\n");
+        exit(0);
+    }
 
-//     if (!input.is_open()) {
-//         fprintf(stderr, "**Can not open CSV file to read\n");
-//         exit(0);
-//     }
+	string line, col;
+	vector<string> header;
 
-// 	string line, col;
-// 	vector<string> header;
+        getline(input, line);
+		stringstream ss(line);
+		while (getline(ss, col, ',')) {
+			header.push_back(col);
+		}
 
-//         getline(input, line);
-// 		stringstream ss(line);
-// 		while (getline(ss, col, ',')) {
-// 			header.push_back(col);
-// 		}
-
-// 		// Read values
-// 		while (getline(input, line)) {
-// 			stringstream ss(line);
-// 			int i = 0;
-// 			while (getline(ss, col, ',')) {
-// 				ParMap[header[i]].push_back(stod(col));
-// 				i++;
-// 			}
-// 		}
-//     // Print map after reading
-// 	/*
-//     for (auto &pair : ParMap) {
-// 		cout << pair.first << ": ";
-// 		for (auto& value : pair.second) {
-// 			cout << value << " ";
-// 		}
-// 		cout << endl;
-// 	}
-//     */
-// }
+		// Read values
+		while (getline(input, line)) {
+			stringstream ss(line);
+			int i = 0;
+			while (getline(ss, col, ',')) {
+				ParMap[header[i]].push_back(stod(col));
+				i++;
+			}
+		}
+    // Print map after reading
+	
+    for (auto &pair : ParMap) {
+		cout << pair.first << ": ";
+		for (auto& value : pair.second) {
+			cout << value << " ";
+		}
+		cout << endl;
+	}
+    
+}*/
 
 /*
 void IDM::WriteDat(const string &filename) {
@@ -1165,9 +1165,9 @@ void IDM::OverlapSXT(int nPoints) {
 }
 
 
-void IDM::ParsGraph() {
-    RootClass root;
-    Graph grValues = ReadGraphData("data/PassedTeoCons/PassedTeoCons.dat", "MA", "MC");
+void IDM::ParsGraph(const string& path, const string& Title, const string& xName, const string& yName) {
+    Graph grValues = ReadGraphData(path, Title, xName, yName);
+    RootClass root(grValues);
 
-    root.GraphPlot(grValues.x, grValues.y, true, 2, 20, false);
+    root.GraphPlot(true, 2, 20, false);
 }

@@ -215,13 +215,15 @@ void SavePars(const string &filename, map<string, vector<double>> &ParMap) {
     outputFile.close();
 }
 
-Graph ReadGraphData(const string& filename, const string& X, const string& Y) {
+Graph ReadGraphData(const string& filename, const string &Title, const string& X, const string& Y) {
     Graph gr;
     ifstream file(filename);
     if (!file.is_open()) {
         cerr << "Error: could not open file " << filename << endl;
         return gr;
     }
+
+    gr.SetTitle(Title.c_str());
 
     string line;
     getline(file, line);
@@ -236,9 +238,11 @@ Graph ReadGraphData(const string& filename, const string& X, const string& Y) {
     for (int i = 0; i < headers.size(); i++) {
         if (headers[i] == X) {
             x_col = i;
+            gr.SetXAxis(headers[i]);
         }
         if (headers[i] == Y) {
             y_col = i;
+            gr.SetYAxis(headers[i]);
         }
     }
     if (x_col == -1) {
@@ -264,8 +268,11 @@ Graph ReadGraphData(const string& filename, const string& X, const string& Y) {
             }
             col++;
         }
-        gr.x.push_back(x);
-        gr.y.push_back(y);
+        // Struct
+        // gr.x.push_back(x);
+        // gr.y.push_back(y);
+        gr.AddToX(x);
+        gr.AddToY(y);
     }
     file.close();
 
