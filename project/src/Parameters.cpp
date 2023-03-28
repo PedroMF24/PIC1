@@ -105,7 +105,7 @@ void Parameters::ScanSetup()
 
     // Eq 9 paper principal: strong bounds provided by the total width of the electroweak gauge bosons
     // DMC  mass MH has to be bigger than the other masses
-    while (MH >= MA || MH >= MC || (MC - MA < 0.1))
+    while (MH >= MA || MH >= MC || (MC - MH < 0.1))
     {   
         MH = UniDist(0,1000);
         // cout << "**MH " << MH << endl;

@@ -37,8 +37,8 @@ class RootClass {
     void ScatterPlot(string Title, int nPoints);
     void FirstPlot(string Title);
 
-    void LinePlot(vector<double> &x, vector<double> &y);
-    void ScatterPlot(vector<double> &x, vector<double> &y);
+    void CurvePlot(vector<double> &x, vector<double> &y);
+    void ScatterPlot(int ColorKey, bool Add2Vec);
 
     void SetOutDir(string newOutDir);
     void SetOutFileExt(string newOutFileExt);
@@ -51,8 +51,6 @@ class RootClass {
     // Legends
     
     // Relative to the size of the graph, values range from 0 to 1
-    // void MakeLegend(TLegend *leg, const double* LegendPos, TGraph* gr, string opt);
-    void MakeLegend(TLegend *leg, const double* LegendPos, vector<pair<TGraph *, string>> legend_entries, string opt);
 
 
     // void GraphPlot(vector<double> x, vector<double> y, bool DrawBit, string ColorKey, string MarkerStyle, bool Add2Vec);
@@ -62,9 +60,6 @@ class RootClass {
     void FreeGraphVector();
     void MultiGraphPlot(const string Title);
 
-    void ClearLegend();
-    void ShowPlot(TCanvas *c, TApplication *app);
-    void DeleteCanvas(TCanvas *c);
 
     private:
 
@@ -99,6 +94,12 @@ class RootClass {
     unordered_map<string, int> ColorPalette;
 
     void SaveOutput(TCanvas *c);
+    void ClearLegend();
+    void ShowPlot(TCanvas *c, TApplication *app);
+    void DeleteCanvas(TCanvas *c);
+    void DeleteApp(TApplication *app);
+    // void MakeLegend(TLegend *leg, const double* LegendPos, TGraph* gr, string opt);
+    void MakeLegend(TLegend *leg, const double* LegendPos, vector<pair<TGraph *, string>> legend_entries, string opt);
 
     // TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
     // TLegend *Legend = nullptr;

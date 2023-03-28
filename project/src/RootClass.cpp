@@ -17,7 +17,18 @@ void RootClass::SaveOutput(TCanvas *c) {
     OutputPath.append(graph.GetTitle().c_str());
     OutputPath.append(outFileExt.c_str());
     c->Update();
+    // if (!c) {
+    //     std::cerr << "**Error: canvas is null" << std::endl;
+    //     return;
+    // }
+
+    // if (OutputPath.empty()) {
+    //     std::cerr << "**Error: output path is empty" << std::endl;
+    //     return;
+    // }  
+
     c->SaveAs(OutputPath.c_str());
+
     cout << "Saving " << graph.GetTitle() << " in " << OutputPath << endl;
 }
 
@@ -43,7 +54,7 @@ void RootClass::MultiGraphPlot(const string Title) {
 
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
     TMultiGraph *mg = new TMultiGraph();
-    mg->SetTitle(Title.c_str());
+    // mg->SetTitle(Title.c_str());
 
     int i = 0;
 
@@ -209,7 +220,7 @@ void RootClass::GraphPlot(bool DrawBit, int ColorKey, int MarkerStyle, bool Add2
 
     TGraph *gr = new TGraph(nPoints, &x[0], &y[0]);
 
-    gr->SetTitle(graph.GetTitle().c_str());
+    // gr->SetTitle(graph.GetTitle().c_str());
     gr->GetXaxis()->CenterTitle();
     gr->GetXaxis()->SetTitle(graph.GetXAxisTitle().c_str());
     gr->GetYaxis()->SetTitle(graph.GetYAxisTitle().c_str());
@@ -260,18 +271,26 @@ void RootClass::GraphPlot(bool DrawBit, int ColorKey, int MarkerStyle, bool Add2
         ShowPlot(c, app);
         
     DeleteCanvas(c);
+    // DeleteApp(app);
 }
 
 void RootClass::ShowPlot(TCanvas *c, TApplication *app) {
     // TApplication app("app", nullptr, nullptr);
     
     TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+    // WRONG rc->Connect("CloseWindow()", "TCanvas", c, "Terminate()");
     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+    
     // cout << "in showplot" << endl;
-    app->Run();
+    app->Run(kTRUE);
     // if (app) {
     //     app->Run();
     // }
+}
+
+void RootClass::DeleteApp(TApplication *app) {
+    delete app;
+    app = nullptr;
 }
 
 // TLegend *leg, const double* LegendPos, vector<pair<TGraph *, string>> legend_entries, string opt
@@ -311,7 +330,12 @@ void RootClass::MakeLegend(TLegend *leg, const double* LegendPos, vector<pair<TG
 
 void RootClass::DeleteCanvas(TCanvas *c) {
     c->Clear();
-    delete c;
+    // c->cd();
+    // gPad->SetLogy();
+    // gPad->Update();
+    // c->Print(OutputPath.c_str());
+    c->Close(); // add this line to delete the canvas object
+    delete c;   // add this line to delete the canvas object
     // c->Resize(800, 800);
     // c = new TCanvas("c", "canvas", x, y);
 }
@@ -330,6 +354,53 @@ void RootClass::SetOutFileExt(string newOutFileExt) {
  * 
  */
 
+
+void RootClass::ScatterPlot(int ColorKey, bool Add2Vec) {
+cout << "Making " << graph.GetTitle() << " scatter plot..." << endl;
+    // if (OpenWindowBit) {
+    TApplication *app = nullptr;
+    if (graph.GetOpenWindowBit()) 
+        app = new TApplication("app", nullptr, nullptr);
+
+    TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+    int nPoints = graph.GetX().size();
+
+    vector<double> x = graph.GetX();
+    vector<double> y = graph.GetY();
+
+    TGraph *gr = new TGraph(nPoints, &x[0], &y[0]);
+
+    // gr->SetTitle(graph.GetTitle().c_str());
+    gr->GetXaxis()->CenterTitle();
+    gr->GetXaxis()->SetTitle(graph.GetXAxisTitle().c_str());
+    gr->GetYaxis()->SetTitle(graph.GetYAxisTitle().c_str());
+    gr->SetMarkerColor(ColorKey);
+    gr->SetMarkerStyle(20);
+
+    
+    if (Add2Vec)
+        grVec.emplace_back(graph, gr);
+
+    gr->Draw("AP");
+
+    if(graph.GetLegendBit()) {
+        TLegend *leg = nullptr;
+        vector<pair<TGraph *, string>> legend_entries;
+        legend_entries.emplace_back(gr, graph.GetTitle());
+        // MakeLegend(leg, LegendPos[3], legend_entries, "p");
+    }
+
+    if (graph.GetSaveOutputBit())
+        SaveOutput(c);
+
+    // cout << "gets here" << endl;
+    if (graph.GetOpenWindowBit()) 
+        ShowPlot(c, app);
+        
+    DeleteCanvas(c);
+    DeleteApp(app);
+
+}
 
 // vector<double> x,y;
 

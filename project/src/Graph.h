@@ -15,6 +15,7 @@ public:
     ~Graph() = default;
 
     Graph& operator=(const Graph& obj);
+    friend std::ostream& operator<<(ostream& s, const Graph& p);
 
     void SetTitle(string newTitle);
     void SetXAxis(string newXAxis);
@@ -48,6 +49,6 @@ private:
 
     bool LegendBit = true;
     bool SaveOutputBit = true;
-    bool OpenWindowBit = false;
+    bool OpenWindowBit = true;
 };
 #endif

@@ -35,7 +35,7 @@ StandardModel::StandardModel() {                // Units in GeV
  * @param name of constant 
  * @return double 
  */
-double StandardModel::GetSMValue(string name) {
+double StandardModel::GetSMValue(string name) const {
     auto it = SMConstants.find(name);
     if (it == SMConstants.end()) {
         fprintf(stderr, "**No SM constant called %s was found\n", name.c_str());

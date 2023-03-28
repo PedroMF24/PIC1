@@ -2,13 +2,20 @@
 #define __EXPCONSTRAINTS__
 
 #include "Parameters.h"
+#include "SM.h"
 
-class ExpCons {
+class ExpCons { // : public StandardModel
     public:
     ExpCons() = default;
     ~ExpCons() = default;
 
     int HiggsBoundsSignals(double MC, double Mh, double laL);
+    int WZDecayWidths(double MH, double MA);
+    int HChargedLifetime(double MH, double MA, double MC);
+    int HiggsWidth(double laL);
+    int DMData(double MH);
+    int EWBosons(double MH, double MA, double MC);
+    int LEPAnalysis(double MH, double MA);
 
 //     def EWBosons(MHX, MHC, MH3):
 //     MW = 80.433 # W boson mass
@@ -21,9 +28,9 @@ class ExpCons {
 //         quit()
 //         # return 0
 
-    int EWBosons(Parameters Pars);
-    int LEPAnalysis(Parameters Pars);
-    int CheckAllExpCons(Parameters Pars);
+    // int EWBosons(Parameters Pars);
+    // int LEPAnalysis(Parameters Pars);
+    // int CheckAllExpCons(Parameters Pars);
 
     int GetExpCons();
 

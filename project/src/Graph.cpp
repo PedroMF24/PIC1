@@ -26,6 +26,22 @@ Graph& Graph::operator=(const Graph &obj) { // Works!
     return *this;
 }
 
+ostream& operator<< (std::ostream& s, const Graph& p) {
+    s << "Title: " << p.GetTitle() << endl;
+    s << "X Title: " << p.GetXAxisTitle() << endl;
+    s << "Y Title: " << p.GetYAxisTitle() << endl;
+    vector<double> X = p.GetX();
+    vector<double> Y = p.GetY();
+    if (X.size() == Y.size()) {
+        for (int i = 0; i < X.size(); i++)
+            cout << "X: " << X[i] << "\t" << "Y: " << Y[i] << endl;
+    } else {
+        fprintf(stderr, "**X Y vectors of Graph do not have the same size");
+        exit(0);
+    }
+    return s;
+}
+
 void Graph::AddToX(double x) {
     X.push_back(x);
 }

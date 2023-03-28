@@ -123,13 +123,14 @@ int IDM::CheckAllCons() {
     double S, T, U;
 
     // Other conditions implicit in number generation
-    int BFB = BFB_Test(la1, la2, la3, laL);
+    int BFB = BFB_Test(la1, la2, la3, laL);                             // OK
     int TM = TwoMins_Test(la1, la2, Mh, m22Squared);
     int SMU = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
-    int Pert = Perturbativity_Test(la1, la2, la3, la4, la5, laL);
-    int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11
+    int Pert = Perturbativity_Test(la1, la2, la3, la4, la5, laL);       // OK
+    int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11            // OK
     // BFB && Pert && STU && TM && SMU
-    return CheckResult(BFB && Pert && STU && TM && SMU);
+    // CheckResult(STU)
+    return (STU);
 
     /* =================================================================== */
 
@@ -1189,13 +1190,15 @@ void IDM::OverlapSXT(int nPoints) {
 
 void IDM::ParsGraph(const string& path, const string& Title, const string& xName, const string& yName) {
     Graph grValues = ReadGraphData(path, Title, xName, yName);
+    // cout << grValues << endl;
     RootClass root(grValues);
-    root.GraphPlot(true, 2, 20, true);
+    root.ScatterPlot(2, false);
+    // root.GraphPlot(true, 2, 20, true);
 
-    Graph gr2 = ReadGraphData(path, "Teste", "MH", "la2");
-    root.SetNewGraph(gr2);
-    root.GraphPlot(true, 2, 20, true);
+    // Graph gr2 = ReadGraphData(path, "Teste", "MH", "la2");
+    // root.SetNewGraph(gr2);
+    // // root.GraphPlot(true, 2, 20, true);
 
     
-    root.MultiGraphPlot("MultiName");
+    // root.MultiGraphPlot("MultiName");
 }

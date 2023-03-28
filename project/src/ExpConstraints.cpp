@@ -2,8 +2,10 @@
 
 // CONSTRAINTS
 
-int WZDecayWidths(double MH, double MA) {
-    double mz = 90.1;
+// OK
+int ExpCons::WZDecayWidths(double MH, double MA) {
+    StandardModel SM;
+    double mz = SM.GetSMValue("MZ");
     int check = 1;
     if (MH >= 0 && MH <= 41) {
         check = (MA >= 100) ? 1 : 0;
@@ -15,19 +17,44 @@ int WZDecayWidths(double MH, double MA) {
     return check;
 }
 
-int ChargedHLifetime(double MH, double MA, double MC) {
+int ExpCons::HChargedLifetime(double MH, double MA, double MC) {
     int check = ((MA >= MC) && (MC - MH <= 0.1)) ? 0 : 1;
     return check;
 }
 
-int HiggsWidth(double laL) {
+int ExpCons::HiggsWidth(double laL) {
     int check = (abs(laL) <= 0.1) ? 1 : 0;
     return check;
 }
 
-int DMData(double MH) {
+int ExpCons::DMData(double MH) {
     int check = (MH >= 45) ? 1 : 0;
     return check;
+}
+
+int ExpCons::EWBosons(double MH, double MA, double MC) {
+    StandardModel SM;
+    double MW = SM.GetSMValue("MW");
+    double MZ = SM.GetSMValue("MZ");
+
+    double aux1 = MH + MC;
+    double aux2 = MA + MC;
+    double aux3 = MA + MH;
+
+    if (aux1 >= MW && aux2 >= MW && aux3 >= MZ && 2*MC >= MZ)
+        return 1;
+    else
+        return 0;
+}
+
+
+int ExpCons::LEPAnalysis(double MH, double MA) {
+    if (MA <= 100 && MH <= 80 && abs(MA - MH) >= 8) {
+        printf("Region ruled out by LEP Analysis\n");
+        return 0;
+    }
+    else
+        return 1;
 }
 
 
@@ -37,31 +64,31 @@ int DMData(double MH) {
  * 
  * @return int 
  */
-int ExpCons::EWBosons(Parameters Pars) {
-    double MW = 80.433; // W boson mass
-    double MZ = 91.19;  // Z boson mass
+// int ExpCons::EWBosons(Parameters Pars) {
+//     double MW = 80.433; // W boson mass
+//     double MZ = 91.19;  // Z boson mass
 
-    if (Pars.GetMH() + Pars.GetMC() >= MW && Pars.GetMA() + Pars.GetMC() >= MW && Pars.GetMA() + Pars.GetMH() >= MZ and 2*Pars.GetMC() >= MZ)
-        return 1;
-    else {
-        printf("Problems with the EW Bosons mass condition\n");
-        return 0;
-    }
-}
+//     if (Pars.GetMH() + Pars.GetMC() >= MW && Pars.GetMA() + Pars.GetMC() >= MW && Pars.GetMA() + Pars.GetMH() >= MZ and 2*Pars.GetMC() >= MZ)
+//         return 1;
+//     else {
+//         printf("Problems with the EW Bosons mass condition\n");
+//         return 0;
+//     }
+// }
 
 /**
  * @brief Check mass relation with LEP Analysis
  * 
  * @return int 
  */
-int ExpCons::LEPAnalysis(Parameters Pars) {
-    if (Pars.GetMA() <= 100 && Pars.GetMH() <= 80 && abs(Pars.GetMA() - Pars.GetMH()) >= 8) {
-        printf("Region ruled out by LEP Analysis\n");
-        return 0;
-    }
-    else
-        return 1;
-}
+// int ExpCons::LEPAnalysis(Parameters Pars) {
+//     if (Pars.GetMA() <= 100 && Pars.GetMH() <= 80 && abs(Pars.GetMA() - Pars.GetMH()) >= 8) {
+//         printf("Region ruled out by LEP Analysis\n");
+//         return 0;
+//     }
+//     else
+//         return 1;
+// }
 
 // int TheoCons::TwoMins(Parameters Pars) {
 //     double aux1 = (Pars.GetMh()*Pars.GetMh())/sqrt(Pars.Getla1()); 
@@ -95,25 +122,25 @@ int ExpCons::HiggsBoundsSignals(double MC, double Mh, double laL) {
  * 
  * @return int 
  */
-int ExpCons::CheckAllExpCons(Parameters Pars) {
-    Check = 0;
-    Check = ((EWBosons(Pars) & LEPAnalysis(Pars)) == 1) ? 1 : 0;
+// int ExpCons::CheckAllExpCons(Parameters Pars) {
+//     Check = 0;
+//     Check = ((EWBosons(Pars) & LEPAnalysis(Pars)) == 1) ? 1 : 0;
 
-    if (Check)
-        printf("Passed ExpCons\n");
-    else
-        printf("Did not pass ExpCons\n");
-    // if ( (EWBosons() & LEPAnalysis()) == 1) {
-    //     printf("Passed ExpCons\n");
-    //     return 1;
-    // }
-    // else {
-    //     printf("Did not pass ExpCons\n");
-    //     return 0;
-    // }
-    return Check;
-}
+//     if (Check)
+//         printf("Passed ExpCons\n");
+//     else
+//         printf("Did not pass ExpCons\n");
+//     // if ( (EWBosons() & LEPAnalysis()) == 1) {
+//     //     printf("Passed ExpCons\n");
+//     //     return 1;
+//     // }
+//     // else {
+//     //     printf("Did not pass ExpCons\n");
+//     //     return 0;
+//     // }
+//     return Check;
+// }
 
-int ExpCons::GetExpCons() {
-    return Check;
-}
+// int ExpCons::GetExpCons() {
+//     return Check;
+// }

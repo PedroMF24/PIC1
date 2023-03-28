@@ -1,9 +1,9 @@
-#include "src/TheoConstraints.h"
-// #include "src/ExpConstraints.h"
-#include "src/RootClass.h"
-#include "src/Parameters.h"
+// #include "src/TheoConstraints.h"
+// // #include "src/ExpConstraints.h"
+// #include "src/RootClass.h"
+// #include "src/Parameters.h"
 #include "src/IDM.h"
-#include "src/SM.h"
+// #include "src/SM.h"
 
 #include "src/StopWatch.h"
 
@@ -28,11 +28,11 @@ int main()
     clock.StartTimer();
 
 
-    // READ PARAMETERS THAT PASSED ALL TEO CONSTRAINTS
+/*    // READ PARAMETERS THAT PASSED ALL TEO CONSTRAINTS
     IDM idm;
     idm.StoreCheckedPars(10000);
-    // idm.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Title", "MA", "MC");
-
+    idm.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Title", "MA", "MC");
+*/
 
 /*    // TEST IF FIRST PLOT IS OK
     IDM pic;
@@ -45,6 +45,24 @@ int main()
     pic.OverlapSXT(20000);
 */
 
+    // TEST SCATTERPLOT
+    IDM pic;
+    pic.StoreCheckedPars(1000);
+
+    pic.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Scatter", "MH", "laL");
+    pic.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Scatter", "MC", "MA");
+
+/*  // TEST PARAMETER GENERATION
+    Parameters pars;
+    int i = 0;
+    while (i<5)
+    {
+        cout << pars << endl;
+        cout << pars.Getla3()+pars.Getla4()+pars.Getla5() << "\t" << pars.GetlaL() << endl; 
+        pars.GenPars(1);
+        i++;
+    }
+*/
     clock.StopTimer();
     clock.PrintTime();
 

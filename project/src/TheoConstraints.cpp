@@ -250,14 +250,15 @@ int TheoCons::BoundFromBelow(double la1, double la2, double la3, double laL, dou
     }
 }
 
-int TheoCons::QuarticCouplings(double la1, double la2, double la3, double laL) {
+int TheoCons::QuarticCouplings(double la1, double la2, double la3, double la4, double la5, double laL) {
     // Quartic couplings must be perturbative
     int aux1 = (la1 <= 4*M_PI/3) ? 1 : 0;
     int aux2 = (la2 <= 4*M_PI/3) ? 1 : 0;
     int aux3 = (la3 <= 4*M_PI) ? 1 : 0;
     int aux4 = (laL <= 4*M_PI) ? 1 : 0;
+    int aux5 = (la3+la4-la5 <= 4*M_PI) ? 1 : 0;
 
-    int check =  aux1 && aux2 && aux4; // && aux3; // PROBLEMA NO AUX3
+    int check =  aux1 && aux2 && aux3 && aux4 &&aux5 ; // && aux3; // PROBLEMA NO AUX3
 
     if (check) {
         //printf("Passed Perturbativity\n");
@@ -300,11 +301,11 @@ int TheoCons::ScatteringMatrixUnitary_Test(double la1, double la2, double la3, d
         }            
     }
 
-    if (result == 1) {
-        // printf("Passed SMU\n");
-    } else {
-        // printf("Did not pass SMU\n");
-    }
+    // if (result == 1) {
+    //     // printf("Passed SMU\n");
+    // } else {
+    //     // printf("Did not pass SMU\n");
+    // }
     return result;
 }
 
@@ -324,7 +325,7 @@ int TheoCons::TwoMins_Test(double la1, double la2, double Mh, double m22Squared)
 
 int TheoCons::Perturbativity_Test(double la1, double la2, double la3, double la4, double la5, double laL) {
     // int auxSMU = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
-    int auxQC = QuarticCouplings(la1, la2, la3, laL);
+    int auxQC = QuarticCouplings(la1, la2, la3, la4, la5, laL);
 
     int check = auxQC; //&& auxSMU;
     if (check) {
@@ -397,13 +398,13 @@ void TheoCons::InitSTUMatrices(double (&ImVdagV)[4][4], complex<double> (&UdagU)
 
 // Check if m11 is good
 void TheoCons::InitSTUVars(double (&mneu)[4], double (&mch)[2], double &m11, double &MH, double &MA, double &MC) {
-    StandardModel model;
-    mneu[0] = model.GetSMValue("MZ");
+    StandardModel SM;
+    mneu[0] = SM.GetSMValue("MZ"); // model.SM.SM.GetSMValue("MZ")
     mneu[1] = m11;
     mneu[2] = MH;
     mneu[3] = MA;
 
-    mch[0] = model.GetSMValue("MW");
+    mch[0] = SM.GetSMValue("MW"); // model.SM.GetSMValue("MW")
     mch[1] = MC;
     // cout << mch[1] << " " << mneu[1] << endl;
 }
@@ -421,18 +422,29 @@ void TheoCons::CalculateSTU(double (&mneu)[4], double (&mch)[2], double (&ImVdag
     double g, alpha, G_F, mW, mZ, thetaW, mh, GW, GZ, pi;
     // double model.Gstu, model.model.Ghatstu, model.Fbigstu;
 
-    StandardModel model;
+    StandardModel SM;
 
     // Common block data
-    mW = model.GetSMValue("MW");
-    G_F = model.GetSMValue("G_FERMI");
+    // mW = model.GetSMValue("MW");
+    // G_F = model.GetSMValue("G_FERMI");
+    // g = sqrt(8.0 * mW * mW * G_F / sqrt(2.0)); 
+    // alpha = model.GetSMValue("ALPHA"); 
+    // mZ = model.GetSMValue("MZ"); 
+    // thetaW = asin(sqrt(model.GetSMValue("S2TW")));
+    // mh = model.GetSMValue("MHIGGS"); 
+    // GW = model.GetSMValue("GAW"); // GAW
+    // GZ = model.GetSMValue("GAZ"); // GAZ
+
+    mW = SM.GetSMValue("MW");
+    G_F = SM.GetSMValue("G_FERMI");
     g = sqrt(8.0 * mW * mW * G_F / sqrt(2.0)); 
-    alpha = model.GetSMValue("ALPHA"); 
-    mZ = model.GetSMValue("MZ"); 
-    thetaW = asin(sqrt(model.GetSMValue("S2TW")));
-    mh = model.GetSMValue("MHIGGS"); 
-    GW = model.GetSMValue("GAW"); // GAW
-    GZ = model.GetSMValue("GAZ"); // GAZ
+    alpha = SM.GetSMValue("ALPHA"); 
+    mZ = SM.GetSMValue("MZ"); 
+    thetaW = asin(sqrt(SM.GetSMValue("S2TW")));
+    mh = SM.GetSMValue("MHIGGS"); 
+    GW = SM.GetSMValue("GAW"); // GAW
+    GZ = SM.GetSMValue("GAZ"); // GAZ
+
     pi = acos(-1);
     // int iboson = data[10];
 
@@ -458,6 +470,125 @@ void TheoCons::CalculateSTU(double (&mneu)[4], double (&mch)[2], double (&ImVdag
     wH = pow(mh, 2) / mW2;
 
     // Evaluate T from the formulas in arXiv: 0802.4353
+    T = 0.0;
+
+    for (j = 1; j < ncs; ++j)
+    {
+        for (k = 1; k < nns; ++k)
+        {
+            T += pow(fabs(UdagV[j][k]), 2) * SM.Fbigstu(pow(mch[j], 2), pow(mneu[k], 2));
+        }
+    }
+
+    for (j = 1; j < nns - 1; ++j)
+    {
+        for (k = j + 1; k < nns; ++k)
+        {
+            T -= pow(ImVdagV[j][k], 2) * SM.Fbigstu(pow(mneu[j], 2), pow(mneu[k], 2));
+        }
+    }
+
+    for (j = 1; j < ncs - 1; ++j)
+    {
+        for (k = j + 1; k < ncs; ++k)
+        {
+            T -= 2.0 * pow(fabs(UdagU[j][k]), 2) * SM.Fbigstu(pow(mch[j], 2), pow(mch[k], 2));
+        }
+    }
+
+    for (j = 1; j < nns; ++j)
+    {
+        T += (3.0 * pow(ImVdagV[0][j], 2) * (SM.Fbigstu(mZ2, pow(mneu[j], 2)) - SM.Fbigstu(mW2, pow(mneu[j], 2))) );
+    }
+
+    T -= (3.0 * (SM.Fbigstu(mZ2, mh2) - SM.Fbigstu(mW2, mh2)) );
+
+    T *= (1.0 / (16.0 * pi * sw2 * mW2)); // sw? g^2/64pi^2?
+    // T *= (g*g/(64*pi*pi*mW2));
+
+    // Evaluate S from the formulas in arXiv: 0802.4353
+    S = 0.0;
+
+    for (j = 1; j < ncs; ++j)
+    {
+        S += pow(2.0 * sw2 - real(UdagU[j][j]), 2) * SM.Gstu(zp[j], zp[j]);
+    }
+
+    for (j = 1; j < ncs - 1; ++j)
+    {
+        for (k = j + 1; k < ncs; ++k)
+        {
+            S += 2.0 * pow(fabs(UdagU[j][k]), 2) * SM.Gstu(zp[j], zp[k]);
+        }
+    }
+
+    for (j = 1; j < nns - 1; ++j)
+    {
+        for (k = j + 1; k < nns; ++k)
+        {
+            S += pow(ImVdagV[j][k], 2) * SM.Gstu(z[j], z[k]);
+        }
+    }
+
+    for (j = 1; j < ncs; ++j)
+    {
+        S -= 2.0 * real(UdagU[j][j]) * log(pow(mch[j], 2));
+    }
+
+    for (j = 1; j < nns; ++j)
+    {
+        S += real(VdagV[j][j]) * log(pow(mneu[j], 2));
+        S += pow(ImVdagV[0][j], 2) * SM.Ghatstu(z[j]);
+    }
+
+        S -= (SM.Ghatstu(zH) + log(pow(mh, 2)));
+
+        S *= 1/(24*M_PI); // S *= (1.0 / (24.0 * pi * sw2));
+        // S *= (g*g/(384*pi*pi*cw2));
+
+    // Evaluate U from the formulas in arXiv: 0802.4353
+        U = 0.0;
+
+    for (int j = 1; j < ncs; ++j) 
+    {
+        for (int k = 1; k < nns; ++k) 
+        {
+            U += pow(fabs(UdagV[j][k]), 2) * SM.Gstu(wp[j], w[k]);
+        }
+    }
+
+    for (int j = 1; j < ncs; ++j) 
+    {
+        U -= pow((2.0 * sw2 - real(UdagU[j][j])), 2) * SM.Gstu(zp[j], zp[j]);
+    }
+
+    for (int j = 1; j < ncs - 1; ++j) 
+    {
+        for (int k = j + 1; k < ncs + 1; ++k) 
+        {
+            U -= 2.0 * pow(fabs(UdagU[j][k]), 2) * SM.Gstu(zp[j], zp[k]);
+        }
+    }
+
+    for (int j = 1; j < nns - 1; ++j) 
+    {
+        for (int k = j + 1; k < nns; ++k) 
+        {
+            U -= pow(ImVdagV[j][k], 2) * SM.Gstu(z[j], z[k]);
+        }
+    }
+
+    for (int j = 1; j < nns; ++j) {
+        U += (pow(ImVdagV[0][j], 2) * (SM.Ghatstu(w[j]) - SM.Ghatstu(z[j])) );
+    }
+
+    U -= (SM.Ghatstu(wH) + SM.Ghatstu(zH));
+    U *= (1.0 / (24.0 * M_PI));
+}
+
+/*
+
+// Evaluate T from the formulas in arXiv: 0802.4353
     T = 0.0;
 
     for (j = 1; j < ncs; ++j)
@@ -552,7 +683,7 @@ void TheoCons::CalculateSTU(double (&mneu)[4], double (&mch)[2], double (&ImVdag
 
     for (int j = 1; j < ncs - 1; ++j) 
     {
-        for (int k = j + 1; k < ncs; ++k) 
+        for (int k = j + 1; k < ncs + 1; ++k) 
         {
             U -= 2.0 * pow(fabs(UdagU[j][k]), 2) * model.Gstu(zp[j], zp[k]);
         }
@@ -572,7 +703,8 @@ void TheoCons::CalculateSTU(double (&mneu)[4], double (&mch)[2], double (&ImVdag
 
     U -= (model.Ghatstu(wH) + model.Ghatstu(zH));
     U *= (1.0 / (24.0 * M_PI));
-}
+
+*/
 
 
 int TheoCons::STU_Check(double &S, double &T, double &U) {
@@ -749,7 +881,7 @@ int TheoCons::STU_Test(double m11, double MH, double MA, double MC, double &S, d
     double ULL = 0.03-0.1;
     double UUL = 0.03+0.1;
 
-    if (U >= ULL && U<= UUL && Corr > 0) {
+    if (U >= ULL && U <= UUL && Corr > 0) {
         return 1;
     } else {
         return 0;

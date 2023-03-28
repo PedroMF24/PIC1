@@ -219,8 +219,8 @@ Graph ReadGraphData(const string& filename, const string &Title, const string& X
     Graph gr;
     ifstream file(filename);
     if (!file.is_open()) {
-        cerr << "Error: could not open file " << filename << endl;
-        return gr;
+        cerr << "**Error: could not open file " << filename << endl;
+        exit(0); // return gr;
     }
 
     gr.SetTitle(Title.c_str());
@@ -246,12 +246,12 @@ Graph ReadGraphData(const string& filename, const string &Title, const string& X
         }
     }
     if (x_col == -1) {
-        cerr << "Error: could not find column " << X << " in file " << filename << endl;
-        return gr;
+        cerr << "**Error: could not find column " << X << " in file " << filename << endl;
+        exit(0); // return gr;
     }
     if (y_col == -1) {
-        cerr << "Error: could not find column " << Y << " in file " << filename << endl;
-        return gr;
+        cerr << "**Error: could not find column " << Y << " in file " << filename << endl;
+        exit(0); // return gr;
     }
 
     while (getline(file, line)) {

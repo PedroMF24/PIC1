@@ -10,7 +10,7 @@
 
 // using Condition = pair<string, function<int(const Parameters&)>>; 
 
-class TheoCons {
+class TheoCons { // : public StandardModel
     public:
     TheoCons() = default;
     // TheoCons(Parameters& newPars);
@@ -36,7 +36,7 @@ class TheoCons {
     // Perturbativity
     int Perturbativity_Test(double la1, double la2, double la3, double la4, double la5, double laL);
     int ScatteringMatrixUnitary_Test(double la1, double la2, double la3, double la4, double la5);
-    int QuarticCouplings(double la1, double la2, double la3, double laL);
+    int QuarticCouplings(double la1, double la2, double la3, double la4, double la5, double laL);
 
     // STU
     void InitSTUVars(double (&mneu)[4], double (&mch)[2], double &m11, double &MH, double &MA, double &MC);
