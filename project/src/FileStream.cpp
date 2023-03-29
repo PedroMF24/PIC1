@@ -1,5 +1,13 @@
 #include "FileStream.h"
 
+bool FileExists(const string& filename) {
+    ifstream file(filename);
+    bool exists = file.good();
+    file.close();
+    return exists;
+}
+
+
 void WriteSTUPars(vector<pair<double,double>> &values, const string &filename) {
     // Open and verify if it was opened correctly
     cout << "Writting STU approved Parameters in file..." << endl;

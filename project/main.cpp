@@ -51,8 +51,8 @@ int main(int argc, char **argv)
     IDM pic;
     pic.StoreCheckedPars(1000);
 
-    pic.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Scatter", "MH", "laL");
-    pic.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Scatter", "MC", "MA");
+    pic.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Scatter2", "MH", "laL");
+    // pic.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Scatter3", "MC", "MA");
 
 /*  // TEST PARAMETER GENERATION
     Parameters pars;

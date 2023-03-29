@@ -51,5 +51,5 @@ Graph ReadGraphData(const string& filename, const string& Title, const string& X
 void WriteElementToFile(string key, ofstream &file, int i, map<string, vector<double>> &ParMap);
 void WriteMapToFile(const string &filename, map<string, vector<double>> &ParMap, Parameters &Pars);
 
-
+bool FileExists(const string& filename);
 

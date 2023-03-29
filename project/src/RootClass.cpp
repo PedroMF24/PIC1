@@ -2,11 +2,14 @@
 
 using namespace std;
 
-
-RootClass::RootClass(Graph newGraph, TApplication *app) {
+RootClass::RootClass(Graph newGraph) {
     graph = newGraph;
-    fApp = app;
 }
+
+// RootClass::RootClass(Graph newGraph, TApplication *app) {
+//     graph = newGraph;
+//     fApp = app;
+// }
 
 void RootClass::SetNewGraph(Graph newGraph) {
     graph = newGraph;
@@ -17,7 +20,11 @@ void RootClass::SaveOutput(TCanvas *c) {
     // OutputPath.append(Title.c_str());
     OutputPath.append(graph.GetTitle().c_str());
     OutputPath.append(outFileExt.c_str());
-    c->Update();
+
+    // c->Update();
+    // auto timestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count());
+    // c->SaveAs(("bin/Plots/Scatter_" + timestamp + ".png").c_str());
+
     // if (!c) {
     //     std::cerr << "**Error: canvas is null" << std::endl;
     //     return;
@@ -358,10 +365,11 @@ void RootClass::SetOutFileExt(string newOutFileExt) {
 
 void RootClass::ScatterPlot(int ColorKey, bool Add2Vec) {
 cout << "Making " << graph.GetTitle() << " scatter plot..." << endl;
+
     // if (OpenWindowBit) {
-    TApplication *app = fApp; // nullptr;
-    // if (graph.GetOpenWindowBit()) 
-    //     app = new TApplication("app", nullptr, nullptr);
+    TApplication *app =  nullptr; // fApp
+    if (graph.GetOpenWindowBit()) 
+        app = new TApplication("app", nullptr, nullptr);
 
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
     int nPoints = graph.GetX().size();

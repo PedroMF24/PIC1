@@ -74,8 +74,8 @@ class IDM : public TheoCons,
     Parameters Pars;
     map<string, vector<double>> ParMap;
 
-    TApplication *fApp;
-    RootClass *fRoot;
+    // TApplication *fApp;
+    // RootClass *fRoot;
 
     // STU Matrices and Values
     // int nns = 4; // Number of neutral scalars

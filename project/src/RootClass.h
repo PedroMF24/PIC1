@@ -13,6 +13,7 @@
 #include <unordered_map>
 
 #include "FileStream.h"
+#include "StopWatch.h"
 
 #include "TH1F.h"
 #include "TGraph.h"
@@ -28,7 +29,8 @@ using namespace std;
 class RootClass {
     public:
     // RootClass() = default;
-    RootClass(Graph newGraph, TApplication *app);
+    RootClass(Graph newGraph);
+    // RootClass(Graph newGraph, TApplication *app);
     // RootClass(bool newSaveOutputBit, bool newOpenWindowBit, bool newLegendBit);
     ~RootClass() = default;
 
@@ -93,7 +95,7 @@ class RootClass {
     // ColorPalette
     unordered_map<string, int> ColorPalette;
 
-    TApplication *fApp;
+    // TApplication *fApp;
 
     void SaveOutput(TCanvas *c);
     void ClearLegend();
