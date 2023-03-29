@@ -271,7 +271,7 @@ void RootClass::GraphPlot(bool DrawBit, int ColorKey, int MarkerStyle, bool Add2
         ShowPlot(c, app);
         
     DeleteCanvas(c);
-    // DeleteApp(app);
+    DeleteApp(app);
 }
 
 void RootClass::ShowPlot(TCanvas *c, TApplication *app) {
