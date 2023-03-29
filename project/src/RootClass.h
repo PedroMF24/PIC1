@@ -28,7 +28,7 @@ using namespace std;
 class RootClass {
     public:
     // RootClass() = default;
-    RootClass(Graph newGraph);
+    RootClass(Graph newGraph, TApplication *app);
     // RootClass(bool newSaveOutputBit, bool newOpenWindowBit, bool newLegendBit);
     ~RootClass() = default;
 
@@ -92,6 +92,8 @@ class RootClass {
 
     // ColorPalette
     unordered_map<string, int> ColorPalette;
+
+    TApplication *fApp;
 
     void SaveOutput(TCanvas *c);
     void ClearLegend();

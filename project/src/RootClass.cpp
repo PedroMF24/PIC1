@@ -3,8 +3,9 @@
 using namespace std;
 
 
-RootClass::RootClass(Graph newGraph) {
+RootClass::RootClass(Graph newGraph, TApplication *app) {
     graph = newGraph;
+    fApp = app;
 }
 
 void RootClass::SetNewGraph(Graph newGraph) {
@@ -271,7 +272,7 @@ void RootClass::GraphPlot(bool DrawBit, int ColorKey, int MarkerStyle, bool Add2
         ShowPlot(c, app);
         
     DeleteCanvas(c);
-    DeleteApp(app);
+    //DeleteApp(app);
 }
 
 void RootClass::ShowPlot(TCanvas *c, TApplication *app) {
@@ -358,9 +359,9 @@ void RootClass::SetOutFileExt(string newOutFileExt) {
 void RootClass::ScatterPlot(int ColorKey, bool Add2Vec) {
 cout << "Making " << graph.GetTitle() << " scatter plot..." << endl;
     // if (OpenWindowBit) {
-    TApplication *app = nullptr;
-    if (graph.GetOpenWindowBit()) 
-        app = new TApplication("app", nullptr, nullptr);
+    TApplication *app = fApp; // nullptr;
+    // if (graph.GetOpenWindowBit()) 
+    //     app = new TApplication("app", nullptr, nullptr);
 
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
     int nPoints = graph.GetX().size();

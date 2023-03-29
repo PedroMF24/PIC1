@@ -5,7 +5,8 @@ IDM::IDM() {
     ClearParMap();
 }
 
-// IDM::IDM(TApplication* app) : fApp(app) {
+// IDM::IDM(TApplication* app) { // : fApp(app)
+//     fRoot = new RootClass(app);
 //     ClearParMap();
 // }
 
@@ -1196,7 +1197,8 @@ void IDM::OverlapSXT(int nPoints) {
 void IDM::ParsGraph(const string& path, const string& Title, const string& xName, const string& yName) {
     Graph grValues = ReadGraphData(path, Title, xName, yName);
     // cout << grValues << endl;
-    RootClass root(grValues);
+    TApplication *app = new TApplication("app", nullptr, nullptr);
+    RootClass root(grValues, app);
     root.ScatterPlot(2, false);
     // root.GraphPlot(true, 2, 20, true);
 
