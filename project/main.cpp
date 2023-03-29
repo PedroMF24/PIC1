@@ -21,7 +21,7 @@
 */
 
 
-int main()
+int main(int argc, char **argv)
 {
 
     StopWatch clock;
@@ -46,6 +46,8 @@ int main()
 */
 
     // TEST SCATTERPLOT
+    // TApplication *app = new TApplication("app", &argc, argv);
+    // IDM pic(app);
     IDM pic;
     pic.StoreCheckedPars(1000);
 

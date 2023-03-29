@@ -28,6 +28,7 @@ class IDM : public TheoCons,
 {
     public:
     IDM();
+    // IDM(TApplication *app);
     IDM(Parameters& Pars);
     ~IDM() = default;
 
@@ -68,6 +69,7 @@ class IDM : public TheoCons,
     void ParsGraph(const string& path, const string& Title, const string& xName, const string& yName);
 
     private:
+    // TApplication* fApp;
     // Parameters generator class and Parameter values
     Parameters Pars;
     map<string, vector<double>> ParMap;

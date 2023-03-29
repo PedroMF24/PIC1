@@ -398,7 +398,7 @@ cout << "Making " << graph.GetTitle() << " scatter plot..." << endl;
         ShowPlot(c, app);
         
     DeleteCanvas(c);
-    DeleteApp(app);
+    // DeleteApp(app);
 
 }
 

@@ -5,6 +5,11 @@ IDM::IDM() {
     ClearParMap();
 }
 
+// IDM::IDM(TApplication* app) : fApp(app) {
+//     ClearParMap();
+// }
+
+
 IDM::IDM(Parameters& newPars) : Pars(newPars) {
 
     Pars = newPars;
