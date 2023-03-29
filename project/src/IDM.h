@@ -35,6 +35,7 @@ class IDM : public TheoCons,
     void GenNewPars();
     void StoreParsTest(int nPoints);
     void StoreCheckedPars(int nPoints);
+    void GenWriteCheckedPars(const string& filename, int nPoints);
 
     void FilterParMap(vector<int> keepIndex);
     void FirstPlot();

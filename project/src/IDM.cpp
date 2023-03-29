@@ -68,7 +68,7 @@ void IDM::StoreParsTest(int nPoints) {
     ClearParMap();
     cout << "Generating and storing Parameters...\n";
     for (int i = 0; i < nPoints; i++) {
-        Pars.GenPars(1); // 1
+        Pars.GenPars(0); // 1
         // Mudar para while. if (Check all constraints) {AddToMap}
         AddToMap();
     }
@@ -108,6 +108,43 @@ void IDM::StoreCheckedPars(int nPoints) {
     WriteMapToFile("data/PassedTeoCons/PassedTeoCons.dat", ParMap, Pars);
 }
 
+void IDM::GenWriteCheckedPars(const string& filename, int nPoints) {
+    cout << "Generating and Writting " << nPoints << " Parameters" << " to " << filename << endl;
+    // Create or open file
+    ofstream outfile(filename);
+    // Check if file was created or opened successfully
+    if (!outfile.is_open()) {
+        cerr << "**Error: could not create file " << filename << endl;
+        exit(0);
+    }
+    // Write header
+    vector<string> names = Pars.GetParNames();
+    auto it = names.begin();
+    if (it != names.end()) {
+        outfile << *it;
+        ++it;
+    }
+    while (it != names.end()) {
+        outfile << " " << *it;
+        ++it;
+    }
+    outfile << endl;
+    // Generate and Write Parameters
+    int i = 0;
+    while (i < nPoints) {
+        Pars.GenPars(1);
+        // Check all constraints
+        if (CheckAllCons()) {
+            outfile << Pars;
+            i++;
+        }
+    }
+    // Close the file
+    outfile.close();
+}
+
+
+
 int IDM::CheckAllCons() {
 
     double Mh = 125.1;
@@ -137,7 +174,7 @@ int IDM::CheckAllCons() {
     int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11            // OK
     // BFB && Pert && STU && TM && SMU
     // CheckResult(STU)
-    return (STU);
+    return (BFB && Pert && STU && TM && SMU);
 
     /* =================================================================== */
 
@@ -1109,6 +1146,112 @@ cout << "Making SXT graph...\n";
     app.Run();
 }
 
+// NAO APAGAR, MTO IMPORTANTE
+/*
+void IDM::OverlapSXT(int nPoints) {
+    TApplication app("app", nullptr, nullptr);
+    TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+
+    TMultiGraph *mg = new TMultiGraph();
+    string name = "S-T Plane";
+    mg->SetTitle(name.c_str());
+
+    vector<double> Svec, Tvec;
+    Svec.clear();
+    Tvec.clear();
+    vector<double> aux;
+
+    // double la1 = Pars.Getla1();
+    // double Mh = 125.1; // Pars.GetMh();
+    // double m11 = Mh*Mh;
+
+    // vector<pair<double, double>> Values = GetParsSTU(nPoints);
+
+    // WriteSTUPars(Values, "data/STU/STU_Points.dat");
+    // WriteDat("data/STU/STU_PointsPars.dat", ParMap);
+    
+    ReadDAT("data/PassedTeoCons/PassedTeoCons.dat", ParMap);
+    int N = 0;
+    int max =  ParMap["MH"].size(); // ST[0].size(); // 
+    cout << "Max " << max << endl;
+
+    double la1 = Pars.Getla1();
+    double Mh = Pars.GetMh();
+
+    double S,T,U;
+
+    for (int i = 0; i < max; i++) {
+        double MH = ParMap["MH"][i];
+        double MA = ParMap["MA"][i];
+        double MC = ParMap["MC"][i];
+
+        if (ST(Mh, MH, MA, MC, S, T, U)) {
+            Svec.push_back(S);
+            Tvec.push_back(T);
+        }
+    }
+    
+
+    // for (int i = 0; i < nPoints; i++)
+    // {
+    //     Svec.push_back(Values[i].first);
+    //     Tvec.push_back(Values[i].second);
+    // }
+
+    int Npoints = Svec.size();
+    TGraph *gr = new TGraph(Npoints, &Svec[0], &Tvec[0]);
+    // TGraph *gr = new TGraph(max, &ST[0][0], &ST[1][0]);
+    gr->SetTitle("SXT");
+    gr->SetMarkerColor(4);
+    gr->SetMarkerStyle(20);
+
+    Svec.clear();
+    Tvec.clear();
+    vector<pair<double, double>>  profValues = readProfSTU();
+    int ProfPoints = profValues.size();
+    for (auto &pair : profValues)
+    {
+        Svec.push_back(pair.first);
+        Tvec.push_back(pair.second);
+    }
+    
+    
+    TGraph *grprof = new TGraph(Svec.size(), &Svec[0], &Tvec[0]);
+    grprof->SetTitle("Elipse");
+    grprof->SetMarkerColor(2);
+    grprof->SetMarkerStyle(20);
+
+    mg->Add(grprof);
+    mg->Add(gr);
+
+    c->Update();
+
+    mg->GetXaxis()->SetTitle("S");
+    mg->GetXaxis()->CenterTitle();
+    mg->GetYaxis()->SetTitle("T");
+    mg->Draw("AP");
+
+    // c->BuildLegend();
+
+    TLegend *leg = new TLegend(0.9, 0.7, 0.99, 0.9);
+    leg->SetHeader("Constraints", "C");
+    leg->AddEntry(grprof, "Allowed", "p");
+    leg->AddEntry(gr, "Results", "p");
+    leg->Draw();
+
+    c->Update();
+
+    string dir = "bin/Plots/";
+    name.append(".png");
+    dir.append(name);
+    c->SaveAs(dir.c_str());
+
+    TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+    app.Run();
+}
+*/
+
 
 void IDM::OverlapSXT(int nPoints) {
     TApplication app("app", nullptr, nullptr);
@@ -1196,15 +1339,15 @@ void IDM::OverlapSXT(int nPoints) {
 
 
 void IDM::ParsGraph(const string& path, const string& Title, const string& xName, const string& yName) {
-    Graph grValues = ReadGraphData(path, Title, xName, yName);
+    // Graph grValues = ReadGraphData(path, Title, xName, yName);
     // cout << grValues << endl;
 
     // fRoot = new RootClass(grValues, fApp);
     // fRoot->ScatterPlot(2, false);
     // delete fRoot;
 
-    RootClass root(grValues);
-    root.ScatterPlot(2, false);
+    // RootClass root(grValues);
+    // root.ScatterPlot(2, false);
 
     // root.GraphPlot(true, 2, 20, true);
 

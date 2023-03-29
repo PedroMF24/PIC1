@@ -12,9 +12,19 @@ class Graph {
 public:
     Graph() = default;
     Graph(string newTitle, string newXAxisTitle, vector<double> newX, string newYAxisTitle, vector<double> newY);
+    Graph(bool newLegendBit, bool newSaveOutputBit, bool newOpenWindowBit);
     ~Graph() = default;
 
     Graph& operator=(const Graph& obj);
+    Graph operator+(const Graph& obj);
+    Graph operator-(const Graph& obj);
+    Graph operator/(const Graph& obj);
+    // Graph& operator*(const Graph& obj);
+    // Graph& operator^(const Graph& obj);
+
+    // Graph& operator==(const Graph& obj);
+
+
     friend std::ostream& operator<<(ostream& s, const Graph& p);
 
     void SetTitle(string newTitle);
@@ -25,6 +35,12 @@ public:
     void SetLegendBit(bool newLegendBit);
     void SetSaveOutputBit(bool newSaveOutputBit);
     void SetOpenWindowBit(bool newOpenWIndowBit);
+    void SetX(vector<double> newX);
+    void SetY(vector<double> newY);
+
+    // void SumX2Vec(vector<double> vec);
+    void  DivYVec(vector<double> vec);
+
 
     void AddToX(double x);
     void AddToY(double y);
@@ -34,6 +50,7 @@ public:
     string GetTitle() const ;
     string GetXAxisTitle() const ;
     string GetYAxisTitle() const ;
+    string GetDrawOpt() const ;
     bool GetLegendBit() const ;
     bool GetSaveOutputBit() const ;
     bool GetOpenWindowBit() const ;
@@ -45,10 +62,10 @@ private:
     string YAxisTitle = "Y";
     vector<double> Y;
 
-    // string DrawOpt = "AP";
+    string DrawOpt = "AP";
 
-    bool LegendBit = true;
-    bool SaveOutputBit = true;
-    bool OpenWindowBit = true;
+    bool LegendBit = false;
+    bool SaveOutputBit = false;
+    bool OpenWindowBit = false;
 };
 #endif

@@ -29,12 +29,12 @@ using namespace std;
 class RootClass {
     public:
     // RootClass() = default;
-    RootClass(Graph newGraph);
+    RootClass(Graph* newGraph);
     // RootClass(Graph newGraph, TApplication *app);
     // RootClass(bool newSaveOutputBit, bool newOpenWindowBit, bool newLegendBit);
     ~RootClass() = default;
 
-    void SetNewGraph(Graph newGraph);
+    void SetNewGraph(Graph* newGraph);
 
     void ScatterPlot(string Title, int nPoints);
     void FirstPlot(string Title);
@@ -58,21 +58,21 @@ class RootClass {
     // void GraphPlot(vector<double> x, vector<double> y, bool DrawBit, string ColorKey, string MarkerStyle, bool Add2Vec);
     // void GraphPlot(vector<double> x, vector<double> y, bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec);
     void GraphPlot(bool DrawBit, int ColorKey, int MarkerStyle, bool Add2Vec);
-    void AddToGraphVector(Graph g, TGraph *gr);
+    void AddToGraphVector(Graph* g, TGraph *gr);
     void FreeGraphVector();
-    void MultiGraphPlot(const string Title);
+    void MultiGraphPlot(const string& Title, const string& X, const string& Y);
 
 
     private:
 
-    Graph graph;
+    Graph* graph;
 
     string outDir = "bin/Plots/";
     string outFileExt = ".png";
     
     // TApplication *app;
     // vector<pair<string, TGraph *>> grVec;
-    vector<pair<Graph, TGraph *>> grVec;
+    vector<pair<Graph* , TGraph *>> grVec;
 
     string DrawOpt = "AP";
 

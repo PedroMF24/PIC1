@@ -564,7 +564,7 @@ void TheoCons::CalculateSTU(double (&mneu)[4], double (&mch)[2], double (&ImVdag
 
     for (int j = 1; j < ncs - 1; ++j) 
     {
-        for (int k = j + 1; k < ncs + 1; ++k) 
+        for (int k = j + 1; k < ncs; ++k) 
         {
             U -= 2.0 * pow(fabs(UdagU[j][k]), 2) * SM.Gstu(zp[j], zp[k]);
         }

@@ -56,6 +56,7 @@ Parameters::Parameters(const Parameters& newPars) {
     m22Squared = newPars.m22Squared;
 }
 
+/*
 ostream& operator<< (std::ostream& s, const Parameters& p) {
     s << "la1: " << p.la1 << endl;
     s << "la2: " << p.la2 << endl; 
@@ -68,8 +69,22 @@ ostream& operator<< (std::ostream& s, const Parameters& p) {
     s << "MH: " << p.MH << endl; 
     s << "(m_22)^2: " << p.m22Squared << endl;
     return s;
-}
+}*/
 
+ostream& operator<<(std::ostream& s, const Parameters& p) {
+    s << fixed << setprecision(6);
+    s << p.Mh << " ";
+    s << p.MH << " ";
+    s << p.MA << " ";
+    s << p.MC << " ";
+    s << p.la2 << " ";
+    s << p.laL << " ";
+    s << p.la1 << " ";
+    s << p.la3 << " ";
+    s << p.la4 << " ";
+    s << p.la5 << endl;
+    return s;
+}
 // void Parameters::ScanSetup()
 // {
 

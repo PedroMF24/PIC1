@@ -9,6 +9,29 @@ Graph::Graph(string newTitle, string newXAxisTitle, vector<double> newX, string 
     Y = newY;
 }
 
+Graph::Graph(bool newLegendBit, bool newSaveOutputBit, bool newOpenWindowBit) {
+    LegendBit = newLegendBit;
+    SaveOutputBit = newSaveOutputBit;
+    OpenWindowBit = newOpenWindowBit;
+}
+
+void  Graph::DivYVec(vector<double> vec) {
+    if (Y.size() == vec.size()) {
+        for (int i = 0; i < Y.size(); i++) {
+            if (vec[i] != 0) {
+                Y[i] /= vec[i]; 
+            } else {
+                fprintf(stderr, "**Div2YVec by zero");
+                exit(0);
+            }
+        }
+    } else {
+        fprintf(stderr, "**DivYVec, vectors do not have same size");
+        exit(0);
+    }
+}
+
+
 Graph& Graph::operator=(const Graph &obj) { // Works!
 
     if (this != &obj) {
@@ -19,12 +42,72 @@ Graph& Graph::operator=(const Graph &obj) { // Works!
         X = obj.X;
         Y = obj.Y;
 
+        DrawOpt = obj.DrawOpt;
         LegendBit = obj.LegendBit;
         SaveOutputBit = obj.SaveOutputBit;
         OpenWindowBit = obj.OpenWindowBit;
     }
     return *this;
 }
+
+Graph Graph::operator+(const Graph& obj) {
+    Graph result;
+    result.SetTitle(this->GetTitle() + " + " + obj.GetTitle());
+    result.SetXAxis(this->GetXAxisTitle() + " + " + obj.GetXAxisTitle());
+    result.SetYAxis(this->GetYAxisTitle() + " + " + obj.GetYAxisTitle());
+    if (this->GetX().size() == this->GetY().size()) {
+        for (int i = 0; i < this->GetX().size(); i++) {
+            result.AddToX(this->GetX()[i] + obj.GetX()[i]);
+            result.AddToY(this->GetY()[i] + obj.GetY()[i]);
+        }
+    } else {
+        fprintf(stderr, "**Sum of Graphs of different sizes");
+        exit(0);
+    }
+    return result;
+}
+
+Graph Graph::operator-(const Graph& obj) {
+    Graph result;
+    result.SetTitle(this->GetTitle() + " - " + obj.GetTitle());
+    result.SetXAxis(this->GetXAxisTitle() + " - " + obj.GetXAxisTitle());
+    result.SetYAxis(this->GetYAxisTitle() + " - " + obj.GetYAxisTitle());
+
+    if (this->GetX().size() == this->GetY().size()) {
+        for (int i = 0; i < this->GetX().size(); i++) {
+            result.AddToX(this->GetX()[i] - obj.GetX()[i]);
+            result.AddToY(this->GetY()[i] - obj.GetY()[i]);
+        }
+    } else {
+        fprintf(stderr, "**Subtraction of Graphs of different sizes");
+        exit(0);
+    }
+    return result;
+}
+
+Graph Graph::operator/(const Graph& obj) {
+    Graph result;
+    result.SetTitle(this->GetTitle() + " / " + obj.GetTitle());
+    result.SetXAxis(this->GetXAxisTitle() + " / " + obj.GetXAxisTitle());
+    result.SetYAxis(this->GetYAxisTitle() + " / " + obj.GetYAxisTitle());
+
+    if (this->GetX().size() == this->GetY().size()) {
+        for (int i = 0; i < this->GetX().size(); i++) {
+            if (obj.GetX()[i] != 0 && obj.GetY()[i] != 0) {
+            result.AddToX(this->GetX()[i] / obj.GetX()[i]);
+            result.AddToY(this->GetY()[i] / obj.GetY()[i]);
+            } else {
+                fprintf(stderr, "**Division of Graph by zero");
+                exit(0);
+            }
+        }
+    } else {
+        fprintf(stderr, "**Division of Graphs of different sizes");
+        exit(0);
+    }
+    return result;
+}
+
 
 ostream& operator<< (std::ostream& s, const Graph& p) {
     s << "Title: " << p.GetTitle() << endl;
@@ -70,6 +153,10 @@ string Graph::GetYAxisTitle() const {
     return YAxisTitle;
 }
 
+string Graph::GetDrawOpt() const {
+    return DrawOpt;
+}
+
 bool Graph::GetLegendBit() const {
     return LegendBit;
 }
@@ -81,6 +168,18 @@ bool Graph::GetSaveOutputBit() const {
 bool Graph::GetOpenWindowBit() const {
     return OpenWindowBit;
 }
+
+void Graph::SetX(vector<double> newX) {
+    // Graph& gr
+    // X = gr.GetX();
+    X = newX;
+}
+
+void Graph::SetY(vector<double> newY) {
+    // Y = gr.GetY();
+    Y = newY;
+}
+
 
 void Graph::SetTitle(string newTitle) {
     Title = newTitle;

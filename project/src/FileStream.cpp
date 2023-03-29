@@ -43,7 +43,7 @@ void WriteElementToFile(string key, ofstream &file, int i, map<string, vector<do
     // map<string, vector<double>> myMap
     auto found_key = ParMap.find(key);
     if (found_key != ParMap.end())
-        file << found_key->second[i] << " "; 
+        file << fixed << setprecision(6) << found_key->second[i] << " "; 
     // setprecision(n) to limit significant digits of number to n digits
     // file << setprecision(5) << found_key->second[i] << "\t"; 
 }
@@ -223,15 +223,15 @@ void SavePars(const string &filename, map<string, vector<double>> &ParMap) {
     outputFile.close();
 }
 
-Graph ReadGraphData(const string& filename, const string &Title, const string& X, const string& Y) {
-    Graph gr;
+Graph* ReadGraphData(const string& filename, const string &Title, const string& X, const string& Y) {
+    Graph* gr = new Graph();
     ifstream file(filename);
     if (!file.is_open()) {
         cerr << "**Error: could not open file " << filename << endl;
         exit(0); // return gr;
     }
 
-    gr.SetTitle(Title.c_str());
+    gr->SetTitle(Title.c_str());
 
     string line;
     getline(file, line);
@@ -246,11 +246,11 @@ Graph ReadGraphData(const string& filename, const string &Title, const string& X
     for (int i = 0; i < headers.size(); i++) {
         if (headers[i] == X) {
             x_col = i;
-            gr.SetXAxis(headers[i]);
+            gr->SetXAxis(headers[i]);
         }
         if (headers[i] == Y) {
             y_col = i;
-            gr.SetYAxis(headers[i]);
+            gr->SetYAxis(headers[i]);
         }
     }
     if (x_col == -1) {
@@ -279,8 +279,8 @@ Graph ReadGraphData(const string& filename, const string &Title, const string& X
         // Struct
         // gr.x.push_back(x);
         // gr.y.push_back(y);
-        gr.AddToX(x);
-        gr.AddToY(y);
+        gr->AddToX(x);
+        gr->AddToY(y);
     }
     file.close();
 

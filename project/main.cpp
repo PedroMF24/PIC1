@@ -27,6 +27,47 @@ int main(int argc, char **argv)
     StopWatch clock;
     clock.StartTimer();
 
+    /* Gen and write parameters directly using operator overloading */
+    // IDM pic;
+    // pic.GenWriteCheckedPars("data/teste.dat", 10000);
+
+
+    // IDM pic;
+    // pic.OverlapSXT(10);
+    // pic.StoreCheckedPars(10000);
+
+    /* TO WORK WITH MULTIGRAPH, 
+    EDIT OPTIONS OF THE FIRST
+    GRAPH ADDED TO THE GRAPH VECTOR */
+    Graph* grValues = ReadGraphData("data/PassedTeoCons/PassedTeoCons.dat", "Teste", "MH", "MA");
+    Graph* gr = ReadGraphData("data/PassedTeoCons/PassedTeoCons.dat", "Scatter", "MA", "MC");
+    cout << grValues->GetTitle() << endl;
+    // // grValues->DivYVec(gr->GetY());
+
+    grValues->SetSaveOutputBit(false);
+    grValues->SetOpenWindowBit(false);
+
+    RootClass* root = new RootClass(grValues);
+    root->ScatterPlot(4, true);
+    root->SetNewGraph(gr);
+    root->ScatterPlot(2, true);
+
+    grValues->SetOpenWindowBit(true);
+    root->MultiGraphPlot("MGraph title", "ola", "adeus");
+
+    // // cout << (*grValues)/(*gr); //  << " " << 
+    // // cout << *grValues << endl;
+
+    delete gr;
+    delete root;
+    delete grValues;
+
+    // grValues.SetSaveOutputBit(true);
+    // grValues.SetOpenWindowBit(true);
+
+    // RootClass root(grValues);
+    // root.ScatterPlot(2, false);
+
 
 /*    // READ PARAMETERS THAT PASSED ALL TEO CONSTRAINTS
     IDM idm;
@@ -48,10 +89,10 @@ int main(int argc, char **argv)
     // TEST SCATTERPLOT
     // TApplication *app = new TApplication("app", &argc, argv);
     // IDM pic(app);
-    IDM pic;
-    pic.StoreCheckedPars(1000);
+    // IDM pic;
+    // pic.StoreCheckedPars(10000);
 
-    pic.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Scatter2", "MH", "laL");
+    // pic.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Scatter2", "MH", "laL");
     // pic.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Scatter3", "MC", "MA");
 
 /*  // TEST PARAMETER GENERATION

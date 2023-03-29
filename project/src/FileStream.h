@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <map>
 #include <iterator>
+#include <iomanip>
 
 #include "Parameters.h"
 #include "Graph.h"
@@ -45,7 +46,7 @@ void WriteSTUPars(vector<pair<double,double>> &values, const string &filename);
 vector<pair<double,double>> readProfSTU();
 
 // Graph
-Graph ReadGraphData(const string& filename, const string& Title, const string& X, const string& Y);
+Graph* ReadGraphData(const string& filename, const string &Title, const string& X, const string& Y);
 
 // Write .dat file formatted for HiggsBounds
 void WriteElementToFile(string key, ofstream &file, int i, map<string, vector<double>> &ParMap);
