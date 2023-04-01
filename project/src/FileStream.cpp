@@ -48,9 +48,28 @@ void WriteElementToFile(string key, ofstream &file, int i, map<string, vector<do
     // file << setprecision(5) << found_key->second[i] << "\t"; 
 }
 
+void WriteSTU_ToFile(ofstream &file, int i, map<string, vector<double>> &ParMap, Parameters &Pars) {
+    TheoCons tc;
+    double ImVdagV[4][4];
+    complex<double> UdagU[2][2], VdagV[4][4], UdagV[2][4];
+    double m11 = Pars.GetMh();
+    double MH = ParMap["MH"][i];
+    double MA = ParMap["MA"][i];
+    double MC = ParMap["MC"][i];
+    double S, T, U;
+    // Define common variables
+    double mneu[4], mch[2];
+    tc.InitSTUVars(mneu, mch, m11, MH, MA, MC);
+    // cout << "Depois de init " << mch[1] << " " << mneu[1] << endl;
+    // Call Evaluate_Matrices and Calculate_STU functions
+    tc.InitSTUMatrices(ImVdagV, UdagU, VdagV, UdagV);
+    tc.CalculateSTU(mneu, mch, ImVdagV, UdagU, VdagV, UdagV, S, T, U);
+    file << S << " " << T << " " << U;
+}
+
 void WriteMapToFile(const string &filename, map<string, vector<double>> &ParMap, Parameters &Pars) {
     cout << "Writting Parameter Map to .dat file...\n";
-
+    bool PrintSTU = true;
     ofstream file;
     file.open(filename);
 
@@ -58,6 +77,7 @@ void WriteMapToFile(const string &filename, map<string, vector<double>> &ParMap,
         fprintf(stderr, "**Can not open .dat file to write\n");
         exit(0);
     }
+    file << fixed << setprecision(6);
 
     // Get the size of the largest vector
     int maxSize = 0;
@@ -73,7 +93,10 @@ void WriteMapToFile(const string &filename, map<string, vector<double>> &ParMap,
 	// Write the column names
     for (auto &par : Pars.GetParNames())
 		file << par << " "; // \t
-	file << endl;
+    if (PrintSTU) {
+        file << "S " << "T " << "U"; 
+    }
+    file << endl;
 
     // Write each element in a column
     for (int i = 0; i < maxSize; i++) {
@@ -91,6 +114,9 @@ void WriteMapToFile(const string &filename, map<string, vector<double>> &ParMap,
 				exit(0);
 			}
 		}
+        if (PrintSTU) {
+            WriteSTU_ToFile(file, i, ParMap, Pars);
+        }
 		file << endl;
     }
     file.close();
@@ -120,9 +146,9 @@ void ReadDAT(const string &filename, map<string, vector<double>> &ParMap) {
 	while (getline(input, line)) {
 		stringstream ss(line);
 		int i = 0;
-		while (getline(ss, col, ' ')) {
+		while (getline(ss, col, ' ')) { // ; para prof data
 			ParMap[header[i]].push_back(stod(col));
-            cout << "header " << header[i] << " Value " << ParMap[header[i]][i] << endl; 
+            // cout << "header " << header[i] << " Value " << ParMap[header[i]][i] << endl; 
 			i++;
 		}
 	}
@@ -177,7 +203,7 @@ void ReadCSV(const string &filename, map<string, vector<double>> &ParMap) {
 
         getline(input, line);
 		stringstream ss(line);
-		while (getline(ss, col, ',')) {
+		while (getline(ss, col, ';')) {
 			header.push_back(col);
 		}
 
@@ -185,7 +211,7 @@ void ReadCSV(const string &filename, map<string, vector<double>> &ParMap) {
 		while (getline(input, line)) {
 			stringstream ss(line);
 			int i = 0;
-			while (getline(ss, col, ',')) {
+			while (getline(ss, col, ';')) {
 				ParMap[header[i]].push_back(stod(col));
 				i++;
 			}
@@ -285,6 +311,17 @@ Graph* ReadGraphData(const string& filename, const string &Title, const string& 
     file.close();
 
     return gr;
+}
+
+void ReadWriteSTU(const string& filename, map<string, vector<double>> &ParMap) {
+    ReadDAT("data/PassedTeoCons/PassedTeoCons.dat", ParMap);
+
+    ofstream outfile(filename);
+    if (!outfile.is_open()) {
+        cerr << "**Error: could not open file " << filename << endl;
+        exit(0); // return gr;
+    }
+    outfile << endl;
 }
 
 /*

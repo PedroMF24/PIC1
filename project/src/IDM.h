@@ -59,6 +59,8 @@ class IDM : public TheoCons,
     vector<pair<double,double>> GetParsSTU(int nPoints);
     void OverlapSXT(int nPoints);
 
+    void FinalPlots(const string& Title, const string& XAxis, const string& YAxis, int N_points);
+
     // void IDMC_Test();
 
     Parameters GetPars();
@@ -68,6 +70,7 @@ class IDM : public TheoCons,
     void TM_Test();
 
     void ParsGraph(const string& path, const string& Title, const string& xName, const string& yName);
+    void STU_BAD();
 
     private:
     // TApplication* fApp;

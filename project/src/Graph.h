@@ -11,7 +11,10 @@ class Graph {
 
 public:
     Graph() = default;
-    Graph(string newTitle, string newXAxisTitle, vector<double> newX, string newYAxisTitle, vector<double> newY);
+    Graph(const string& newTitle);
+    Graph(const string& newTitle, const string& newXAxisTitle, vector<double>& newX, 
+            const string& newYAxisTitle, vector<double>& newY);
+    Graph(const string& newTitle, vector<double>& newX, vector<double>& newY);
     Graph(bool newLegendBit, bool newSaveOutputBit, bool newOpenWindowBit);
     ~Graph() = default;
 
@@ -44,6 +47,7 @@ public:
 
     void AddToX(double x);
     void AddToY(double y);
+    void AddPoint(double x, double y);
 
     vector<double> GetX() const ;
     vector<double> GetY() const ;

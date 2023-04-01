@@ -10,6 +10,7 @@
 
 #include "Parameters.h"
 #include "Graph.h"
+#include "TheoConstraints.h"
 
 using namespace std;
 
@@ -53,4 +54,4 @@ void WriteElementToFile(string key, ofstream &file, int i, map<string, vector<do
 void WriteMapToFile(const string &filename, map<string, vector<double>> &ParMap, Parameters &Pars);
 
 bool FileExists(const string& filename);
-
+void WriteSTUToFile(ofstream &file, int i, map<string, vector<double>> &ParMap, Parameters &Pars);

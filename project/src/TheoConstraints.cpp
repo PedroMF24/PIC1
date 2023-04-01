@@ -252,21 +252,15 @@ int TheoCons::BoundFromBelow(double la1, double la2, double la3, double laL, dou
 
 int TheoCons::QuarticCouplings(double la1, double la2, double la3, double la4, double la5, double laL) {
     // Quartic couplings must be perturbative
-    int aux1 = (la1 <= 4*M_PI/3) ? 1 : 0;
+    // int aux1 = (la1 <= 4*M_PI/3) ? 1 : 0; // Always less than 4/3*(pi)
     int aux2 = (la2 <= 4*M_PI/3) ? 1 : 0;
     int aux3 = (la3 <= 4*M_PI) ? 1 : 0;
     int aux4 = (laL <= 4*M_PI) ? 1 : 0;
     int aux5 = (la3+la4-la5 <= 4*M_PI) ? 1 : 0;
 
-    int check =  aux1 && aux2 && aux3 && aux4 &&aux5 ; // && aux3; // PROBLEMA NO AUX3
+    int check = aux2 && aux3 && aux4 &&aux5 ; // aux1 // && aux3; // PROBLEMA NO AUX3
 
-    if (check) {
-        //printf("Passed Perturbativity\n");
-        return 1;
-    } else {
-        //printf("Did not pass Perturbativity\n");
-        return 0;
-    }
+    return check;
 }
 
 int TheoCons::ScatteringMatrixUnitary_Test(double la1, double la2, double la3, double la4, double la5) {
@@ -440,7 +434,7 @@ void TheoCons::CalculateSTU(double (&mneu)[4], double (&mch)[2], double (&ImVdag
     g = sqrt(8.0 * mW * mW * G_F / sqrt(2.0)); 
     alpha = SM.GetSMValue("ALPHA"); 
     mZ = SM.GetSMValue("MZ"); 
-    thetaW = asin(sqrt(SM.GetSMValue("S2TW")));
+    thetaW = SM.GetSMValue("THETA_W"); // asin(sqrt(SM.GetSMValue("S2TW")));
     mh = SM.GetSMValue("MHIGGS"); 
     GW = SM.GetSMValue("GAW"); // GAW
     GZ = SM.GetSMValue("GAZ"); // GAZ
@@ -466,8 +460,8 @@ void TheoCons::CalculateSTU(double (&mneu)[4], double (&mch)[2], double (&ImVdag
         wp[j] = pow(mch[j], 2) / mW2;
     }
 
-    zH = pow(mh, 2) / mZ2;
-    wH = pow(mh, 2) / mW2;
+    zH = mh2 / mZ2;
+    wH = mh2 / mW2;
 
     // Evaluate T from the formulas in arXiv: 0802.4353
     T = 0.0;
@@ -532,7 +526,7 @@ void TheoCons::CalculateSTU(double (&mneu)[4], double (&mch)[2], double (&ImVdag
 
     for (j = 1; j < ncs; ++j)
     {
-        S -= 2.0 * real(UdagU[j][j]) * log(pow(mch[j], 2));
+        S = S - 2.0 * (real(UdagU[j][j])) * log(pow(mch[j], 2));
     }
 
     for (j = 1; j < nns; ++j)
@@ -541,7 +535,7 @@ void TheoCons::CalculateSTU(double (&mneu)[4], double (&mch)[2], double (&ImVdag
         S += pow(ImVdagV[0][j], 2) * SM.Ghatstu(z[j]);
     }
 
-        S -= (SM.Ghatstu(zH) + log(pow(mh, 2)));
+        S = S - SM.Ghatstu(zH) - log(mh2);
 
         S *= 1/(24*M_PI); // S *= (1.0 / (24.0 * pi * sw2));
         // S *= (g*g/(384*pi*pi*cw2));
@@ -566,7 +560,7 @@ void TheoCons::CalculateSTU(double (&mneu)[4], double (&mch)[2], double (&ImVdag
     {
         for (int k = j + 1; k < ncs; ++k) 
         {
-            U -= 2.0 * pow(fabs(UdagU[j][k]), 2) * SM.Gstu(zp[j], zp[k]);
+            U -= 2.0 * fabs(pow(UdagU[j][k], 2)) * SM.Gstu(zp[j], zp[k]);
         }
     }
 
@@ -582,7 +576,7 @@ void TheoCons::CalculateSTU(double (&mneu)[4], double (&mch)[2], double (&ImVdag
         U += (pow(ImVdagV[0][j], 2) * (SM.Ghatstu(w[j]) - SM.Ghatstu(z[j])) );
     }
 
-    U -= (SM.Ghatstu(wH) + SM.Ghatstu(zH));
+    U = U - SM.Ghatstu(wH) + SM.Ghatstu(zH);
     U *= (1.0 / (24.0 * M_PI));
 }
 
@@ -866,24 +860,30 @@ int TheoCons::STU_Test(double m11, double MH, double MA, double MC, double &S, d
     InitSTUMatrices(ImVdagV, UdagU, VdagV, UdagV);
     CalculateSTU(mneu, mch, ImVdagV, UdagU, VdagV, UdagV, S, T, U);
 
-    // Define a1 to a6 constants
-    a1 = -0.34215919;
-    a2 = 0.77604111;
-    a3 = -0.52618813;
-    a4 = -0.03202802;
-    a5 = 0.05277964;
-    a6 = 0.00136192;
-
-    // Calculate Corr
-    Corr = a1 * pow(S, 2) + a2 * S * T + a3 * pow(T, 2) + a4 * S + a5 * T + a6;
-
-    // U check
-    double ULL = 0.03-0.1;
-    double UUL = 0.03+0.1;
-
-    if (U >= ULL && U <= UUL && Corr > 0) {
+    if (STU_Check(S, T, U)) {
         return 1;
     } else {
         return 0;
     }
+
+    // // Define a1 to a6 constants
+    // a1 = -0.34215919;
+    // a2 = 0.77604111;
+    // a3 = -0.52618813;
+    // a4 = -0.03202802;
+    // a5 = 0.05277964;
+    // a6 = 0.00136192;
+
+    // // Calculate Corr
+    // Corr = a1*pow(S, 2) + a2*S*T + a3*pow(T, 2) + a4*S + a5*T + a6;
+
+    // // U check
+    // double ULL = 0.03-0.1;
+    // double UUL = 0.03+0.1;
+
+    // if (U > ULL && U < UUL && Corr > 0) {
+    //     return 1;
+    // } else {
+    //     return 0;
+    // }
 }

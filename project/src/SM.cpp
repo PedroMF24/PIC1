@@ -5,9 +5,9 @@
  * 
  */
 StandardModel::StandardModel() {                // Units in GeV
-    SMConstants["MW"] = 80.385;                 // W boson mass
+    SMConstants["MW"] = 80.35797;               // W boson mass
     SMConstants["GAW"] = 2.08430;                // 2.085; Weak current coupling
-    SMConstants["MZ"] = 91.1876;                // Z boson mass
+    SMConstants["MZ"] = 91.15348;               // Z boson mass
     SMConstants["GAZ"] = 2.49427;               // 2.4952; Neutral current coupling
     SMConstants["E_MASS"] = 0.510998928e-03;    // Electron mass
     SMConstants["MU_MASS"] = 1.056583715e-01;   // Mu mass
@@ -27,6 +27,7 @@ StandardModel::StandardModel() {                // Units in GeV
     SMConstants["HBARC"] = 0.1973269718;        // Reduced planck's constant times velocity of light
     SMConstants["G_FERMI"] = 1.1663787e-05;     // Fermi's constant
     SMConstants["MHIGGS"] = 125.1;
+    SMConstants["THETA_W"] = acos(SMConstants["MW"] / SMConstants["MZ"] );
 }
 
 /**

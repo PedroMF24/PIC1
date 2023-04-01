@@ -27,10 +27,17 @@ int main(int argc, char **argv)
     StopWatch clock;
     clock.StartTimer();
 
+    IDM pic;
+    pic.FinalPlots(" ", "MH", "laL", 10000);
+
+    // IDM pic;
+    // pic.STU_BAD();
+
     /* Gen and write parameters directly using operator overloading */
     // IDM pic;
-    // pic.GenWriteCheckedPars("data/teste.dat", 10000);
-
+    // // pic.GenWriteCheckedPars("data/PassedTeoCons/PassedTeoCons.dat", 10000);
+    // // pic.STU_BAD();
+    // pic.OverlapSXT(1);
 
     // IDM pic;
     // pic.OverlapSXT(10);
@@ -39,28 +46,28 @@ int main(int argc, char **argv)
     /* TO WORK WITH MULTIGRAPH, 
     EDIT OPTIONS OF THE FIRST
     GRAPH ADDED TO THE GRAPH VECTOR */
-    Graph* grValues = ReadGraphData("data/PassedTeoCons/PassedTeoCons.dat", "Teste", "MH", "MA");
-    Graph* gr = ReadGraphData("data/PassedTeoCons/PassedTeoCons.dat", "Scatter", "MA", "MC");
-    cout << grValues->GetTitle() << endl;
-    // // grValues->DivYVec(gr->GetY());
+    // Graph* grValues = ReadGraphData("data/PassedTeoCons/PassedTeoCons.dat", "Teste", "MH", "MA");
+    // Graph* gr = ReadGraphData("data/PassedTeoCons/PassedTeoCons.dat", "Scatter", "MA", "MC");
+    // cout << grValues->GetTitle() << endl;
+    // // // grValues->DivYVec(gr->GetY());
 
-    grValues->SetSaveOutputBit(false);
-    grValues->SetOpenWindowBit(false);
+    // grValues->SetSaveOutputBit(false);
+    // grValues->SetOpenWindowBit(false);
 
-    RootClass* root = new RootClass(grValues);
-    root->ScatterPlot(4, true);
-    root->SetNewGraph(gr);
-    root->ScatterPlot(2, true);
+    // RootClass* root = new RootClass(grValues);
+    // root->ScatterPlot(4, true);
+    // root->SetNewGraph(gr);
+    // root->ScatterPlot(2, true);
 
-    grValues->SetOpenWindowBit(true);
-    root->MultiGraphPlot("MGraph title", "ola", "adeus");
+    // grValues->SetOpenWindowBit(true);
+    // root->MultiGraphPlot("MGraph title", "ola", "adeus");
 
-    // // cout << (*grValues)/(*gr); //  << " " << 
-    // // cout << *grValues << endl;
+    // // // cout << (*grValues)/(*gr); //  << " " << 
+    // // // cout << *grValues << endl;
 
-    delete gr;
-    delete root;
-    delete grValues;
+    // delete gr;
+    // delete root;
+    // delete grValues;
 
     // grValues.SetSaveOutputBit(true);
     // grValues.SetOpenWindowBit(true);
@@ -81,10 +88,10 @@ int main(int argc, char **argv)
     pic.FirstPlot();
 */
 
-/*    // TEST IF STU IS OK
-    IDM pic;
-    pic.OverlapSXT(20000);
-*/
+// TEST IF STU IS OK
+    // IDM pic;
+    // pic.OverlapSXT(20000);
+
 
     // TEST SCATTERPLOT
     // TApplication *app = new TApplication("app", &argc, argv);

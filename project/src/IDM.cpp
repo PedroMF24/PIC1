@@ -48,9 +48,9 @@ Parameters IDM::GetPars() {
 }
 
 // Not ready
-void IDM::GenNewPars() {
-    Pars.GenPars(1);
-}
+// void IDM::GenNewPars() {
+//     Pars.GenPars(1);
+// }
 
 void IDM::AddToMap() {
     ParMap["la2"].push_back(Pars.Getla2());
@@ -68,7 +68,7 @@ void IDM::StoreParsTest(int nPoints) {
     ClearParMap();
     cout << "Generating and storing Parameters...\n";
     for (int i = 0; i < nPoints; i++) {
-        Pars.GenPars(0); // 1
+        Pars.GenPars(1); // 1
         // Mudar para while. if (Check all constraints) {AddToMap}
         AddToMap();
     }
@@ -135,7 +135,7 @@ void IDM::GenWriteCheckedPars(const string& filename, int nPoints) {
         Pars.GenPars(1);
         // Check all constraints
         if (CheckAllCons()) {
-            outfile << Pars;
+            outfile << Pars << endl;
             i++;
         }
     }
@@ -1045,6 +1045,95 @@ int MyST_Check(double &S, double &T) {
 //     file.close();
 // }
 
+// "data/PassedTeoCons/PassedTeoCons.dat", "Scatter", "MA", "MC"
+void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAxis, int N_points) {
+    // Graph* grInfo = ReadGraphData(filename, Title, X, Y);
+    // cout << "Making " << grInfo->GetTitle() << " final graph...\n";
+
+    StoreParsTest(N_points);
+
+    // RootClass root(grInfo);
+    Graph* grBFB = new Graph("BFB");
+    Graph* grSTU = new Graph("STU");
+    Graph* grUNI = new Graph("UNI");
+    Graph* grPER = new Graph("PER");
+    Graph* grTMI = new Graph("TMI");
+    Graph* grOK = new Graph("OK");
+
+    double Mh = Pars.GetMh();
+    double v = Pars.Getv();
+    double la1 = Pars.Getla1(); // (Mh/v)**2
+
+    int max = ParMap["MH"].size();
+
+    for (int i = 0; i < max; i++) {
+        double la2 = ParMap["la2"][i];
+        double la3 = ParMap["la3"][i];
+        double la4 = ParMap["la4"][i];
+        double la5 = ParMap["la5"][i];
+        double laL = ParMap["laL"][i];
+        double m22Squared = ParMap["m22Squared"][i];
+        double MH = ParMap["MH"][i]; // MHX CDM
+        double MA = ParMap["MA"][i]; // MH3 It is A in IDM paper
+        double MC = ParMap["MC"][i]; // MHC Charged Higgs
+        // S T U Oblique parameters
+        double S, T, U;
+        // Other conditions implicit in number generation
+        int BFB = BFB_Test(la1, la2, la3, laL);                             // OK
+        int TMI = TwoMins_Test(la1, la2, Mh, m22Squared);
+        int UNI = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
+        int PER = Perturbativity_Test(la1, la2, la3, la4, la5, laL);       // OK
+        int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11            // OK
+
+        double X, Y;
+        X = MH;
+        Y = laL;
+
+        if (BFB == 0) {
+            grBFB->AddPoint(X, Y);
+        } else if (UNI == 0) {
+            grUNI->AddPoint(X, Y);
+        } else if (STU == 0) {
+            grSTU->AddPoint(X, Y);
+        } else if (PER == 0) {
+            grPER->AddPoint(X, Y);
+        } else if (TMI == 0) {
+            grTMI->AddPoint(X, Y);
+        } else {
+            grOK->AddPoint(X, Y);
+        }
+    }
+    
+    RootClass root(grBFB);
+    root.ScatterPlot(4, true);
+    grBFB->SetLegendBit(true);
+    grBFB->SetSaveOutputBit(true);
+
+    root.SetNewGraph(grUNI);
+    root.ScatterPlot(6, true);
+
+    root.SetNewGraph(grSTU);
+    root.ScatterPlot(3, true);
+
+    root.SetNewGraph(grPER);
+    root.ScatterPlot(877, true);
+
+    root.SetNewGraph(grTMI);
+    root.ScatterPlot(806, true);
+
+    root.SetNewGraph(grOK);
+    root.ScatterPlot(2, true);
+
+    root.MultiGraphPlot(Title, XAxis, YAxis);
+
+    delete grBFB;
+    delete grUNI;
+    delete grSTU;
+    delete grTMI;
+    delete grPER;
+    delete grOK;
+}
+
 void IDM::SXT(int nPoints) {
 cout << "Making SXT graph...\n";
     TApplication app("app", nullptr, nullptr);
@@ -1147,10 +1236,11 @@ cout << "Making SXT graph...\n";
 }
 
 // NAO APAGAR, MTO IMPORTANTE
-/*
+
 void IDM::OverlapSXT(int nPoints) {
     TApplication app("app", nullptr, nullptr);
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+    c->SetGrid();
 
     TMultiGraph *mg = new TMultiGraph();
     string name = "S-T Plane";
@@ -1221,8 +1311,9 @@ void IDM::OverlapSXT(int nPoints) {
     grprof->SetMarkerColor(2);
     grprof->SetMarkerStyle(20);
 
-    mg->Add(grprof);
     mg->Add(gr);
+    mg->Add(grprof);
+
 
     c->Update();
 
@@ -1250,9 +1341,9 @@ void IDM::OverlapSXT(int nPoints) {
     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
 }
-*/
 
 
+/*
 void IDM::OverlapSXT(int nPoints) {
     TApplication app("app", nullptr, nullptr);
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
@@ -1336,7 +1427,16 @@ void IDM::OverlapSXT(int nPoints) {
     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
 }
+*/
 
+void IDM::STU_BAD() {
+    /* See values from professor */
+    // ReadCSV("data/STU/check/STU-Bad.csv", ParMap);
+    // WriteMapToFile("data/STU/check/Verify_STU.dat", ParMap, Pars);
+    /* Gen new values and */
+    ReadDAT("data/PassedTeoCons/PassedTeoCons.dat", ParMap);
+    WriteMapToFile("data/teste.dat", ParMap, Pars);
+}
 
 void IDM::ParsGraph(const string& path, const string& Title, const string& xName, const string& yName) {
     // Graph grValues = ReadGraphData(path, Title, xName, yName);

@@ -82,7 +82,7 @@ ostream& operator<<(std::ostream& s, const Parameters& p) {
     s << p.la1 << " ";
     s << p.la3 << " ";
     s << p.la4 << " ";
-    s << p.la5 << endl;
+    s << p.la5;
     return s;
 }
 // void Parameters::ScanSetup()

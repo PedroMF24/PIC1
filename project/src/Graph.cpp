@@ -1,6 +1,7 @@
 #include "Graph.h"
 
-Graph::Graph(string newTitle, string newXAxisTitle, vector<double> newX, string newYAxisTitle, vector<double> newY)
+Graph::Graph(const string& newTitle, const string& newXAxisTitle, vector<double>& newX, 
+             const string& newYAxisTitle, vector<double>& newY)
 {
     Title = newTitle;
     XAxisTitle = newXAxisTitle;
@@ -14,6 +15,17 @@ Graph::Graph(bool newLegendBit, bool newSaveOutputBit, bool newOpenWindowBit) {
     SaveOutputBit = newSaveOutputBit;
     OpenWindowBit = newOpenWindowBit;
 }
+
+Graph::Graph(const string& newTitle, vector<double>& newX, vector<double>& newY) {
+    Title = newTitle;
+    X = newX;
+    Y = newY;
+}
+
+Graph::Graph(const string& newTitle) {
+    Title = newTitle;
+}
+
 
 void  Graph::DivYVec(vector<double> vec) {
     if (Y.size() == vec.size()) {
@@ -130,6 +142,11 @@ void Graph::AddToX(double x) {
 }
 
 void Graph::AddToY(double y) {
+    Y.push_back(y);
+}
+
+void Graph::AddPoint(double x, double y) {
+    X.push_back(x);
     Y.push_back(y);
 }
 
