@@ -33,16 +33,21 @@ int main(int argc, char **argv)
     // TEST_GenParsSTUValues();
     // TEST_Multigraph();
     // TEST_FirstPlot();
+    /*    */
+    // IDM pic;
+    // // pic.GenWriteCheckedPars("data/PassedTeoCons/PassedExpCons.dat", 1000);
+    // Graph* gr = ReadGraphData("data/PassedTeoCons/PassedExpCons.dat", "", "MH", "laL");
+    // RootClass root(gr);
+    // gr->SetOpenWindowBit(true);
+    // gr->SetSaveOutputBit(true);
+
+    // root.ScatterPlot(2, false, 20);
+
+    // delete gr;
+    /*    */
+
     IDM pic;
-    // pic.GenWriteCheckedPars("data/PassedTeoCons/PassedExpCons.dat", 1000);
-    Graph* gr = ReadGraphData("data/PassedTeoCons/PassedExpCons.dat", "", "MH", "laL");
-    RootClass root(gr);
-    gr->SetOpenWindowBit(true);
-    gr->SetSaveOutputBit(true);
-
-    root.ScatterPlot(2, false, 20);
-
-    delete gr;
+    pic.WriteMicrOMEGAs("scripts/input-mO.dat", 20);
 
     // Differença para o SM, S e T estao correlacionados
     // 

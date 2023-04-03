@@ -1,8 +1,12 @@
 #%%
+import time
 import pandas as pd
 import subprocess
 import shutil
 import os
+
+# Get the current time
+start_time = time.time()
 
 workdir=os.getcwd() # gives current working directory
 micromegas_path = "/home/pmfig/dev/micromegas_5.3.41/IDM" 
@@ -18,6 +22,9 @@ shutil.copy("input-mO.dat", os.path.join(micromegas_path, "input-mO.dat")) # cop
 
 os.chdir(micromegas_path) # A complete path of directory to be changed to new directory path. method in Python used to change the current working directory to specified path. It takes only a single argument as new directory path.
 
+print("Parameter file: " + parameter_file)
+print("Template file: " + micromegas_path + "/" + template_file)
+print("Transition file: " + output_file)
 
 # %%
 # This opens the parameter file as a table
@@ -27,6 +34,7 @@ parameters["Omega"]=0.0
 
 # %%
 # Iterate through the points
+print("Calculating Relic Density...")
 
 for idx, row in parameters.iterrows():
     # Open the micro-omegas template file
@@ -50,7 +58,9 @@ for idx, row in parameters.iterrows():
     omega=output.stdout.decode("utf-8").split("Omega=")[1].split("\n")[0]
     parameters.loc[idx,"Omega"]=float(omega)
 
-parameters.to_csv("output-mO.dat",sep="\t",header=None, index=False)
+print("Writting output file: output-mO.dat")
+headers = ["BP", "mh", "MH", "MA", "MC", "la2", "laL", "Omega"]
+parameters.to_csv("output-mO.dat",sep=" ",header=headers, index=False, float_format="%.11E")
 
 shutil.move("output-mO.dat", os.path.join(workdir, "output-mO.dat"))
 
@@ -58,3 +68,9 @@ os.remove("input-mO.dat")
 
 os.chdir(workdir)
 
+# Get the current time again
+end_time = time.time()
+# Calculate the running time
+running_time = end_time - start_time
+# Print the running time
+print("Running time:", running_time, "seconds")

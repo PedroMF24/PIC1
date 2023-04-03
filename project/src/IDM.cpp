@@ -148,7 +148,7 @@ void IDM::GenWriteCheckedPars(const string& filename, int nPoints) {
     while (i < nPoints) {
         Pars.GenPars();
         // Check all constraints
-        if (CheckallCons()) { // CheckTeoCons()
+        if (CheckTeoCons()) { // CheckTeoCons()
             outfile << Pars << endl;
             i++;
         }
@@ -216,33 +216,153 @@ int IDM::CheckallCons() {
     double la5 = Pars.Getla5();
 
     double S, T, U;
-    int GOOD = 1;
-    // Other conditions implicit in number generation
-    int BFB = BFB_Test(la1, la2, la3, laL);                             // OK
-    int TM = TwoMins_Test(la1, la2, Mh, m22Squared);
-    int SMU = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
-    int Pert = Perturbativity_Test(la1, la2, la3, la4, la5, laL);       // OK
-    int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11            // OK
-    // BFB && Pert && STU && TM && SMU
-    // CheckResult(STU)
-    int LEP = LEPAnalysis(MH, MA, MC);
-    int HWD = HiggsWidth(MH, laL);
-    int EWB = EWBosons(MH, MA, MC);
-    int HCL = HChargedLifetime(MH, MA, MC);
-    int LUX = LUXDMData(MH, Mh, laL);
-    int WZD = WZDecayWidths(MH, MA);
-    // int ORD = RelicDensity(MH);
-    int HBS = HiggsBoundsSignals(MC, Mh, laL);
 
-    int EXT = Extras(MC, MA);
+    if (!BFB_Test(la1, la2, la3, laL)) {
+        return 0;
+    }
 
-    vector<int> vec_check = {BFB, TM, SMU, Pert, STU, LEP, HWD, EWB, HCL, LUX, WZD,  HBS, EXT}; // ORD,
-        for (auto &bit : vec_check)
-        {
-            GOOD &= bit;
-            if (!GOOD) return GOOD;
+    if (!TwoMins_Test(la1, la2, Mh, m22Squared)) {
+        return 0;
+    }
+
+    if (!ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5)) {
+        return 0;
+    }
+
+    if (!Perturbativity_Test(la1, la2, la3, la4, la5, laL)) {
+        return 0;
+    }
+
+    if (!STU_Test(Mh, MH, MA, MC, S, T, U)) {
+        return 0;
+    }
+
+    if (!LEPAnalysis(MH, MA, MC)) {
+        return 0;
+    }
+
+    if (!HiggsWidth(MH, laL)) {
+        return 0;
+    }
+
+    if (!EWBosons(MH, MA, MC)) {
+        return 0;
+    }
+
+    if (!HChargedLifetime(MH, MA, MC)) {
+        return 0;
+    }
+
+    if (!LUXDMData(MH, Mh, laL)) {
+        return 0;
+    }
+
+    if (!WZDecayWidths(MH, MA)) {
+        return 0;
+    }
+
+    if (!HiggsBoundsSignals(MC, Mh, laL)) {
+        return 0;
+    }
+
+    if (!Extras(MC, MA)) {
+        return 0;
+    }
+
+    return 1;
+}
+
+
+    // double Mh = 125.1;
+    // double v = 246;
+    // double la1 = Pars.Getla1(); // (Mh/v)**2
+
+    // // Mass Basis
+    // double MH = Pars.GetMH(); // MHX CDM
+    // double MA = Pars.GetMA(); // MH3 It is A in IDM paper
+    // double MC = Pars.GetMC(); // MHC Charged Higgs
+    // double la2 = Pars.Getla2(); // lambda_2
+    // double laL = Pars.GetlaL(); // la3 + la4 + la5
+
+    // // Coupling Parameters Basis
+    // double m22Squared = Pars.Getm22Squared();
+    // double la3 = Pars.Getla3();
+    // double la4 = Pars.Getla4();
+    // double la5 = Pars.Getla5();
+
+    // double S, T, U;
+    // int GOOD = 1;
+    // // Other conditions implicit in number generation
+    // int BFB = BFB_Test(la1, la2, la3, laL);                             // OK
+    // int TM = TwoMins_Test(la1, la2, Mh, m22Squared);
+    // int SMU = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
+    // int Pert = Perturbativity_Test(la1, la2, la3, la4, la5, laL);       // OK
+    // int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11            // OK
+    // // BFB && Pert && STU && TM && SMU
+    // // CheckResult(STU)
+    // int LEP = LEPAnalysis(MH, MA, MC);
+    // int HWD = HiggsWidth(MH, laL);
+    // int EWB = EWBosons(MH, MA, MC);
+    // int HCL = HChargedLifetime(MH, MA, MC);
+    // int LUX = LUXDMData(MH, Mh, laL);
+    // int WZD = WZDecayWidths(MH, MA);
+    // // int ORD = RelicDensity(MH);
+    // int HBS = HiggsBoundsSignals(MC, Mh, laL);
+
+    // int EXT = Extras(MC, MA);
+
+    // vector<int> vec_check = {BFB, TM, SMU, Pert, STU, LEP, HWD, EWB, HCL, LUX, WZD,  HBS, EXT}; // ORD,
+    //     for (auto &bit : vec_check)
+    //     {
+    //         GOOD = GOOD && bit;
+    //         if (!GOOD) return GOOD;
+    //     }
+    // return GOOD;
+// }
+
+
+void IDM::WriteMicrOMEGAs(const string& filename, int nPoints) {
+    cout << "Generating and Writting " << nPoints << " Parameters" << " to " << filename << " for MicrOMEGAs"<< endl;
+    // Create or open file
+    ofstream outfile(filename);
+    // Check if file was created or opened successfully
+    if (!outfile.is_open()) {
+        cerr << "**Error: could not create file " << filename << endl;
+        exit(0);
+    }
+    // Do not write header
+    // vector<string> names = Pars.GetParNames();
+    // auto it = names.begin();
+    // if (it != names.end()) {
+    //     outfile << *it;
+    //     ++it;
+    // }
+    // while (it != names.end()) {
+    //     outfile << " " << *it;
+    //     ++it;
+    // }
+    // outfile << endl;
+    // Generate and Write Parameters
+    outfile << setprecision(10) << scientific;
+    Pars.SetScanBit(true);
+    int i = 0;
+    while (i < nPoints) {
+        Pars.GenPars();
+        // Check all constraints
+        if (CheckallCons()) { // 
+            cout << i << endl;
+            outfile << i << " "
+            << Pars.GetMh() << " " 
+            << Pars.GetMH() << " "
+            << Pars.GetMA() << " "
+            << Pars.GetMC() << " "
+            << Pars.Getla2() << " "
+            << Pars.GetlaL() << endl;
+            i++;
         }
-    return GOOD;
+    }
+    // Close the file
+    outfile.close();
 }
 
 vector<pair<double,double>> IDM::GetParsSTU(int nPoints) {

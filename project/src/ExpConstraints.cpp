@@ -43,7 +43,7 @@ int ExpCons::LUXDMData(double MH, double Mh, double laL) {
             return 0;
         }
     } else {
-        return 0;
+        return 1;
     }
     // int check = (MH >= 45) ? 1 : 0;
     // return check;
