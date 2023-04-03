@@ -38,7 +38,7 @@ class IDM : public TheoCons,
     void GenWriteCheckedPars(const string& filename, int nPoints);
 
     void FilterParMap(vector<int> keepIndex);
-    void FirstPlot();
+    void FirstPlot(const string& filename);
     
     void LimitsFromColliders();
 
@@ -51,20 +51,25 @@ class IDM : public TheoCons,
     // void ReadCSV(const string &filename);
     // void ReadDAT(const string &filename);
 
+    void AssignPars(double& la2, double& la3, double& la4, 
+                    double& la5, double& laL, double& m22Sqr, 
+                    double& MH, double& MA, double& MC, double i);
+
     // void WriteDat(const string &filename); // Write Map elements as they are to .dat file
     // void WriteElementToFile(string key, ofstream &file, int i); // Write parameters to run on experimental constraints 
     // void WriteMapToFile(const string &filename);
 
     void SXT(int nPoints);
     vector<pair<double,double>> GetParsSTU(int nPoints);
-    void OverlapSXT(int nPoints);
+    void OverlapSXT(const string& filename);
 
     void FinalPlots(const string& Title, const string& XAxis, const string& YAxis, int N_points);
 
     // void IDMC_Test();
 
-    Parameters GetPars();
+    const Parameters& GetPars() const ;
     vector<double> GetParMapVal(const string &name);
+    const map<string, vector<double>>& GetParMap() const { return ParMap; }
 
 
     void TM_Test();

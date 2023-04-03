@@ -43,7 +43,18 @@ void IDM::PrintParMap() {
     }
 }
 
-Parameters IDM::GetPars() {
+void IDM::AssignPars(double& la2, double& la3, double& la4, 
+                    double& la5, double& laL, double& m22Sqr, 
+                    double& MH, double& MA, double& MC, double i) {
+    la2 = ParMap["la2"][i];
+    la3 = ParMap["la3"][i];
+    la4 = ParMap["la4"][i];
+    la5 = ParMap["la5"][i];
+    laL = ParMap["laL"][i];
+    m22Sqr = ParMap["m22Squared"][i];
+}
+
+const Parameters& IDM::GetPars() const {
     return Pars;
 }
 
@@ -67,8 +78,9 @@ void IDM::AddToMap() {
 void IDM::StoreParsTest(int nPoints) {
     ClearParMap();
     cout << "Generating and storing Parameters...\n";
+    Pars.SetScanBit(true);
     for (int i = 0; i < nPoints; i++) {
-        Pars.GenPars(1); // 1
+        Pars.GenPars(); // 1
         // Mudar para while. if (Check all constraints) {AddToMap}
         AddToMap();
     }
@@ -96,9 +108,10 @@ void IDM::StoreParsTest(int nPoints) {
 void IDM::StoreCheckedPars(int nPoints) {
     ClearParMap();
     cout << "Generating and storing Parameters...\n";
+    Pars.SetScanBit(true);
     int i = 0;
     while (i < nPoints) {
-        Pars.GenPars(1);
+        Pars.GenPars();
         // Check all constraints
         if (CheckAllCons()) {
             AddToMap();
@@ -130,9 +143,10 @@ void IDM::GenWriteCheckedPars(const string& filename, int nPoints) {
     }
     outfile << endl;
     // Generate and Write Parameters
+    Pars.SetScanBit(true);
     int i = 0;
     while (i < nPoints) {
-        Pars.GenPars(1);
+        Pars.GenPars();
         // Check all constraints
         if (CheckAllCons()) {
             outfile << Pars << endl;
@@ -186,8 +200,9 @@ vector<pair<double,double>> IDM::GetParsSTU(int nPoints) {
     cout << "Generating and storing Parameters that pass STU...\n";
     int i = 0;
     vector<pair<double, double>> STVals; // ST.first = S, ST.second = T;
-    while ( i < nPoints) {
-        Pars.GenPars(0); // 1
+    Pars.SetScanBit(false);
+    while (i < nPoints) {
+        Pars.GenPars(); // 1
         // Mudar para while. if (Check all constraints) {AddToMap}
         double S, T, U;
         if (ST(Pars.GetMh(), Pars.GetMH(), Pars.GetMA(), Pars.GetMC(), S, T, U)) {
@@ -213,9 +228,10 @@ void removePointFromMapVectors(map<string, vector<double>> &myMap, int pos) {
 }*/
 
 void IDM::TM_Test(){
+    Pars.SetScanBit(true);
     int i = 0;
     while (i < 20) {
-        Pars.GenPars(1);
+        Pars.GenPars();
         double la1 = Pars.Getla1();
         double la2 = Pars.Getla2();
         double m22Sq = Pars.Getm22Squared();
@@ -230,17 +246,17 @@ void IDM::TM_Test(){
 }
 
 
-void IDM::FirstPlot() {
+void IDM::FirstPlot(const string& filename) {
     cout << "Making FirstPlot...\n";
     TApplication app("app", nullptr, nullptr);
     TCanvas *c = new TCanvas("c", "FirstPlot", 1200, 800);
     TMultiGraph *mg = new TMultiGraph();
 
     string name = "Title";
-    mg->SetTitle(name.c_str());
+    mg->SetTitle(" ");
 
     /* IMPORTANT TO TO STOREPARSTEST FIRST */
-    WriteMapToFile("data/test/dat_test.dat", ParMap, Pars);
+    WriteMapToFile(filename, ParMap, Pars);
 
     // vector<int> keepIndex;
 
@@ -262,16 +278,19 @@ void IDM::FirstPlot() {
     int N = 0;
     int max = ParMap["MH"].size();
 
-    for (int i = 0; i < max; i++) {
-        double la2 = ParMap["la2"][i];
-        double la3 = ParMap["la3"][i];
-        double la4 = ParMap["la4"][i];
-        double la5 = ParMap["la5"][i];
-        double laL = ParMap["laL"][i];
-        double m22Squared = ParMap["m22Squared"][i];
+    double la2, la3, la4, la5, laL, m22Sqr, MH, MA, MC;
 
-        int bfb = BoundFromBelow(la1, la2, la3, laL, Mh, m22Squared); // BFB_Test(la1, la2, la3, laL);
-        int Pert = Perturbativity_Test(la1, la2, la3, la4, la5, laL);
+    for (int i = 0; i < max; i++) {
+        AssignPars(la2, la3, la4, la5, laL, m22Sqr, MH, MA, MC, i);
+        // double la2 = ParMap["la2"][i];
+        // double la3 = ParMap["la3"][i];
+        // double la4 = ParMap["la4"][i];
+        // double la5 = ParMap["la5"][i];
+        // double laL = ParMap["laL"][i];
+        // double m22Squared = ParMap["m22Squared"][i];
+
+        int bfb =  BFB_Test(la1, la2, la3, laL); //  BoundFromBelow(la1, la2, la3, laL, Mh, m22Squared);
+        int Pert = (la2 <= 4*M_PI/3) ? 1 : 0; // Perturbativity_Test(la1, la2, la3, la4, la5, laL);
         // int twoMins = TwoMins(Pars);
 
         int check = bfb && Pert; // & twoMins;
@@ -1235,8 +1254,114 @@ cout << "Making SXT graph...\n";
     app.Run();
 }
 
-// NAO APAGAR, MTO IMPORTANTE
 
+
+void IDM::OverlapSXT(const string& filename) {
+    TApplication app("app", nullptr, nullptr);
+    TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+    c->SetGrid();
+
+    TMultiGraph *mg = new TMultiGraph();
+    string name = "S-T Plane";
+    mg->SetTitle(name.c_str());
+
+    vector<double> Svec, Tvec;
+    Svec.clear();
+    Tvec.clear();
+    vector<double> aux;
+
+    // double la1 = Pars.Getla1();
+    // double Mh = 125.1; // Pars.GetMh();
+    // double m11 = Mh*Mh;
+
+    // vector<pair<double, double>> Values = GetParsSTU(nPoints);
+
+    // WriteSTUPars(Values, "data/STU/STU_Points.dat");
+    // WriteDat("data/STU/STU_PointsPars.dat", ParMap);
+    
+    ReadDAT(filename, ParMap);
+    int N = 0;
+    int max =  ParMap["MH"].size(); // ST[0].size(); // 
+    cout << "Max " << max << endl;
+
+    double la1 = Pars.Getla1();
+    double Mh = Pars.GetMh();
+
+    double S,T,U;
+
+    for (int i = 0; i < max; i++) {
+        double MH = ParMap["MH"][i];
+        double MA = ParMap["MA"][i];
+        double MC = ParMap["MC"][i];
+        STU_Test(Mh, MH, MA, MC, S, T, U);
+        Svec.push_back(S);
+        Tvec.push_back(T);
+    }
+    
+
+    // for (int i = 0; i < nPoints; i++)
+    // {
+    //     Svec.push_back(Values[i].first);
+    //     Tvec.push_back(Values[i].second);
+    // }
+
+    int Npoints = Svec.size();
+    TGraph *gr = new TGraph(Npoints, &Svec[0], &Tvec[0]);
+    // TGraph *gr = new TGraph(max, &ST[0][0], &ST[1][0]);
+    gr->SetTitle("SXT");
+    gr->SetMarkerColor(4);
+    gr->SetMarkerStyle(20);
+
+    Svec.clear();
+    Tvec.clear();
+    
+    vector<pair<double, double>>  profValues = readProfSTU();
+    int ProfPoints = profValues.size();
+    for (auto &pair : profValues)
+    {
+        Svec.push_back(pair.first);
+        Tvec.push_back(pair.second);
+    }
+    
+    
+    TGraph *grprof = new TGraph(Svec.size(), &Svec[0], &Tvec[0]);
+    grprof->SetTitle("Elipse");
+    grprof->SetMarkerColor(2);
+    grprof->SetMarkerStyle(20);
+
+    mg->Add(gr);
+    mg->Add(grprof);
+
+    c->Update();
+
+    mg->GetXaxis()->SetTitle("S");
+    mg->GetXaxis()->CenterTitle();
+    mg->GetYaxis()->SetTitle("T");
+    mg->Draw("AP");
+
+    // c->BuildLegend();
+
+    TLegend *leg = new TLegend(0.9, 0.7, 0.99, 0.9);
+    leg->SetHeader("Constraints", "C");
+    leg->AddEntry(grprof, "Allowed", "p");
+    leg->AddEntry(gr, "Results", "p");
+    leg->Draw();
+
+    c->Update();
+
+    string dir = "bin/Plots/";
+    name.append(".png");
+    dir.append(name);
+    c->SaveAs(dir.c_str());
+
+    TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
+    rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
+    app.Run();
+}
+
+
+// NAO APAGAR, MTO IMPORTANTE
+/*/
 void IDM::OverlapSXT(int nPoints) {
     TApplication app("app", nullptr, nullptr);
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
@@ -1311,9 +1436,8 @@ void IDM::OverlapSXT(int nPoints) {
     grprof->SetMarkerColor(2);
     grprof->SetMarkerStyle(20);
 
-    mg->Add(gr);
     mg->Add(grprof);
-
+    mg->Add(gr);
 
     c->Update();
 
@@ -1340,7 +1464,7 @@ void IDM::OverlapSXT(int nPoints) {
     TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
     rc->Connect("CloseWindow()", "TApplication", gApplication, "Terminate()");
     app.Run();
-}
+}*/
 
 
 /*

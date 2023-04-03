@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := $(shell root-config --cflags) -fPIC
+CXXFLAGS := -std=c++17 $(shell root-config --cflags) -fPIC 
 
 UNAME := $(shell uname)
 

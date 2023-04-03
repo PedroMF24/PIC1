@@ -89,7 +89,7 @@ void RootClass::MultiGraphPlot(const string& Title, const string& X, const strin
     mg->Draw(grExample->GetDrawOpt().c_str()); // DrawOpt.c_str()
 
     if (1) {
-        MakeLegend(leg, LegendPos[3], legend_entries, "p");
+        MakeLegend(leg, LegendPos[4], legend_entries, "p");
     }
 
     if (grExample->GetSaveOutputBit())
@@ -388,7 +388,7 @@ cout << "Making " << graph->GetTitle() << " scatter plot..." << endl;
     gr->GetXaxis()->SetTitle(graph->GetXAxisTitle().c_str());
     gr->GetYaxis()->SetTitle(graph->GetYAxisTitle().c_str());
     gr->SetMarkerColor(ColorKey);
-    gr->SetMarkerStyle(20);
+    gr->SetMarkerStyle(7); // 20
 
     
     if (Add2Vec)

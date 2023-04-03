@@ -18,7 +18,7 @@ Parameters::Parameters()
     // }
     
     // cout << "Parameter constructor MH before GenPars " << GetMH() << endl;
-    GenPars(1); // Initialize values
+    GenPars(); // Initialize values
     // cout << "Parameters constructor MH after GenPars " << GetMH() << endl;
 
 }
@@ -131,7 +131,7 @@ void Parameters::ScanSetup()
 }
 
 
-void Parameters::GenPars(int scan_setup)
+void Parameters::GenPars()
 {
     // TRandom3* rnd = new TRandom3(0);
     // MH = rnd->Rndm()*1000;

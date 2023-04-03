@@ -28,7 +28,7 @@ class Parameters : public MyRandom {
     friend std::ostream& operator<<(ostream& s, const Parameters& p);
 
     void ScanSetup();
-    void GenPars(int scan_setup);
+    void GenPars();
     void ImportPars(const string &filename);
     void SetPars();
 
@@ -48,6 +48,8 @@ class Parameters : public MyRandom {
 
     vector<string> GetParNames();
 
+    void SetScanBit(bool bit) { scan_setup = bit; }
+
     private:
     double Mh = 125.1;
     double v = 246;
@@ -65,6 +67,8 @@ class Parameters : public MyRandom {
     double la3 = 0;
     double la4 = 0;
     double la5 = 0;
+
+    bool scan_setup = true;
 
     vector<string> ParNames = {"mh", "MH", "MA", "MC", "la2", "laL", "la1", "la3", "la4", "la5"};
 

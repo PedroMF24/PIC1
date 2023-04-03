@@ -225,14 +225,15 @@ int TheoCons::BFB_Test(double la1, double la2, double la3, double laL) {
     
     int check = (la1 > 0 && la2 > 0 && aux1 > 0 && aux2 > 0) ? 1 : 0;
     
-    if (check) {
-        // printf("Passed BFB\n");
-        return 1;
-    }
-    else {
-        // printf("Potencial is not bound from below\n");
-        return 0;
-    }
+    // if (check) {
+    //     // printf("Passed BFB\n");
+    //     return 1;
+    // }
+    // else {
+    //     // printf("Potencial is not bound from below\n");
+    //     return 0;
+    // }
+    return check;
 }
 
 int TheoCons::BoundFromBelow(double la1, double la2, double la3, double laL, double Mh, double m22Squared) {
@@ -258,7 +259,7 @@ int TheoCons::QuarticCouplings(double la1, double la2, double la3, double la4, d
     int aux4 = (laL <= 4*M_PI) ? 1 : 0;
     int aux5 = (la3+la4-la5 <= 4*M_PI) ? 1 : 0;
 
-    int check = aux2 && aux3 && aux4 &&aux5 ; // aux1 // && aux3; // PROBLEMA NO AUX3
+    int check = aux2 && aux3 && aux4 && aux5 ; //  // && aux3; // PROBLEMA NO AUX3
 
     return check;
 }
@@ -308,25 +309,26 @@ int TheoCons::TwoMins_Test(double la1, double la2, double Mh, double m22Squared)
     double aux2 = m22Squared/sqrt(la2);
 
     int check = (aux1 >= aux2) ? 1 : 0;
-    if (check) {
-        // printf("Passed 2 mins\n");
-        return 1;
-    } else {
-        // printf("Inert vacuum is not garanteed to be global, failed 'TwoMins'\n");
-        return 0;
-    }
+    return check;
+    // if (check) {
+    //     // printf("Passed 2 mins\n");
+    //     return 1;
+    // } else {
+    //     // printf("Inert vacuum is not garanteed to be global, failed 'TwoMins'\n");
+    //     return 0;
+    // }
 }
 
 int TheoCons::Perturbativity_Test(double la1, double la2, double la3, double la4, double la5, double laL) {
     // int auxSMU = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
     int auxQC = QuarticCouplings(la1, la2, la3, la4, la5, laL);
-
-    int check = auxQC; //&& auxSMU;
-    if (check) {
-        return 1;
-    } else {
-        return 0;
-    }
+    return auxQC;
+    // int check = auxQC && auxSMU;
+    // if (check) {
+    //     return 1;
+    // } else {
+    //     return 0;
+    // }
 }
 
 
@@ -860,30 +862,30 @@ int TheoCons::STU_Test(double m11, double MH, double MA, double MC, double &S, d
     InitSTUMatrices(ImVdagV, UdagU, VdagV, UdagV);
     CalculateSTU(mneu, mch, ImVdagV, UdagU, VdagV, UdagV, S, T, U);
 
-    if (STU_Check(S, T, U)) {
-        return 1;
-    } else {
-        return 0;
-    }
-
-    // // Define a1 to a6 constants
-    // a1 = -0.34215919;
-    // a2 = 0.77604111;
-    // a3 = -0.52618813;
-    // a4 = -0.03202802;
-    // a5 = 0.05277964;
-    // a6 = 0.00136192;
-
-    // // Calculate Corr
-    // Corr = a1*pow(S, 2) + a2*S*T + a3*pow(T, 2) + a4*S + a5*T + a6;
-
-    // // U check
-    // double ULL = 0.03-0.1;
-    // double UUL = 0.03+0.1;
-
-    // if (U > ULL && U < UUL && Corr > 0) {
+    // if (STU_Check(S, T, U)) {
     //     return 1;
     // } else {
     //     return 0;
     // }
+
+    // Define a1 to a6 constants
+    a1 = -0.34215919;
+    a2 = 0.77604111;
+    a3 = -0.52618813;
+    a4 = -0.03202802;
+    a5 = 0.05277964;
+    a6 = 0.00136192;
+
+    // Calculate Corr
+    Corr = a1*pow(S, 2) + a2*S*T + a3*pow(T, 2) + a4*S + a5*T + a6;
+
+    // U check
+    double ULL = 0.03-0.1;
+    double UUL = 0.03+0.1;
+
+    if (U > ULL && U < UUL && Corr > 0) {
+        return 1;
+    } else {
+        return 0;
+    }
 }

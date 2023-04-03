@@ -4,7 +4,7 @@
 // #include "src/Parameters.h"
 #include "src/IDM.h"
 // #include "src/SM.h"
-
+#include "src/TestFuncs.h"
 #include "src/StopWatch.h"
 
 // int main() {
@@ -27,92 +27,23 @@ int main(int argc, char **argv)
     StopWatch clock;
     clock.StartTimer();
 
+    // TEST_GenParsSTUValues();
+    // TEST_Multigraph();
+    // TEST_FirstPlot();
     IDM pic;
-    pic.FinalPlots(" ", "MH", "laL", 10000);
-
-    // IDM pic;
-    // pic.STU_BAD();
-
-    /* Gen and write parameters directly using operator overloading */
-    // IDM pic;
-    // // pic.GenWriteCheckedPars("data/PassedTeoCons/PassedTeoCons.dat", 10000);
-    // // pic.STU_BAD();
-    // pic.OverlapSXT(1);
-
-    // IDM pic;
-    // pic.OverlapSXT(10);
-    // pic.StoreCheckedPars(10000);
-
-    /* TO WORK WITH MULTIGRAPH, 
-    EDIT OPTIONS OF THE FIRST
-    GRAPH ADDED TO THE GRAPH VECTOR */
-    // Graph* grValues = ReadGraphData("data/PassedTeoCons/PassedTeoCons.dat", "Teste", "MH", "MA");
     // Graph* gr = ReadGraphData("data/PassedTeoCons/PassedTeoCons.dat", "Scatter", "MA", "MC");
-    // cout << grValues->GetTitle() << endl;
-    // // // grValues->DivYVec(gr->GetY());
-
-    // grValues->SetSaveOutputBit(false);
-    // grValues->SetOpenWindowBit(false);
-
-    // RootClass* root = new RootClass(grValues);
-    // root->ScatterPlot(4, true);
-    // root->SetNewGraph(gr);
+    // gr->SetOpenWindowBit(true);
+    // RootClass* root = new RootClass(gr);
     // root->ScatterPlot(2, true);
-
-    // grValues->SetOpenWindowBit(true);
-    // root->MultiGraphPlot("MGraph title", "ola", "adeus");
-
-    // // // cout << (*grValues)/(*gr); //  << " " << 
-    // // // cout << *grValues << endl;
-
     // delete gr;
-    // delete root;
-    // delete grValues;
+    pic.FinalPlots(" ", "MA", "MC", 20000);
 
-    // grValues.SetSaveOutputBit(true);
-    // grValues.SetOpenWindowBit(true);
-
-    // RootClass root(grValues);
-    // root.ScatterPlot(2, false);
-
-
-/*    // READ PARAMETERS THAT PASSED ALL TEO CONSTRAINTS
-    IDM idm;
-    idm.StoreCheckedPars(10000);
-    idm.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Title", "MA", "MC");
-*/
-
-/*    // TEST IF FIRST PLOT IS OK
-    IDM pic;
-    pic.StoreParsTest(20000);
-    pic.FirstPlot();
-*/
-
-// TEST IF STU IS OK
     // IDM pic;
-    // pic.OverlapSXT(20000);
+    // pic.GenWriteCheckedPars("data/PassedTeoCons/PassedTeoCons.dat", 10000);
+    // pic.OverlapSXT(1);
+    // pic.FinalPlots(" ", "MH", "laL", 10000);
 
 
-    // TEST SCATTERPLOT
-    // TApplication *app = new TApplication("app", &argc, argv);
-    // IDM pic(app);
-    // IDM pic;
-    // pic.StoreCheckedPars(10000);
-
-    // pic.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Scatter2", "MH", "laL");
-    // pic.ParsGraph("data/PassedTeoCons/PassedTeoCons.dat", "Scatter3", "MC", "MA");
-
-/*  // TEST PARAMETER GENERATION
-    Parameters pars;
-    int i = 0;
-    while (i<5)
-    {
-        cout << pars << endl;
-        cout << pars.Getla3()+pars.Getla4()+pars.Getla5() << "\t" << pars.GetlaL() << endl; 
-        pars.GenPars(1);
-        i++;
-    }
-*/
     clock.StopTimer();
     clock.PrintTime();
 

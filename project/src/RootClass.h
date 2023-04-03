@@ -76,11 +76,12 @@ class RootClass {
 
     string DrawOpt = "AP";
 
-    const double LegendPos[4][4] = 
+    const double LegendPos[5][5] = 
     {{0.1,0.7,0.3,0.9},     // Fit left up
     {0.7,0.7,0.9,0.9},      // Fit right up
     {0.9,0.7,0.99,0.9},     // Fit side up
     {0.9,0.7,0.99,0.9},     // Fit side up
+    {0.9,0.6,0.99,0.9}
     };
 
 
