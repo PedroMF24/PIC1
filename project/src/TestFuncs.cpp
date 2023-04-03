@@ -24,9 +24,9 @@ void TEST_Multigraph() {
     grValues->SetOpenWindowBit(false);
 
     RootClass* root = new RootClass(grValues);
-    root->ScatterPlot(4, true);
+    root->ScatterPlot(4, true, 20);
     root->SetNewGraph(gr);
-    root->ScatterPlot(2, true);
+    root->ScatterPlot(2, true, 20);
 
     grValues->SetOpenWindowBit(true);
     root->MultiGraphPlot("MGraph title", "ola", "adeus");
