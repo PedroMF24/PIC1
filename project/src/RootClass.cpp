@@ -367,7 +367,7 @@ void RootClass::SetOutFileExt(string newOutFileExt) {
  */
 
 
-void RootClass::ScatterPlot(int ColorKey, bool Add2Vec) {
+void RootClass::ScatterPlot(const int  ColorKey, bool Add2Vec, const int Marker) {
 cout << "Making " << graph->GetTitle() << " scatter plot..." << endl;
 
     // if (OpenWindowBit) {
@@ -387,8 +387,10 @@ cout << "Making " << graph->GetTitle() << " scatter plot..." << endl;
     gr->GetXaxis()->CenterTitle();
     gr->GetXaxis()->SetTitle(graph->GetXAxisTitle().c_str());
     gr->GetYaxis()->SetTitle(graph->GetYAxisTitle().c_str());
+    gr->SetMarkerStyle(Marker); // 20
+    // gr->SetMarkerSize(10);
     gr->SetMarkerColor(ColorKey);
-    gr->SetMarkerStyle(7); // 20
+
 
     
     if (Add2Vec)

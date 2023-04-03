@@ -14,6 +14,9 @@
 
 
 
+
+
+
 /*
  * auto execution_time = measure_time(my_function, arg1, arg2, ...);
 
@@ -31,16 +34,28 @@ int main(int argc, char **argv)
     // TEST_Multigraph();
     // TEST_FirstPlot();
     IDM pic;
-    // Graph* gr = ReadGraphData("data/PassedTeoCons/PassedTeoCons.dat", "Scatter", "MA", "MC");
+    // pic.GenWriteCheckedPars("data/PassedTeoCons/PassedExpCons.dat", 1000);
+    Graph* gr = ReadGraphData("data/PassedTeoCons/PassedExpCons.dat", "", "MH", "laL");
+    RootClass root(gr);
+    gr->SetOpenWindowBit(true);
+    gr->SetSaveOutputBit(true);
+
+    root.ScatterPlot(2, false, 20);
+
+    delete gr;
+
+    // Differença para o SM, S e T estao correlacionados
+    // 
+    // Graph* gr = ReadGraphData("data/PassedTeoCons/PassedTeoCons.dat", "Scatter", "MH", "MA");
     // gr->SetOpenWindowBit(true);
     // RootClass* root = new RootClass(gr);
     // root->ScatterPlot(2, true);
     // delete gr;
-    pic.FinalPlots(" ", "MA", "MC", 20000);
+    // pic.FinalPlots("", "MA", "MC", 5000);
 
     // IDM pic;
     // pic.GenWriteCheckedPars("data/PassedTeoCons/PassedTeoCons.dat", 10000);
-    // pic.OverlapSXT(1);
+    // pic.OverlapSXT("data/PassedTeoCons/PassedTeoCons.dat");
     // pic.FinalPlots(" ", "MH", "laL", 10000);
 
 

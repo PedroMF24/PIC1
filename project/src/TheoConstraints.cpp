@@ -268,8 +268,8 @@ int TheoCons::ScatteringMatrixUnitary_Test(double la1, double la2, double la3, d
 
     int result = 1;
 
-    double L21EvenP = 0.5*(la1 + la2 + sqrt(pow(la1 - la2,2) + 4*fabs(la5*la5)));
-    double L21EvenM = 0.5*(la1 + la2 - sqrt(pow(la1 - la2,2) + 4*fabs(la5*la5)));
+    double L21EvenP = 0.5*(la1 + la2 + sqrt(pow(la1 - la2,2) + 4*la5*la5));
+    double L21EvenM = 0.5*(la1 + la2 - sqrt(pow(la1 - la2,2) + 4*la5*la5));
 
     double  L01EvenP = 0.5*(la1 + la2 + sqrt(pow(la1 - la2,2) + 4*la4*la4));
     double  L01EvenM = 0.5*(la1 + la2 - sqrt(pow(la1 - la2,2) + 4*la4*la4));
@@ -280,11 +280,11 @@ int TheoCons::ScatteringMatrixUnitary_Test(double la1, double la2, double la3, d
     double L21Odd = la3 + la4;
     double L20Odd = la3 - la4;
 
-    double L01OddP = la3 + fabs(la5);
-    double L01OddM = la3 - fabs(la5);
+    double L01OddP = la3 + la5;
+    double L01OddM = la3 - la5;
 
-    double L00OddP = la3 + 2*la4 + 3*fabs(la5);
-    double L00OddM = la3 + 2*la4 - 3*fabs(la5);
+    double L00OddP = la3 + 2*la4 + 3*la5;
+    double L00OddM = la3 + 2*la4 - 3*la5;
 
     double Eigenvalues[] = {L21EvenP, L21EvenM, L01EvenP, L01EvenM, L00EvenP, L00EvenM, L21Odd, L20Odd, L01OddP, L01OddM, L00OddP, L00OddM};
 

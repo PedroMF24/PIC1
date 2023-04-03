@@ -40,6 +40,7 @@ public:
     void SetOpenWindowBit(bool newOpenWIndowBit);
     void SetX(vector<double> newX);
     void SetY(vector<double> newY);
+    void SetDrawOpt(const string newDrawOpt) {DrawOpt = newDrawOpt;}
 
     // void SumX2Vec(vector<double> vec);
     void  DivYVec(vector<double> vec);

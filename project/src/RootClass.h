@@ -36,11 +36,11 @@ class RootClass {
 
     void SetNewGraph(Graph* newGraph);
 
-    void ScatterPlot(string Title, int nPoints);
+    // void ScatterPlot(string Title,  int nPoints);
     void FirstPlot(string Title);
 
     void CurvePlot(vector<double> &x, vector<double> &y);
-    void ScatterPlot(int ColorKey, bool Add2Vec);
+    void ScatterPlot(const int  ColorKey, bool Add2Vec, const int Marker);
 
     void SetOutDir(string newOutDir);
     void SetOutFileExt(string newOutFileExt);

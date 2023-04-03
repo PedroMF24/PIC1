@@ -31,6 +31,7 @@ public:
     void StartTimer();
     void StopTimer();
     void ResetTimer();
+    void Lap();
 
     void PrintTime();
 

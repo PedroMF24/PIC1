@@ -72,7 +72,7 @@ ostream& operator<< (std::ostream& s, const Parameters& p) {
 }*/
 
 ostream& operator<<(std::ostream& s, const Parameters& p) {
-    s << fixed << setprecision(6);
+    s << setprecision(10) << scientific;
     s << p.Mh << " ";
     s << p.MH << " ";
     s << p.MA << " ";
@@ -139,14 +139,32 @@ void Parameters::GenPars()
     // MC = rnd->Rndm()*1000;
     // la2 = rnd->Rndm()*1000;
     // laL = rnd->Rndm()*1000;
-    if (scan_setup)
-        ScanSetup();
-    else {
+    if (scan_setup) {
+        // ScanSetup();
+        la2 = UniDist(0,4.5); // (-4*M_PI, 4*M_PI); // Perturbativity
+        laL = UniDist(-1.5,2); // -1.5,2 // -2,4*M_PI -> For HBS
+
+        MH = UniDist(0,1000);
+        MA = UniDist(0,1000);
+        MC = UniDist(70,1000); // IDM revisited >80
+
+        // Eq 9 paper principal: strong bounds provided by the total width of the electroweak gauge bosons
+        // DMC  mass MH has to be bigger than the other masses
+        while (MH >= MA || MH >= MC || (MC - MH < 0.1))
+        {   
+            MH = UniDist(0,1000);
+            // cout << "**MH " << MH << endl;
+            // cout << MH << endl;
+            MA = UniDist(0,1000);
+            MC = UniDist(70,1000); // IDM revisited >80
+        }
+    } else {
         MH = UniDist(0,1000);
         MA = UniDist(0,1000);
         MC = UniDist(0,1000);
-        la2 = UniDist(-500,500); // (-4*M_PI, 4*M_PI); // Perturbativity
-        laL = UniDist(-500,500);
+        la2 = UniDist(0,4.5); // (-4*M_PI, 4*M_PI); // Perturbativity
+        laL = UniDist(-1.5,2);
+        // cout << fixed << setprecision(10) << laL << endl;
     }
 
 

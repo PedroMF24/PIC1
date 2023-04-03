@@ -18,7 +18,17 @@ void StopWatch::ResetTimer()
 }
 
 void StopWatch::PrintTime() {
-    cout << "Execution time: " << fixed << setprecision(3) << Time/1e6 << " seconds" << endl;
+    if (Time/1e6 >= 60) {
+        cout << "Execution time: " << fixed << setprecision(3) << Time/(1e6*60) << " minutes" << endl;
+    } else {
+        cout << "Execution time: " << fixed << setprecision(3) << Time/1e6 << " seconds" << endl;
+    }
+}
+
+void StopWatch::Lap() {
+    StopTimer();
+    PrintTime();
+    StartTimer();
 }
 
 

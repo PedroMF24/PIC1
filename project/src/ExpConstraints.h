@@ -12,10 +12,13 @@ class ExpCons { // : public StandardModel
     int HiggsBoundsSignals(double MC, double Mh, double laL);
     int WZDecayWidths(double MH, double MA);
     int HChargedLifetime(double MH, double MA, double MC);
-    int HiggsWidth(double laL);
-    int DMData(double MH);
+    int HiggsWidth(double MH, double laL);
+    int LUXDMData(double MH, double Mh, double laL);
     int EWBosons(double MH, double MA, double MC);
-    int LEPAnalysis(double MH, double MA);
+    int LEPAnalysis(double MH, double MA, double MC);
+    int RelicDensity(double MH);
+
+    int Extras(double MC, double MA);
 
 //     def EWBosons(MHX, MHC, MH3):
 //     MW = 80.433 # W boson mass

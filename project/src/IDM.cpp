@@ -113,7 +113,7 @@ void IDM::StoreCheckedPars(int nPoints) {
     while (i < nPoints) {
         Pars.GenPars();
         // Check all constraints
-        if (CheckAllCons()) {
+        if (CheckTeoCons()) { // 
             AddToMap();
             i++;
         }
@@ -148,7 +148,7 @@ void IDM::GenWriteCheckedPars(const string& filename, int nPoints) {
     while (i < nPoints) {
         Pars.GenPars();
         // Check all constraints
-        if (CheckAllCons()) {
+        if (CheckallCons()) { // CheckTeoCons()
             outfile << Pars << endl;
             i++;
         }
@@ -159,7 +159,7 @@ void IDM::GenWriteCheckedPars(const string& filename, int nPoints) {
 
 
 
-int IDM::CheckAllCons() {
+int IDM::CheckTeoCons() {
 
     double Mh = 125.1;
     double v = 246;
@@ -193,6 +193,56 @@ int IDM::CheckAllCons() {
     /* =================================================================== */
 
     // Perturbativity(Pars);
+}
+
+
+int IDM::CheckallCons() {
+
+    double Mh = 125.1;
+    double v = 246;
+    double la1 = Pars.Getla1(); // (Mh/v)**2
+
+    // Mass Basis
+    double MH = Pars.GetMH(); // MHX CDM
+    double MA = Pars.GetMA(); // MH3 It is A in IDM paper
+    double MC = Pars.GetMC(); // MHC Charged Higgs
+    double la2 = Pars.Getla2(); // lambda_2
+    double laL = Pars.GetlaL(); // la3 + la4 + la5
+
+    // Coupling Parameters Basis
+    double m22Squared = Pars.Getm22Squared();
+    double la3 = Pars.Getla3();
+    double la4 = Pars.Getla4();
+    double la5 = Pars.Getla5();
+
+    double S, T, U;
+    int GOOD = 1;
+    // Other conditions implicit in number generation
+    int BFB = BFB_Test(la1, la2, la3, laL);                             // OK
+    int TM = TwoMins_Test(la1, la2, Mh, m22Squared);
+    int SMU = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
+    int Pert = Perturbativity_Test(la1, la2, la3, la4, la5, laL);       // OK
+    int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11            // OK
+    // BFB && Pert && STU && TM && SMU
+    // CheckResult(STU)
+    int LEP = LEPAnalysis(MH, MA, MC);
+    int HWD = HiggsWidth(MH, laL);
+    int EWB = EWBosons(MH, MA, MC);
+    int HCL = HChargedLifetime(MH, MA, MC);
+    int LUX = LUXDMData(MH, Mh, laL);
+    int WZD = WZDecayWidths(MH, MA);
+    // int ORD = RelicDensity(MH);
+    int HBS = HiggsBoundsSignals(MC, Mh, laL);
+
+    int EXT = Extras(MC, MA);
+
+    vector<int> vec_check = {BFB, TM, SMU, Pert, STU, LEP, HWD, EWB, HCL, LUX, WZD,  HBS, EXT}; // ORD,
+        for (auto &bit : vec_check)
+        {
+            GOOD &= bit;
+            if (!GOOD) return GOOD;
+        }
+    return GOOD;
 }
 
 vector<pair<double,double>> IDM::GetParsSTU(int nPoints) {
@@ -249,7 +299,7 @@ void IDM::TM_Test(){
 void IDM::FirstPlot(const string& filename) {
     cout << "Making FirstPlot...\n";
     TApplication app("app", nullptr, nullptr);
-    TCanvas *c = new TCanvas("c", "FirstPlot", 1200, 800);
+    TCanvas *c = new TCanvas("c", "FirstPlot", 1300, 800);
     TMultiGraph *mg = new TMultiGraph();
 
     string name = "Title";
@@ -419,7 +469,7 @@ void IDM::FirstPlot() {
     TGraph *grPert = new TGraph();
     grPert->SetTitle("Perturbativity");
 
-    while (N<20000) // 10000
+    while (N<30000) // 10000
     {
         // cout << "**MH before while genpars " << Pars.GetMH() << endl;
         Pars.GenPars(); // GetPars().GenPars();
@@ -1063,7 +1113,7 @@ int MyST_Check(double &S, double &T) {
 //     }
 //     file.close();
 // }
-
+/*
 // "data/PassedTeoCons/PassedTeoCons.dat", "Scatter", "MA", "MC"
 void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAxis, int N_points) {
     // Graph* grInfo = ReadGraphData(filename, Title, X, Y);
@@ -1077,6 +1127,8 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
     Graph* grUNI = new Graph("UNI");
     Graph* grPER = new Graph("PER");
     Graph* grTMI = new Graph("TMI");
+    Graph* grEXP = new Graph("EXP");
+
     Graph* grOK = new Graph("OK");
 
     double Mh = Pars.GetMh();
@@ -1104,9 +1156,15 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
         int PER = Perturbativity_Test(la1, la2, la3, la4, la5, laL);       // OK
         int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11            // OK
 
+        int HWD = HiggsWidth(laL);
+        int EWB = EWBosons(MH, MA, MC);
+        int LEP = LEPAnalysis(MH, MA);
+
+        int EXP = HWD && EWB && LEP;
+
         double X, Y;
-        X = MH;
-        Y = laL;
+        X = MA;
+        Y = MC;
 
         if (BFB == 0) {
             grBFB->AddPoint(X, Y);
@@ -1118,6 +1176,8 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
             grPER->AddPoint(X, Y);
         } else if (TMI == 0) {
             grTMI->AddPoint(X, Y);
+        } else if (EXP == 0) {
+            grEXP->AddPoint(X, Y);
         } else {
             grOK->AddPoint(X, Y);
         }
@@ -1128,17 +1188,20 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
     grBFB->SetLegendBit(true);
     grBFB->SetSaveOutputBit(true);
 
-    root.SetNewGraph(grUNI);
-    root.ScatterPlot(6, true);
-
     root.SetNewGraph(grSTU);
     root.ScatterPlot(3, true);
+
+    root.SetNewGraph(grUNI);
+    root.ScatterPlot(6, true);
 
     root.SetNewGraph(grPER);
     root.ScatterPlot(877, true);
 
     root.SetNewGraph(grTMI);
     root.ScatterPlot(806, true);
+
+    root.SetNewGraph(grEXP);
+    root.ScatterPlot(7, true);
 
     root.SetNewGraph(grOK);
     root.ScatterPlot(2, true);
@@ -1150,8 +1213,263 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
     delete grSTU;
     delete grTMI;
     delete grPER;
+    delete grEXP;
     delete grOK;
 }
+
+*/
+
+void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAxis, int N_points) {
+    // Graph* grInfo = ReadGraphData(filename, Title, X, Y);
+    // cout << "Making " << grInfo->GetTitle() << " final graph...\n";
+
+    // StoreParsTest(N_points);
+
+
+    // RootClass root(grInfo);
+    Graph* grBFB = new Graph("BFB");
+    Graph* grSTU = new Graph("STU");
+    Graph* grUNI = new Graph("UNI");
+    Graph* grPER = new Graph("PER");
+    Graph* grTMI = new Graph("TMI");
+    Graph* grEXP = new Graph("EXP");
+
+    Graph* grOK = new Graph("OK");
+
+    double Mh = Pars.GetMh();
+    double v = Pars.Getv();
+    double la1 = Pars.Getla1(); // (Mh/v)**2
+
+    // int max = ParMap["MH"].size();
+
+    // for (int i = 0; i < max; i++) {
+    ClearParMap();
+    cout << "Generating Parameters of final plots...\n";
+    Pars.SetScanBit(true);
+    bool do_first = true;
+    int i = 0;
+    int a, b, c, d, e, f, g;
+    a = b = c = d = e = f = g = 0;
+    while (i < N_points) {
+        Pars.GenPars();
+
+        double la2 = Pars.Getla2();
+        double la3 = Pars.Getla3();
+        double la4 = Pars.Getla4();
+        double la5 = Pars.Getla5();
+        double laL = Pars.GetlaL();
+        double m22Squared = Pars.Getm22Squared();
+        double MH = Pars.GetMH(); // MHX CDM
+        double MA = Pars.GetMA(); // MH3 It is A in IDM paper
+        double MC = Pars.GetMC(); // MHC Charged Higgs
+
+
+
+        // S T U Oblique parameters
+        double S, T, U;
+
+        double X, Y;
+        X = MA;
+        Y = MC;
+
+        // if (!RelicDensity(MH)) {
+        //     //if (f < 300) {
+        //         grEXP->AddPoint(X, Y);
+        //         //f++;
+        //         //continue;
+        //     //}
+        // }
+
+        // Other conditions implicit in number generation
+        int TMI = TwoMins_Test(la1, la2, Mh, m22Squared);
+        int BFB = BFB_Test(la1, la2, la3, laL);                             // OK
+        // if (!(BFB && TMI)) {
+        //     if (a<300) {
+        //         grBFB->AddPoint(X, Y);
+        //         a++;
+        //         continue;
+        //     }
+        // }
+
+        // int PER = Perturbativity_Test(la1, la2, la3, la4, la5, laL);       // OK
+        int UNI = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
+        // if (!(UNI && PER)) {
+        //     //if (b<300) {
+        //         grUNI->AddPoint(X, Y);
+        //         //b++;
+        //         //continue;
+        //     //}
+        //     // grUNI->AddPoint(X, Y);
+        // } 
+
+        int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11            // OK
+        // if (!STU) {
+        //    //if (c<300) {
+        //         grSTU->AddPoint(X, Y);
+        //         //c++;
+        //         //continue;
+        //     //}
+        // } 
+
+        int LEP = LEPAnalysis(MH, MA, MC);
+        // if (!LEP) {
+            //if (f < 300) {
+                //grEXP->AddPoint(X, Y);
+                //f++;
+                //continue;
+            //}
+        // }
+
+        int HWD = HiggsWidth(MH, laL);
+        int EWB = EWBosons(MH, MA, MC);
+        int HCL = HChargedLifetime(MH, MA, MC);
+        int LUX = LUXDMData(MH, Mh, laL);
+        int WZD = WZDecayWidths(MH, MA);
+        int ORD = RelicDensity(MH);
+
+        int EXT = Extras(MC, MA);
+
+        int HBS = HiggsBoundsSignals(MC, Mh, laL);
+
+        int EXP = LEP && LUX && HWD && EWB && HCL && WZD && HBS && EXT; // LUX ORD &&
+
+        // if (!EXP) {
+        //     //if (f < 300) {
+        //         grEXP->AddPoint(X, Y);
+        //         //f++;
+        //         //continue;
+        //     //}
+        // }
+
+        int GOOD = TMI && ORD && LEP && BFB && UNI && STU && LUX && HWD && EWB && HCL && WZD && HBS && EXT; // ; 
+
+        // if (GOOD) {
+        //     grOK->AddPoint(X, Y);
+        // }
+        // i++;
+
+        if ( i%100 != 0 ) {
+            if (!do_first) {
+                // cout << "Done " << i << " points" << endl;
+                do_first = true;
+            }
+        }
+
+        if (BFB == 0 || TMI == 0) {
+            if (a<300) {
+                grBFB->AddPoint(X, Y);
+                a++;
+            }
+        } 
+        else if (STU == 0) {
+            if (c<300) {
+                grSTU->AddPoint(X, Y);
+                c++;
+            }
+        } 
+        // else if (PER == 0) {
+        //     if (d<300) {
+        //         grPER->AddPoint(X, Y);
+        //         d++;
+        //     }
+        // } 
+        // else if (TMI == 0) {
+        //     if (e<300) {
+        //         grTMI->AddPoint(X, Y);
+        //         e++;
+        //     }
+        // } 
+        else if (UNI == 0) {
+            if (b<300) {
+                grUNI->AddPoint(X, Y);
+                b++;
+            }
+            // grUNI->AddPoint(X, Y);
+        } 
+        else if (EXP == 0) { // else
+            if (f<300) {
+                grEXP->AddPoint(X, Y);
+                f++;
+            }
+        } 
+        else if (GOOD) {
+            grOK->AddPoint(X, Y);
+            
+        } else {
+            fprintf(stderr, "**Warning: FinalPlots, should never get here\n");
+        }
+
+        i++;
+        
+        if ( i%100 == 0 ) {
+            if (do_first) {
+                cout << "Done " << i << " points" << endl;
+                do_first = false;
+            }
+        }
+    }
+
+    // Graph* grOK = new Graph("OK");
+    // grOK = ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "OK", XAxis, YAxis);
+
+        // double la2 = ParMap["la2"][i];
+        // double la3 = ParMap["la3"][i];
+        // double la4 = ParMap["la4"][i];
+        // double la5 = ParMap["la5"][i];
+        // double laL = ParMap["laL"][i];
+        // double m22Squared = ParMap["m22Squared"][i];
+        // double MH = ParMap["MH"][i]; // MHX CDM
+        // double MA = ParMap["MA"][i]; // MH3 It is A in IDM paper
+        // double MC = ParMap["MC"][i]; // MHC Charged Higgs
+
+    // }
+    
+
+
+    const int Marker = 20;
+
+    RootClass root(grEXP); // 
+    root.ScatterPlot(7, true, Marker);
+    grEXP->SetLegendBit(true);
+    grEXP->SetSaveOutputBit(true);
+
+    // root.ScatterPlot(4, true, Marker);
+    // grBFB->SetLegendBit(true);
+    // grBFB->SetSaveOutputBit(true);
+
+    root.SetNewGraph(grBFB);
+    root.ScatterPlot(4, true, Marker);
+
+    root.SetNewGraph(grUNI);
+    root.ScatterPlot(6, true, Marker);
+
+    root.SetNewGraph(grSTU);
+    root.ScatterPlot(3, true, Marker);
+
+    // root.SetNewGraph(grPER);
+    // root.ScatterPlot(877, true, Marker);
+
+    // root.SetNewGraph(grTMI);
+    // root.ScatterPlot(806, true, Marker);
+
+    // root.SetNewGraph(grEXP);
+    // root.ScatterPlot(7, true, Marker);
+
+    root.SetNewGraph(grOK);
+    root.ScatterPlot(2, true, Marker);
+
+    root.MultiGraphPlot(Title, XAxis, YAxis);
+
+    delete grBFB;
+    delete grUNI;
+    delete grSTU;
+    delete grTMI;
+    delete grPER;
+    delete grEXP;
+    delete grOK;
+}
+
+
 
 void IDM::SXT(int nPoints) {
 cout << "Making SXT graph...\n";
@@ -1258,7 +1576,7 @@ cout << "Making SXT graph...\n";
 
 void IDM::OverlapSXT(const string& filename) {
     TApplication app("app", nullptr, nullptr);
-    TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+    TCanvas *c = new TCanvas("c", "canvas", 1300, 800);
     c->SetGrid();
 
     TMultiGraph *mg = new TMultiGraph();
@@ -1310,7 +1628,7 @@ void IDM::OverlapSXT(const string& filename) {
     // TGraph *gr = new TGraph(max, &ST[0][0], &ST[1][0]);
     gr->SetTitle("SXT");
     gr->SetMarkerColor(4);
-    gr->SetMarkerStyle(20);
+    gr->SetMarkerStyle(10);
 
     Svec.clear();
     Tvec.clear();
@@ -1327,7 +1645,7 @@ void IDM::OverlapSXT(const string& filename) {
     TGraph *grprof = new TGraph(Svec.size(), &Svec[0], &Tvec[0]);
     grprof->SetTitle("Elipse");
     grprof->SetMarkerColor(2);
-    grprof->SetMarkerStyle(20);
+    grprof->SetMarkerStyle(10);
 
     mg->Add(gr);
     mg->Add(grprof);
@@ -1364,7 +1682,7 @@ void IDM::OverlapSXT(const string& filename) {
 /*/
 void IDM::OverlapSXT(int nPoints) {
     TApplication app("app", nullptr, nullptr);
-    TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+    TCanvas *c = new TCanvas("c", "canvas", 1300, 800);
     c->SetGrid();
 
     TMultiGraph *mg = new TMultiGraph();
@@ -1470,7 +1788,7 @@ void IDM::OverlapSXT(int nPoints) {
 /*
 void IDM::OverlapSXT(int nPoints) {
     TApplication app("app", nullptr, nullptr);
-    TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+    TCanvas *c = new TCanvas("c", "canvas", 1300, 800);
 
     TMultiGraph *mg = new TMultiGraph();
     string name = "S-T Plane";

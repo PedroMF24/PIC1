@@ -77,7 +77,7 @@ void WriteMapToFile(const string &filename, map<string, vector<double>> &ParMap,
         fprintf(stderr, "**Can not open .dat file to write\n");
         exit(0);
     }
-    file << fixed << setprecision(6);
+    file << setprecision(10) << scientific;
 
     // Get the size of the largest vector
     int maxSize = 0;
