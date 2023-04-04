@@ -1,0 +1,28 @@
+main.tex         % the master file that includes all the other files
+preamble.tex     % contains the document class, packages, and other setup
+content.tex      % contains the main content of the document
+toc.tex          % contains the table of contents
+
+% example content for content.tex
+\section{Introduction}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla ut enim id purus commodo consectetur.
+
+% example content for toc.tex
+\noindent\hyperref[sec:first]{\textbf{\large 1. First Section}}\dotfill\hyperref[sec:first]{\textbf{\large 1}}\\ 
+\vspace{0.2cm}
+\hspace*{0.5cm}\hyperref[sub:first]{\textbf{1.1 First Subsection}}\dotfill\hyperref[sub:first]{\textbf{1}}\\ 
+\vspace{0.2cm}
+\hspace*{0.5cm}\hyperref[sub:second]{\textbf{1.2 Second Subsection}}\dotfill\hyperref[sub:second]{\textbf{2}}\\ 
+\vspace{0.5cm}
+\noindent\hyperref[sec:second]{\textbf{\large 2. Second Section}}\dotfill\hyperref[sec:second]{\textbf{\large 3}}\\ 
+\vspace{0.2cm}
+\hspace*{0.5cm}\hyperref[sub:third]{\textbf{2.1 First Subsection}}\dotfill\hyperref[sub:third]{\textbf{3}}\\ 
+\vspace{0.2cm}
+\hspace*{0.5cm}\hyperref[sub:fourth]{\textbf{2.2 Second Subsection}}\dotfill\hyperref[sub:fourth]{\textbf{4}}
+
+% example content for main.tex
+\input{preamble.tex}  % include the preamble from another file
+\begin{document}
+\input{toc.tex}       % include the table of contents from another file
+\input{content.tex}   % include the main content from another file
+\end{document}

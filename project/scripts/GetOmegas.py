@@ -73,4 +73,4 @@ end_time = time.time()
 # Calculate the running time
 running_time = end_time - start_time
 # Print the running time
-print("Running time:", running_time, "seconds")
+print("Running time: %.3f seconds" % running_time)

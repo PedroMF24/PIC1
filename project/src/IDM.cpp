@@ -1,4 +1,4 @@
-#include "IDM.h"
+#include "../include/IDM.h"
 
 IDM::IDM() {
     // Pars.GenPars(1);

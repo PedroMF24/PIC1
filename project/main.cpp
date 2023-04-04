@@ -2,10 +2,10 @@
 // // #include "src/ExpConstraints.h"
 // #include "src/RootClass.h"
 // #include "src/Parameters.h"
-#include "src/IDM.h"
+#include "include/IDM.h"
 // #include "src/SM.h"
-#include "src/TestFuncs.h"
-#include "src/StopWatch.h"
+#include "include/TestFuncs.h"
+#include "include/StopWatch.h"
 
 // int main() {
 //     StandardModel SM;
@@ -34,20 +34,20 @@ int main(int argc, char **argv)
     // TEST_Multigraph();
     // TEST_FirstPlot();
     /*    */
-    // IDM pic;
-    // // pic.GenWriteCheckedPars("data/PassedTeoCons/PassedExpCons.dat", 1000);
-    // Graph* gr = ReadGraphData("data/PassedTeoCons/PassedExpCons.dat", "", "MH", "laL");
-    // RootClass root(gr);
-    // gr->SetOpenWindowBit(true);
-    // gr->SetSaveOutputBit(true);
+    IDM pic;
+    // pic.GenWriteCheckedPars("data/PassedTeoCons/PassedExpCons.dat", 1000);
+    Graph* gr = ReadGraphData("data/PassedTeoCons/PassedExpCons.dat", "", "MH", "laL");
+    RootClass root(gr);
+    gr->SetOpenWindowBit(true);
+    gr->SetSaveOutputBit(true);
 
     // root.ScatterPlot(2, false, 20);
 
     // delete gr;
     /*    */
 
-    IDM pic;
-    pic.WriteMicrOMEGAs("scripts/input-mO.dat", 20);
+    // IDM pic;
+    // pic.WriteMicrOMEGAs("scripts/input-mO.dat", 20);
 
     // Differença para o SM, S e T estao correlacionados
     // 

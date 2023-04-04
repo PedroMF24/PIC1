@@ -1,4 +1,4 @@
-#include "TheoConstraints.h"
+#include "../include/TheoConstraints.h"
 
 int TheoCons::CheckResult(int check_bit) {
     int result = (check_bit == 1) ? 1 : 0;
@@ -9,38 +9,179 @@ int TheoCons::CheckResult(int check_bit) {
 //     vector<Condition> TConsVec = {{"BFB", BFB}, {"2Mins", TwoMins}, {"Unitary", ScatteringMatrixUnitary}, {"Perturbativity", Perturbativity}}; 
 // }
 
-int TheoCons::BFB(Parameters& Pars) {
-    double aux1 = Pars.Getla3() + sqrt(Pars.Getla1()*Pars.Getla2());
-    double aux2 = Pars.GetlaL() + sqrt(Pars.Getla1()*Pars.Getla2()); // Pars.Getla4() + Pars.Getla5() + aux1;
+bool TheoCons::BFB(Parameters& Pars) {
+
+    double la1 = Pars.Getla1();
+    double la2 = Pars.Getla2();
+    double la3 = Pars.Getla3();
+    double laL = Pars.GetlaL();
+    double Mh = Pars.GetMh();
+    double m22Squared = Pars.Getm22Squared();
+
+    double aux1 = la3 + sqrt(la1*la2);
+    double aux2 = laL + sqrt(la1*la2); // la4 + la5 + aux1;
+
+    double aux1 = (Mh*Mh)/sqrt(la1); 
+    double aux2 = m22Squared/sqrt(la2);
+
+    // BFB
+    bool check1 = (aux1 >= aux2) ? true : false;
+    // Two Mins
+    bool check2 = (la1 > 0 && la2 > 0 && aux1 > 0 && aux2 > 0) ? true : false;
+
+    return (check1 && check2);
+
+    /* double aux1 = Pars.Getla3() + sqrt(Pars.Getla1()*Pars.Getla2());
+    // double aux2 = Pars.GetlaL() + sqrt(Pars.Getla1()*Pars.Getla2()); // Pars.Getla4() + Pars.Getla5() + aux1;
     
-    int check = (Pars.Getla1() > 0 && Pars.Getla2() > 0 && aux1 > 0 && aux2 > 0) ? 1 : 0;
+    // int check = (Pars.Getla1() > 0 && Pars.Getla2() > 0 && aux1 > 0 && aux2 > 0) ? 1 : 0;
     
-    if (check) {
-        // printf("Passed BFB\n");
-        return 1;
+    // if (check) {
+    //     // printf("Passed BFB\n");
+    //     return 1;
+    // }
+    // else {
+    //     // printf("Potencial is not bound from below\n");
+    //     return 0;
+    // }*/
+}
+
+bool TheoCons::Perturbativity(Parameters& Pars) {
+
+    // double la1 = Pars.Getla1();
+    double la2 = Pars.Getla2();
+    double la3 = Pars.Getla3();
+    double la4 = Pars.Getla4();
+    double la5 = Pars.Getla5();
+    double laL = Pars.GetlaL();
+
+    bool aux2 = (la2 <= 4*M_PI/3) ? true : false;
+    bool aux3 = (la3 <= 4*M_PI) ? true : false;
+    bool aux4 = (laL <= 4*M_PI) ? true : false;
+    bool aux5 = (la3+la4-la5 <= 4*M_PI) ? true : false;
+
+    bool check = aux2 && aux3 && aux4 && aux5 ; //  // && aux3; // PROBLEMA NO AUX3
+    return check;
+}
+
+bool TheoCons::ScatteringMatrixUnitary(Parameters& Pars) {
+
+    double la1 = Pars.Getla1();
+    double la2 = Pars.Getla2();
+    double la3 = Pars.Getla3();
+    double la4 = Pars.Getla4();
+    double la5 = Pars.Getla5();
+
+    bool result = 1;
+
+    double L21EvenP = 0.5*(la1 + la2 + sqrt(pow(la1 - la2,2) + 4*la5*la5));
+    double L21EvenM = 0.5*(la1 + la2 - sqrt(pow(la1 - la2,2) + 4*la5*la5));
+
+    double  L01EvenP = 0.5*(la1 + la2 + sqrt(pow(la1 - la2,2) + 4*la4*la4));
+    double  L01EvenM = 0.5*(la1 + la2 - sqrt(pow(la1 - la2,2) + 4*la4*la4));
+    
+    double L00EvenP = 0.5*( 3*(la1 + la2) + sqrt( 9*pow(la1-la2,2) +4*pow(2*la3 + la4,2) ) );
+    double L00EvenM = 0.5*( 3*(la1 + la2) - sqrt( 9*pow(la1-la2,2) +4*pow(2*la3 + la4,2) ) );
+    
+    double L21Odd = la3 + la4;
+    double L20Odd = la3 - la4;
+
+    double L01OddP = la3 + la5;
+    double L01OddM = la3 - la5;
+
+    double L00OddP = la3 + 2*la4 + 3*la5;
+    double L00OddM = la3 + 2*la4 - 3*la5;
+
+    double Eigenvalues[] = {L21EvenP, L21EvenM, L01EvenP, L01EvenM, L00EvenP, L00EvenM, L21Odd, L20Odd, L01OddP, L01OddM, L00OddP, L00OddM};
+
+    for (auto &i : Eigenvalues)
+    {
+        if (fabs(i) > 8*M_PI) {
+            result = false;
+            break;
+        }            
     }
-    else {
-        // printf("Potencial is not bound from below\n");
-        return 0;
+
+    // if (result == 1) {
+    //     // printf("Passed SMU\n");
+    // } else {
+    //     // printf("Did not pass SMU\n");
+    // }
+    return result;
+}
+
+bool TheoCons::STU(Parameters &Pars) {
+
+    double m11 = Pars.GetMh();
+    double MH = Pars.GetMH();
+    double MA = Pars.GetMA();
+    double MC = Pars.GetMC();
+
+    double S, T, U;
+
+
+    double ImVdagV[4][4];
+    complex<double> UdagU[2][2], VdagV[4][4], UdagV[2][4];
+    double Corr;
+    double a1, a2, a3, a4, a5, a6;
+    double UU, ST;
+    UU = ST = 0;
+
+    // Define common variables
+    double mneu[4], mch[2];
+    InitSTUVars(mneu, mch, m11, MH, MA, MC);
+    // cout << "Depois de init " << mch[1] << " " << mneu[1] << endl;
+
+    // Call Evaluate_Matrices and Calculate_STU functions
+    InitSTUMatrices(ImVdagV, UdagU, VdagV, UdagV);
+    CalculateSTU(mneu, mch, ImVdagV, UdagU, VdagV, UdagV, S, T, U);
+
+    // if (STU_Check(S, T, U)) {
+    //     return 1;
+    // } else {
+    //     return 0;
+    // }
+
+    // Define a1 to a6 constants
+    a1 = -0.34215919;
+    a2 = 0.77604111;
+    a3 = -0.52618813;
+    a4 = -0.03202802;
+    a5 = 0.05277964;
+    a6 = 0.00136192;
+
+    // Calculate Corr
+    Corr = a1*pow(S, 2) + a2*S*T + a3*pow(T, 2) + a4*S + a5*T + a6;
+
+    // U check
+    double ULL = 0.03-0.1;
+    double UUL = 0.03+0.1;
+
+    if (U > ULL && U < UUL && Corr > 0) {
+        return true;
+    } else {
+        return false;
     }
 }
 
-int TheoCons::TwoMins(Parameters& Pars) {
-    double aux1 = (Pars.GetMh()*Pars.GetMh())/sqrt(Pars.Getla1()); 
-    double aux2 = Pars.Getm22Squared()/sqrt(Pars.Getla2());
 
-    int check = (aux1 >= aux2) ? 1 : 0;
-    if (check) {
-        printf("Passed 2 mins\n");
-        return 1;
-    }
-    else {
-        printf("Inert vacuum is not garanteed to be global, failed 'TwoMins'\n");
-        return 0;
-    }
-}
+// int TheoCons::TwoMins(Parameters& Pars) {
+//     double aux1 = (Pars.GetMh()*Pars.GetMh())/sqrt(Pars.Getla1()); 
+//     double aux2 = Pars.Getm22Squared()/sqrt(Pars.Getla2());
+
+//     int check = (aux1 >= aux2) ? 1 : 0;
+//     if (check) {
+//         printf("Passed 2 mins\n");
+//         return 1;
+//     }
+//     else {
+//         printf("Inert vacuum is not garanteed to be global, failed 'TwoMins'\n");
+//         return 0;
+//     }
+// }
+
 // CORRECT
-int TheoCons::ScatteringMatrixUnitary(Parameters& Pars) {
+/*int TheoCons::ScatteringMatrixUnitary(Parameters& Pars) {
 
     int result = 1;
 
@@ -89,21 +230,21 @@ int TheoCons::ScatteringMatrixUnitary(Parameters& Pars) {
         printf("Did not pass SMU\n");
     }
     return result;
-}
+}*/
 
-int TheoCons::Perturbativity(Parameters& Pars) {
+// int TheoCons::Perturbativity(Parameters& Pars) {
 
-    int check = (Pars.Getla2() <= 4*M_PI/3) ? 1 : 0;
-    // Also for la1?
+//     int check = (Pars.Getla2() <= 4*M_PI/3) ? 1 : 0;
+//     // Also for la1?
 
-    if (check) {
-        //printf("Passed Perturbativity\n");
-        return 1;
-    } else {
-        //printf("Did not pass Perturbativity\n");
-        return 0;
-    }
-}
+//     if (check) {
+//         //printf("Passed Perturbativity\n");
+//         return 1;
+//     } else {
+//         //printf("Did not pass Perturbativity\n");
+//         return 0;
+//     }
+// }
 
 // =============================================================
 

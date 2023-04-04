@@ -1,0 +1,181 @@
+\usepackage[utf8]{inputenc}
+\usepackage[main=english,portuguese]{babel}
+\usepackage{comment}
+%\usepackage{fontspec}
+% Add hyperlinks to the table of contents
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+\usepackage{iflang}
+%\usepackage{tikz}
+%\usepackage[compat=1.1.0]{tikz-feynman}
+\usepackage{amsmath,bm}
+\usepackage{geometry} % adjust margins
+\usepackage{titling} % control title layout
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage[caption=false]{subfig}
+\usepackage[labelformat=simple]{caption}
+%\usepackage{subfigmat}
+\usepackage{dcolumn}
+\usepackage{indentfirst}
+\usepackage{verbatim}
+\usepackage{cite}
+\usepackage[printonlyused]{acronym}
+\usepackage{lipsum}
+\usepackage[\IfLanguageName{english}{english}{portuguese}]{cleveref}
+%\usepackage{xcolor}
+\usepackage{color}
+% Customize the appearance of the table of contents
+%\usepackage{tocloft}
+%\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+%\renewcommand{\cfttoctitlefont}{\hfill\large\bfseries}
+%\renewcommand{\cftaftertoctitle}{\hfill}
+
+
+
+% Geometry of the pages
+\geometry{a4paper, margin=2cm} % adjust margins
+%\geometry{verbose,tmargin=2.cm,bmargin=2.cm,lmargin=2.cm,rmargin=2cm}
+
+% Set font
+\usepackage{times}
+%\usepackage{helvet}
+
+\title{\textbf{Title of Your Document}}
+\author{Author Name \\ Department Name \\ Institution Name \and 
+Supervisor Name \\ Department Name \\ Institution Name}
+\date{\today}
+
+
+\def\FontLn{% 16 pt normal
+  \usefont{T1}{phv}{m}{n}\fontsize{16pt}{16pt}\selectfont}
+\def\FontLb{% 16 pt bold
+  \usefont{T1}{phv}{b}{n}\fontsize{16pt}{16pt}\selectfont}
+\def\FontMn{% 14 pt normal
+  \usefont{T1}{phv}{m}{n}\fontsize{14pt}{14pt}\selectfont}
+\def\FontMb{% 14 pt bold
+  \usefont{T1}{phv}{b}{n}\fontsize{14pt}{14pt}\selectfont}
+\def\FontSn{% 12 pt normal
+  \usefont{T1}{phv}{m}{n}\fontsize{12pt}{12pt}\selectfont}
+\def\FontIt{% 12 pt normal
+  \usefont{T1}{phv}{}{n}\fontsize{12pt}{12pt}\selectfont}
+
+\begin{comment}
+% Redefine \maketitle command
+\title{My Title}
+\author{Author One}
+\date{\today}
+\renewcommand{\maketitle}{
+  \begin{center}
+    {\huge\bfseries\thetitle\par}
+    \vspace{0.5em}
+    {\large\theauthor\par}
+    \vspace{0.5em}
+    {\large Supervisors: Name of Supervisors\par}
+    \vspace{0.5em}
+    {\large\thedate\par}
+  \end{center}
+  \thispagestyle{empty} % Removes page number from the cover page
+}
+
+
+
+
+\usepackage{ucs}
+\usepackage[utf8x]{inputenc}
+\usepackage[main=english,portuguese]{babel}
+\usepackage{comment}
+\usepackage{iflang}
+\usepackage{tikz}
+\usepackage[compat=1.1.0]{tikz-feynman}
+\usepackage{amsmath,bm}
+\renewcommand{\rmdefault}{phv}
+\renewcommand{\sfdefault}{phv}
+\def\FontLn{% 16 pt normal
+  \usefont{T1}{phv}{m}{n}\fontsize{16pt}{16pt}\selectfont}
+\def\FontLb{% 16 pt bold
+  \usefont{T1}{phv}{b}{n}\fontsize{16pt}{16pt}\selectfont}
+\def\FontMn{% 14 pt normal
+  \usefont{T1}{phv}{m}{n}\fontsize{14pt}{14pt}\selectfont}
+\def\FontMb{% 14 pt bold
+  \usefont{T1}{phv}{b}{n}\fontsize{14pt}{14pt}\selectfont}
+\def\FontSn{% 12 pt normal
+  \usefont{T1}{phv}{m}{n}\fontsize{12pt}{12pt}\selectfont}
+\def\FontIt{% 12 pt normal
+  \usefont{T1}{phv}{}{n}\fontsize{12pt}{12pt}\selectfont}
+
+\usepackage[T1]{fontenc}
+
+
+\usepackage{geometry}	
+\geometry{verbose,tmargin=2.cm,bmargin=2.cm,lmargin=2.cm,rmargin=2cm}
+\usepackage{setspace}
+\renewcommand{\baselinestretch}{1.25}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{subfigure}
+\usepackage{subfigmat}
+\usepackage{dcolumn}
+\usepackage{indentfirst}
+\usepackage{verbatim}
+\newcolumntype{d}{D{.}{.}{-1}}
+\newcolumntype{e}{D{E}{E}{-1}}
+\usepackage[pdftex]{hyperref}
+                             
+\hypersetup{colorlinks,      
+            linkcolor=blue, 
+            anchorcolor=black,
+            citecolor=cyan,  
+            filecolor=black, 
+            menucolor=black, 
+            urlcolor=teal,  
+	        bookmarksopen=true,
+	        bookmarksnumbered=true,
+            }
+\usepackage[figure,table]{hypcap}
+\usepackage[format=plain]{caption} 
+\DeclareCaptionFont{georgia}{\small\fontseries{n}\fontfamily{georgia}\selectfont}
+%\captionsetup[figure]{labelfont=georgia,font=georgia}
+\captionsetup{labelfont=georgia,font=georgia}
+%\captionsetup[table]{skip=10pt}
+\usepackage{cite}
+\usepackage[printonlyused]{acronym}
+\usepackage{lipsum}
+\usepackage[\IfLanguageName{english}{english}{portuguese}]{cleveref}
+\usepackage{xcolor}
+\usepackage{color}
+
+\newcommand{\gray}[1]{\textcolor{gray}{#1}}
+\renewcommand{\theequation}{{\fontseries{n}\fontfamily{georgia}\selectfont\arabic{equation}}}
+\sectionfont{\Large\bfseries\fontfamily{lmss}\selectfont}
+\subsectionfont{\large\bfseries\fontfamily{lmss}\selectfont}
+%TC:endignore
+
+
+% Language setting
+% Replace `english' with e.g. `spanish' to change the document language
+\usepackage[english]{babel}
+
+% Set page size and margins
+% Replace `letterpaper' with `a4paper' for UK/EU standard size
+\usepackage[letterpaper,top=2cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\end{comment}
+
+%\title{Your Paper}
+%\author{You}
+

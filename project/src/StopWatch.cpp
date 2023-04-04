@@ -1,4 +1,4 @@
-#include "StopWatch.h"
+#include "../include/StopWatch.h"
 
 void StopWatch::StartTimer() {
     start = high_resolution_clock::now();

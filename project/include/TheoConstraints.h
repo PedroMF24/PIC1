@@ -23,10 +23,11 @@ class TheoCons { // : public StandardModel
     // int Perturbativity(double la2);
 
     // vector<Condition> MakeTheoConsVector();
-    int BFB(Parameters& Pars);
-    int TwoMins(Parameters& Pars);
-    int ScatteringMatrixUnitary(Parameters& Pars);
-    int Perturbativity(Parameters& Pars);
+    bool BFB(Parameters& Pars);
+    // int TwoMins(Parameters& Pars);
+    bool ScatteringMatrixUnitary(Parameters& Pars);
+    bool Perturbativity(Parameters& Pars);
+    bool STU(Parameters &Pars);
 
     // Potencial bound from below
     int BoundFromBelow(double la1, double la2, double la3, double laL, double Mh, double m22Squared);

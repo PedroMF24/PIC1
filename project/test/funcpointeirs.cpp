@@ -48,6 +48,7 @@ bool mainFunction(const Pars& pars, const vector<Condition>& conditions) {
             cout << "Condition " << condition.first << " failed" << endl;
             break;
         }
+        // result &= condition.second(pars);
     }
     return result;
 }
