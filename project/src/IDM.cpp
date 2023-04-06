@@ -2038,16 +2038,14 @@ void IDM::Omegas(const string& filename) {
     Graph *grOK = new Graph();
 
     // gr->GetX().clear();
-    
+
     int N = gr->GetY().size();
     for (int i = 0; i < N; i++) {
         // gr->AddToX(i);
         double X = gr->GetX()[i];
         double Y = gr->GetY()[i];
-        if (Y < 1e-9) {
-            continue;
-        }
-        if (Y < OLL) {
+
+        if (Y > 1e-9 && Y < OLL) {
             grDown->AddPoint(X, Y);
         }
         else if ( Y > OLL && Y < OUL) {
@@ -2059,6 +2057,7 @@ void IDM::Omegas(const string& filename) {
         else {
             cout << "Should never get here" << endl;
         }
+        
     }
     
 
@@ -2077,6 +2076,7 @@ void IDM::Omegas(const string& filename) {
     cout << "after" << endl;
 
     delete root;
+    delete gr;
     delete grOK;
     delete grUP;
     delete grDown;

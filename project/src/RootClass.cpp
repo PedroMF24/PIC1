@@ -111,8 +111,8 @@ void RootClass::MultiGraphPlot(const string& Title, const string& X, const strin
 
 
 
-    mg->Draw(grExample->GetDrawOpt().c_str()); // DrawOpt.c_str()
-    c->Update();
+    // mg->Draw(grExample->GetDrawOpt().c_str()); // DrawOpt.c_str()
+    // c->Update();
 
     if (1) {
         MakeLegend(leg, LegendPos[4], legend_entries, "p");
