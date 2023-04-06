@@ -18,8 +18,15 @@ void RootClass::SetNewGraph(Graph* newGraph) {
 void RootClass::SaveOutput(TCanvas *c) {
     string OutputPath = outDir;
     // OutputPath.append(Title.c_str());
-    OutputPath.append(graph->GetTitle().c_str());
+    if (grVec.size() == 0) {
+        OutputPath.append(graph->GetTitle().c_str());
+        OutputPath.append(outFileExt.c_str());
+        cout << "Saving " << graph->GetTitle() << " in " << OutputPath << endl;
+    }
+
+    OutputPath.append("Multigraph");
     OutputPath.append(outFileExt.c_str());
+    cout << "Saving " << "Multigraph" << " in " << OutputPath << endl;
 
     // c->Update();
     // auto timestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count());
@@ -37,7 +44,7 @@ void RootClass::SaveOutput(TCanvas *c) {
 
     c->SaveAs(OutputPath.c_str());
 
-    cout << "Saving " << graph->GetTitle() << " in " << OutputPath << endl;
+    
 }
 
 void RootClass::AddToGraphVector(Graph* g, TGraph *gr) {
@@ -83,36 +90,48 @@ void RootClass::MultiGraphPlot(const string& Title, const string& X, const strin
             legend_entries.emplace_back(pair.second, pair.first->GetTitle());
         }
         mg->Add(pair.second);
+        // for (auto &val : pair.first->GetY())
+        // {
+        //     if (val < 0) cout << val << endl;
+        // }
     }
     mg->GetXaxis()->SetTitle(X.c_str());
     mg->GetXaxis()->CenterTitle();
     mg->GetYaxis()->SetTitle(Y.c_str());
 
 
+    
+    
+
     // Debug
-    cout << "Min Y value: " << mg->GetYaxis()->GetXmin() << endl;
-    cout << "Max Y value: " << mg->GetYaxis()->GetXmax() << endl;
-    c->SetLogy();
-    cout << "Is log scale enabled? " << c->GetLogy() << endl;
+    // cout << "Min Y value: " << mg->GetYaxis()->GetXmin() << endl;
+    // cout << "Max Y value: " << mg->GetYaxis()->GetXmax() << endl;
+    // c->SetLogy();
+    // cout << "Is log scale enabled? " << c->GetLogy() << endl;
 
 
 // mg->GetXaxis()->SetTitle(X.c_str());
 // mg->GetXaxis()->CenterTitle();
 // mg->GetYaxis()->SetTitle(Y.c_str());
 
-// double ymin = 1e-9; // set a small positive number
-// double ymax = mg->GetYaxis()->GetXmax(); // use the current max value of Y-axis
-// mg->GetYaxis()->SetRangeUser(ymin, ymax); // set Y-axis range
+bool LogScale = true;
+if (LogScale) {
+    double ymin = 1e-7; // set a small positive number
+    double ymax = mg->GetYaxis()->GetXmax(); // use the current max value of Y-axis
+    mg->GetYaxis()->SetRangeUser(ymin, ymax); // set Y-axis range
 
-// c->SetLogy();
-// mg->Draw(grExample->GetDrawOpt().c_str());
-// c->Update();
+    c->SetLogy();
+    mg->Draw(grExample->GetDrawOpt().c_str());
+    c->Update();
+
+    cout << "Min Y value: " << mg->GetYaxis()->GetXmin() << endl;
+    cout << "Max Y value: " << mg->GetYaxis()->GetXmax() << endl;
+    cout << "Is log scale enabled? " << c->GetLogy() << endl;
+}
 
 
-
-
-    // mg->Draw(grExample->GetDrawOpt().c_str()); // DrawOpt.c_str()
-    // c->Update();
+    mg->Draw(grExample->GetDrawOpt().c_str()); // DrawOpt.c_str()
+    c->Update();
 
     if (1) {
         MakeLegend(leg, LegendPos[4], legend_entries, "p");

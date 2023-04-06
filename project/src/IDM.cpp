@@ -2033,9 +2033,9 @@ void IDM::Omegas(const string& filename) {
     Graph *gr = ReadGraphData(filename, "", "laL", "Omega");
 
 
-    Graph *grUP = new Graph();
-    Graph *grDown = new Graph();
-    Graph *grOK = new Graph();
+    Graph *grUP = new Graph("Above Limit");
+    Graph *grDown = new Graph("Under Limit");
+    Graph *grOK = new Graph("In Limit");
 
     // gr->GetX().clear();
 
@@ -2048,7 +2048,7 @@ void IDM::Omegas(const string& filename) {
         if (Y > 1e-9 && Y < OLL) {
             grDown->AddPoint(X, Y);
         }
-        else if ( Y > OLL && Y < OUL) {
+        else if ( Y >= OLL && Y <= OUL) {
             grOK->AddPoint(X, Y);
         }
         else if (Y > OUL) {
@@ -2056,9 +2056,66 @@ void IDM::Omegas(const string& filename) {
         }
         else {
             cout << "Should never get here" << endl;
+            cout << Y << endl;
         }
         
     }
+
+    // cout << "grOK:" << endl;
+    // for (auto &val : grOK->GetY())
+    // {
+    //     cout << val << endl;
+    // }
+    //     cout << "grUP:" << endl;
+    // for (auto &val : grUP->GetY())
+    // {
+    //     cout << val << endl;
+    // }
+    //     cout << "grDown:" << endl;
+    // for (auto &val : grDown->GetY())
+    // {
+    //     cout << val << endl;
+    // }
+    
+
+    // int N = gr->GetY().size();
+    // vector<double> vecUP, vecDown, vecOK, vecX;
+    // for (int i = 0; i < N; i++) {
+    //     // gr->AddToX(i);
+
+    //     double Y = gr->GetY()[i];
+        
+    //     if (Y < 0) {
+    //         cout << "OLAAAAAAAAaaaaaaaaaaaaaaaaaaA" << endl;
+    //         continue;
+    //     } 
+    //     else {
+    //         vecX.push_back(gr->GetX()[i]);
+    //         if (Y < OLL) {
+    //             // cout << Y << endl;
+    //             vecDown.push_back(Y);
+    //         }
+    //         else if ( Y >= OLL && Y <= OUL) {
+    //             vecOK.push_back(Y);
+    //         }
+    //         else if (Y > OUL) {
+    //             vecUP.push_back(Y);
+    //         }
+    //         else {
+    //             cout << "Should never get here" << endl;
+    //         }
+    //     }
+    // }
+
+    // for (auto &val : vecUP)
+    // {
+    //     if (val > 1 ) cout << val << endl;
+    // }
+    
+
+    // Graph *grUP = new Graph("Above Limit", "Points", vecX, "Above Limit", vecUP);
+    // Graph *grDown = new Graph("Under Limit", "Points", vecX, "Under Limit", vecDown);
+    // Graph *grOK = new Graph("In Limit", "Points", vecX, "In Limit", vecOK);
     
 
     RootClass* root = new RootClass(grOK);
@@ -2071,9 +2128,9 @@ void IDM::Omegas(const string& filename) {
     root->SetNewGraph(grDown);
     root->ScatterPlot(2, true, 20);
 
-    root->MultiGraphPlot("MGraph title", "Points", "Relic Density #Omega");
+    root->MultiGraphPlot("MGraph title", "laL", "Relic Density #Omega");
 
-    cout << "after" << endl;
+    // cout << "after" << endl;
 
     delete root;
     delete gr;
