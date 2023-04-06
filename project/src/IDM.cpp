@@ -2037,7 +2037,8 @@ void IDM::Omegas(const string& filename) {
     Graph *grDown = new Graph();
     Graph *grOK = new Graph();
 
-    gr->GetX().clear();
+    // gr->GetX().clear();
+    
     int N = gr->GetY().size();
     for (int i = 0; i < N; i++) {
         // gr->AddToX(i);
