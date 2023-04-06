@@ -21,11 +21,11 @@ bool TheoCons::BFB(Parameters& Pars) {
     double aux1 = la3 + sqrt(la1*la2);
     double aux2 = laL + sqrt(la1*la2); // la4 + la5 + aux1;
 
-    double aux1 = (Mh*Mh)/sqrt(la1); 
-    double aux2 = m22Squared/sqrt(la2);
+    double aux3 = (Mh*Mh)/sqrt(la1); 
+    double aux4 = m22Squared/sqrt(la2);
 
     // BFB
-    bool check1 = (aux1 >= aux2) ? true : false;
+    bool check1 = (aux3 >= aux4) ? true : false;
     // Two Mins
     bool check2 = (la1 > 0 && la2 > 0 && aux1 > 0 && aux2 > 0) ? true : false;
 

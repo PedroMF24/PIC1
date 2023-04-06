@@ -349,8 +349,8 @@ void IDM::WriteMicrOMEGAs(const string& filename, int nPoints) {
     while (i < nPoints) {
         Pars.GenPars();
         // Check all constraints
-        if (CheckallCons()) { // 
-            cout << i << endl;
+        if (CheckTeoCons()) { // 
+            // cout << i << endl;
             outfile << i << " "
             << Pars.GetMh() << " " 
             << Pars.GetMH() << " "
@@ -2019,4 +2019,64 @@ void IDM::ParsGraph(const string& path, const string& Title, const string& xName
 
     
     // root.MultiGraphPlot("MultiName");
+}
+
+void IDM::Omegas(const string& filename) {
+
+    double OmegaPlanckLimit = 0.1197;
+    double OUL = OmegaPlanckLimit + 0.0022;
+    double OLL = OmegaPlanckLimit - 0.0022;
+
+    double OmegaLimit = 0.1241;
+
+
+    Graph *gr = ReadGraphData(filename, "", "laL", "Omega");
+
+
+    Graph *grUP = new Graph();
+    Graph *grDown = new Graph();
+    Graph *grOK = new Graph();
+
+    gr->GetX().clear();
+    int N = gr->GetY().size();
+    for (int i = 0; i < N; i++) {
+        // gr->AddToX(i);
+        double X = gr->GetX()[i];
+        double Y = gr->GetY()[i];
+        if (Y < 1e-9) {
+            continue;
+        }
+        if (Y < OLL) {
+            grDown->AddPoint(X, Y);
+        }
+        else if ( Y > OLL && Y < OUL) {
+            grOK->AddPoint(X, Y);
+        }
+        else if (Y > OUL) {
+            grUP->AddPoint(X, Y);
+        }
+        else {
+            cout << "Should never get here" << endl;
+        }
+    }
+    
+
+    RootClass* root = new RootClass(grOK);
+    root->ScatterPlot(4, true, 20);
+    grOK->SetOpenWindowBit(true);
+    grOK->SetSaveOutputBit(true);
+
+    root->SetNewGraph(grUP);
+    root->ScatterPlot(3, true, 20);
+    root->SetNewGraph(grDown);
+    root->ScatterPlot(2, true, 20);
+
+    root->MultiGraphPlot("MGraph title", "Points", "Relic Density #Omega");
+
+    cout << "after" << endl;
+
+    delete root;
+    delete grOK;
+    delete grUP;
+    delete grDown;
 }

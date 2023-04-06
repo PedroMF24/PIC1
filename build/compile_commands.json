@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/home/pmfig/dev/PIC1/build",
+  "command": "/usr/bin/g++    -std=c++17 $(shell root-config --cflags) -fPIC -g   -o CMakeFiles/main.dir/main.cpp.o -c /home/pmfig/dev/PIC1/project/main.cpp",
+  "file": "/home/pmfig/dev/PIC1/project/main.cpp"
+}
+]

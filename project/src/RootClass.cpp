@@ -67,6 +67,7 @@ void RootClass::MultiGraphPlot(const string& Title, const string& X, const strin
         app = new TApplication("app", nullptr, nullptr);
 
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+
     TMultiGraph *mg = new TMultiGraph();
     // mg->SetTitle(Title.c_str());
 
@@ -86,7 +87,32 @@ void RootClass::MultiGraphPlot(const string& Title, const string& X, const strin
     mg->GetXaxis()->SetTitle(X.c_str());
     mg->GetXaxis()->CenterTitle();
     mg->GetYaxis()->SetTitle(Y.c_str());
+
+
+    // Debug
+    cout << "Min Y value: " << mg->GetYaxis()->GetXmin() << endl;
+    cout << "Max Y value: " << mg->GetYaxis()->GetXmax() << endl;
+    c->SetLogy();
+    cout << "Is log scale enabled? " << c->GetLogy() << endl;
+
+
+// mg->GetXaxis()->SetTitle(X.c_str());
+// mg->GetXaxis()->CenterTitle();
+// mg->GetYaxis()->SetTitle(Y.c_str());
+
+// double ymin = 1e-9; // set a small positive number
+// double ymax = mg->GetYaxis()->GetXmax(); // use the current max value of Y-axis
+// mg->GetYaxis()->SetRangeUser(ymin, ymax); // set Y-axis range
+
+// c->SetLogy();
+// mg->Draw(grExample->GetDrawOpt().c_str());
+// c->Update();
+
+
+
+
     mg->Draw(grExample->GetDrawOpt().c_str()); // DrawOpt.c_str()
+    c->Update();
 
     if (1) {
         MakeLegend(leg, LegendPos[4], legend_entries, "p");

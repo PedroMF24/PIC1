@@ -355,6 +355,8 @@ class IDM : public TheoCons,
     void ParsGraph(const string& path, const string& Title, const string& xName, const string& yName);
     void STU_BAD();
 
+    void Omegas(const string& filename);
+
     private:
     // TApplication* fApp;
     // Parameters generator class and Parameter values
