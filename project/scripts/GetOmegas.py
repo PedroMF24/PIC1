@@ -16,13 +16,13 @@ parameter_file = "input-mO.dat"
 template_file = "data-template.par"
 output_file = "file.par"
 
-shutil.copy("input-mO.dat", os.path.join(micromegas_path, "input-mO.dat")) # copy the content of the source file to the destination file or directory. shutil.copy(source, destination, *, follow_symlinks = True)
+shutil.copy("../data/micrOMEGAs/input-mO.dat", os.path.join(micromegas_path, "input-mO.dat")) # copy the content of the source file to the destination file or directory. shutil.copy(source, destination, *, follow_symlinks = True)
 
 # print(os.path.join(micromegas_path, "input-mO.dat"))
 
 os.chdir(micromegas_path) # A complete path of directory to be changed to new directory path. method in Python used to change the current working directory to specified path. It takes only a single argument as new directory path.
 
-print("Parameter file: " + parameter_file)
+print("Parameter file: " + "../data/micrOMEGAs/input-mO.dat")
 print("Template file: " + micromegas_path + "/" + template_file)
 print("Transition file: " + output_file)
 
@@ -62,15 +62,20 @@ print("Writting output file: output-mO.dat")
 headers = ["BP", "mh", "MH", "MA", "MC", "la2", "laL", "Omega"]
 parameters.to_csv("output-mO.dat",sep=" ",header=headers, index=False, float_format="%.11E")
 
-shutil.move("output-mO.dat", os.path.join(workdir, "output-mO.dat"))
+shutil.move("output-mO.dat", os.path.join(workdir, "../data/micrOMEGAs/output-mO.dat"))
 
 os.remove("input-mO.dat")
 
 os.chdir(workdir)
+
+print("Output file: " + "../data/micrOMEGAs/output-mO.dat")
 
 # Get the current time again
 end_time = time.time()
 # Calculate the running time
 running_time = end_time - start_time
 # Print the running time
-print("Running time: %.3f seconds" % running_time)
+if running_time >= 60:
+    print("Running time: %.3f minutes" % (running_time/60))
+else:
+    print("Running time: %.3f seconds" % running_time)

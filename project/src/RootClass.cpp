@@ -114,7 +114,7 @@ void RootClass::MultiGraphPlot(const string& Title, const string& X, const strin
 // mg->GetXaxis()->CenterTitle();
 // mg->GetYaxis()->SetTitle(Y.c_str());
 
-bool LogScale = true;
+bool LogScale = false;
 if (LogScale) {
     double ymin = 1e-7; // set a small positive number
     double ymax = mg->GetYaxis()->GetXmax(); // use the current max value of Y-axis
@@ -129,7 +129,7 @@ if (LogScale) {
     cout << "Is log scale enabled? " << c->GetLogy() << endl;
 }
 
-
+    c->SetLogy();
     mg->Draw(grExample->GetDrawOpt().c_str()); // DrawOpt.c_str()
     c->Update();
 
@@ -436,6 +436,8 @@ cout << "Making " << graph->GetTitle() << " scatter plot..." << endl;
     // gr->SetMarkerSize(10);
     gr->SetMarkerColor(ColorKey);
 
+    gr->SetMinimum(gr->GetYaxis()->GetXmin());
+    gr->SetMaximum(gr->GetYaxis()->GetXmax());
 
     
     if (Add2Vec)

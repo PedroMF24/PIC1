@@ -34,8 +34,8 @@ int main(int argc, char **argv)
     // TEST_Multigraph();
     // TEST_FirstPlot();
     /*    */
-    // IDM pic;
-    // // pic.GenWriteCheckedPars("data/PassedTeoCons/PassedExpCons.dat", 1000);
+    IDM pic;
+    pic.WriteMicrOMEGAs("data/input-mO.dat", 1000);
     // Graph* gr = ReadGraphData("data/PassedTeoCons/PassedExpCons.dat", "", "MH", "laL");
     // RootClass root(gr);
     // gr->SetOpenWindowBit(true);
@@ -44,8 +44,8 @@ int main(int argc, char **argv)
 
 
 
-    IDM pic;
-    pic.Omegas("scripts/output-mO.dat");
+    // IDM pic;
+    // pic.Omegas("scripts/output-mO.dat");
 
 
 
