@@ -1,4 +1,4 @@
-#include "../include/Parameters.h"
+#include "include/Parameters.h"
 
 // CONSTRUCTOR
 

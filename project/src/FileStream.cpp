@@ -1,4 +1,4 @@
-#include "../include/FileStream.h"
+#include "include/FileStream.h"
 
 bool FileExists(const string& filename) {
     ifstream file(filename);

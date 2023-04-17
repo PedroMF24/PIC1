@@ -1,4 +1,4 @@
-#include "../include/Graph.h"
+#include "include/Graph.h"
 
 Graph::Graph(const string& newTitle, const string& newXAxisTitle, vector<double>& newX, 
              const string& newYAxisTitle, vector<double>& newY)

@@ -1,4 +1,4 @@
-#include "../include/TheoConstraints.h"
+#include "include/TheoConstraints.h"
 
 int TheoCons::CheckResult(int check_bit) {
     int result = (check_bit == 1) ? 1 : 0;

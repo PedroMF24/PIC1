@@ -2,10 +2,10 @@
 // // #include "src/ExpConstraints.h"
 // #include "src/RootClass.h"
 // #include "src/Parameters.h"
-#include "include/IDM.h"
+#include "../src/include/IDM.h"
 // #include "src/SM.h"
-#include "include/TestFuncs.h"
-#include "include/StopWatch.h"
+#include "../src/include/TestFuncs.h"
+#include "../src/include/StopWatch.h"
 
 // int main() {
 //     StandardModel SM;
@@ -35,12 +35,26 @@ int main(int argc, char **argv)
     // TEST_FirstPlot();
     /*    */
     IDM pic;
-    pic.WriteMicrOMEGAs("data/input-mO.dat", 1000);
-    // Graph* gr = ReadGraphData("data/PassedTeoCons/PassedExpCons.dat", "", "MH", "laL");
-    // RootClass root(gr);
-    // gr->SetOpenWindowBit(true);
-    // gr->SetSaveOutputBit(true);
-
+    // pic.WriteMicrOMEGAs("data/input-mO.dat", 1000);
+    Graph* gr = ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "MH-MA", "MH", "MA");
+    // gr = ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "", "MH", "MC");
+    // ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "", "MH", "laL");
+    // ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "", "MC", "laL");
+    // gr = ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "MA-laL", "MA", "laL");
+    // ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "", "MA", "MC");
+    RootClass root(gr);
+    gr->SetOpenWindowBit(false);
+    gr->SetSaveOutputBit(true);
+    root.ScatterPlot(2, false, 20);
+    // 
+    // root.ScatterPlot(2, false, 20);
+    // 
+    // root.ScatterPlot(2, false, 20);
+    // ;
+    // root.ScatterPlot(2, false, 20);
+    // 
+    // root.ScatterPlot(2, false, 20);
+    // 
 
 
 

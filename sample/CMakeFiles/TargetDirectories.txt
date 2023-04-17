@@ -1,3 +1,0 @@
-/home/pmfig/dev/PIC1/sample/CMakeFiles/rebuild_cache.dir
-/home/pmfig/dev/PIC1/sample/CMakeFiles/edit_cache.dir
-/home/pmfig/dev/PIC1/sample/CMakeFiles/ola.dir

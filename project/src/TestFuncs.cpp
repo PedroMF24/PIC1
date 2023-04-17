@@ -1,4 +1,4 @@
-#include "../include/TestFuncs.h"
+#include "include/TestFuncs.h"
 
 
 void TEST_GenParsSTUValues() {

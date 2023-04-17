@@ -1,4 +1,4 @@
-#include "../include/RootClass.h"
+#include "include/RootClass.h"
 
 using namespace std;
 
@@ -18,15 +18,15 @@ void RootClass::SetNewGraph(Graph* newGraph) {
 void RootClass::SaveOutput(TCanvas *c) {
     string OutputPath = outDir;
     // OutputPath.append(Title.c_str());
-    if (grVec.size() == 0) {
+    if (grVec.empty()) {
         OutputPath.append(graph->GetTitle().c_str());
         OutputPath.append(outFileExt.c_str());
         cout << "Saving " << graph->GetTitle() << " in " << OutputPath << endl;
+    } else {    
+        OutputPath.append("Multigraph");
+        OutputPath.append(outFileExt.c_str());
+        cout << "Saving " << "Multigraph" << " in " << OutputPath << endl;
     }
-
-    OutputPath.append("Multigraph");
-    OutputPath.append(outFileExt.c_str());
-    cout << "Saving " << "Multigraph" << " in " << OutputPath << endl;
 
     // c->Update();
     // auto timestamp = std::to_string(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count());

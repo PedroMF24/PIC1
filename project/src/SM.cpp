@@ -1,4 +1,4 @@
-#include "../include/SM.h"
+#include "include/SM.h"
 
 /**
  * @brief Constructor: Initialize map of SM constants

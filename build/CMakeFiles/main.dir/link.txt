@@ -1,1 +1,0 @@
-/usr/bin/g++  -std=c++17 $(shell root-config --cflags) -fPIC -g  -rdynamic CMakeFiles/main.dir/main.cpp.o  -o main 
