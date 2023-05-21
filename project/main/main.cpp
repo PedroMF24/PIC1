@@ -33,19 +33,23 @@ int main(int argc, char **argv)
     // TEST_GenParsSTUValues();
     // TEST_Multigraph();
     // TEST_FirstPlot();
-    /*    */
+
     IDM pic;
-    // pic.WriteMicrOMEGAs("data/input-mO.dat", 1000);
-    Graph* gr = ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "MH-MA", "MH", "MA");
+    // pic.StorePars(10000);
+    // pic.SXT();
+    /* ======================================================================================== */
+    
+    // pic.WriteMicrOMEGAs("data/input-mO.dat", 5000);
+    // Graph* gr = ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "MH-MA", "MH", "MA");
     // gr = ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "", "MH", "MC");
     // ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "", "MH", "laL");
     // ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "", "MC", "laL");
     // gr = ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "MA-laL", "MA", "laL");
     // ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "", "MA", "MC");
-    RootClass root(gr);
-    gr->SetOpenWindowBit(false);
-    gr->SetSaveOutputBit(true);
-    root.ScatterPlot(2, false, 20);
+    // RootClass root(gr);
+    // gr->SetOpenWindowBit(false);
+    // gr->SetSaveOutputBit(true);
+    // root.ScatterPlot(2, false, 20);
     // 
     // root.ScatterPlot(2, false, 20);
     // 
@@ -54,7 +58,25 @@ int main(int argc, char **argv)
     // root.ScatterPlot(2, false, 20);
     // 
     // root.ScatterPlot(2, false, 20);
-    // 
+    // /* ======================================================================================== */
+
+    // DO FINAL PLOTS
+//     double MH, MA, MC, laL;
+//     pic.FinalPlots("F_MC-MH", "MH", MH, "MC", MC, 500);
+//     pic.FinalPlots("F_MC-MA", "MA", MA, "MC", MC, 500);
+//     pic.FinalPlots("F_MA-MH", "MH", MH, "MA", MA, 500);
+//     pic.FinalPlots("F_laL-MH", "MH", MH, "laL", laL, 500);
+//     pic.FinalPlots("F_laL-MC", "MC", MC, "laL", laL, 500);
+//     pic.FinalPlots("F_laL-MA", "MA", MA, "laL", laL, 500);
+
+// //  DO TEO FINAL PLOTS
+//     // double MH, MA, MC, laL;
+//     pic.FinalTeoPlots("MC-MH", "MH", MH, "MC", MC, 500);
+//     pic.FinalTeoPlots("MC-MA", "MA", MA, "MC", MC, 500);
+//     pic.FinalTeoPlots("MA-MH", "MH", MH, "MA", MA, 500);
+//     pic.FinalTeoPlots("laL-MH", "MH", MH, "laL", laL, 500);
+//     pic.FinalTeoPlots("laL-MC", "MC", MC, "laL", laL, 500);
+//     pic.FinalTeoPlots("laL-MA", "MA", MA, "laL", laL, 500);
 
 
 
@@ -83,10 +105,13 @@ int main(int argc, char **argv)
     // delete gr;
     // pic.FinalPlots("", "MA", "MC", 5000);
 
+    /* Make overlap S vs T plane */
     // IDM pic;
     // pic.GenWriteCheckedPars("data/PassedTeoCons/PassedTeoCons.dat", 10000);
-    // pic.OverlapSXT("data/PassedTeoCons/PassedTeoCons.dat");
-    // pic.FinalPlots(" ", "MH", "laL", 10000);
+    //  "data/PassedTeoCons/PassedTeoCons.dat"
+    // pic.OverlapSXT("data/STU/STU_PointsPars.dat", false);
+    // pic.OverlapSXT("data/STU/STU_PointsPars.dat", true);
+
 
 
     clock.StopTimer();

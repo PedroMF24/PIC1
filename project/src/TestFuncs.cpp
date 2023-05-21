@@ -9,14 +9,13 @@ void TEST_GenParsSTUValues() {
     ReadDAT("data/test/TEST_FUNCTIONS.dat", map);
     WriteMapToFile("data/TEST_FUNCTIONS_WRITTEN.dat", map, pars);
     // pic.STU_BAD();
-    pic.OverlapSXT("data/test/TEST_FUNCTIONS.dat");
+    pic.OverlapSXT("data/test/TEST_FUNCTIONS.dat", false);
 }
-
 
 void TEST_Multigraph() {
     
-    Graph* grValues = ReadGraphData("data/test/TEST_FUNCTIONS.dat", "Teste", "MH", "MA");
-    Graph* gr = ReadGraphData("data/test/TEST_FUNCTIONS.dat", "Scatter", "MA", "MC");
+    Graph* grValues = ReadGraphData("data/test/TestData.dat", "OK", "MH", "MA");
+    Graph* gr = ReadGraphData("data/test/TestData.dat", "Good", "MA", "MC");
     cout << grValues->GetTitle() << endl;
     // // grValues->DivYVec(gr->GetY());
 
@@ -29,7 +28,7 @@ void TEST_Multigraph() {
     root->ScatterPlot(2, true, 20);
 
     grValues->SetOpenWindowBit(true);
-    root->MultiGraphPlot("MGraph title", "ola", "adeus");
+    root->MultiGraphPlot("MGraph title", "#font[12]{M_{H^{+}} [GeV]}", "#font[12]{M_{H^{+}} [GeV]}");
 
     delete gr;
     delete root;
@@ -44,7 +43,7 @@ void TEST_FirstPlot() {
 
 void TEST_STU() {
     IDM pic;
-    pic.OverlapSXT("data/test/TEST_FUNCTIONS.dat");
+    pic.OverlapSXT("data/test/TEST_FUNCTIONS.dat", false);
 }
 
 

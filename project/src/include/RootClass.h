@@ -76,12 +76,13 @@ class RootClass {
 
     string DrawOpt = "AP";
 
-    const double LegendPos[5][5] = 
+    const double LegendPos[6][6] = 
     {{0.1,0.7,0.3,0.9},     // Fit left up
     {0.7,0.7,0.9,0.9},      // Fit right up
     {0.9,0.7,0.99,0.9},     // Fit side up
     {0.9,0.7,0.99,0.9},     // Fit side up
-    {0.9,0.6,0.99,0.9}
+    {0.9,0.6,0.99,0.9},
+    {0.88,0.6,0.99,0.9}
     };
 
 
@@ -98,13 +99,14 @@ class RootClass {
 
     // TApplication *fApp;
 
-    void SaveOutput(TCanvas *c);
+    void SaveOutput(TCanvas *c, const string& Name);
     void ClearLegend();
     void ShowPlot(TCanvas *c, TApplication *app);
     void DeleteCanvas(TCanvas *c);
     void DeleteApp(TApplication *app);
     // void MakeLegend(TLegend *leg, const double* LegendPos, TGraph* gr, string opt);
     void MakeLegend(TLegend *leg, const double* LegendPos, vector<pair<TGraph *, string>> legend_entries, string opt);
+    string Decode2Latex(string name);
 
     // TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
     // TLegend *Legend = nullptr;

@@ -9,6 +9,7 @@ class ExpCons { // : public StandardModel
     ExpCons() = default;
     ~ExpCons() = default;
 
+    /* Functions to reproduce IDM results with hard limits */
     int HiggsBoundsSignals(double MC, double Mh, double laL);
     int WZDecayWidths(double MH, double MA);
     int HChargedLifetime(double MH, double MA, double MC);
@@ -17,7 +18,6 @@ class ExpCons { // : public StandardModel
     int EWBosons(double MH, double MA, double MC);
     int LEPAnalysis(double MH, double MA, double MC);
     int RelicDensity(double MH);
-
     int Extras(double MC, double MA);
 
 //     def EWBosons(MHX, MHC, MH3):

@@ -35,7 +35,7 @@ parameters["Omega"]=0.0
 # %%
 # Iterate through the points
 print("Calculating Relic Density...")
-
+index = 0
 for idx, row in parameters.iterrows():
     # Open the micro-omegas template file
     with open(template_file, "rt") as fin:
@@ -56,6 +56,10 @@ for idx, row in parameters.iterrows():
         f"./main file.par".split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )
     omega=output.stdout.decode("utf-8").split("Omega=")[1].split("\n")[0]
+    if float(omega) >= 0.1175 and float(omega) <= 0.1219: 
+        print("Got one at %d" %idx)
+    elif float(omega) > 0.1219:
+        print("Point above at %d" %idx)
     parameters.loc[idx,"Omega"]=float(omega)
 
 print("Writting output file: output-mO.dat")

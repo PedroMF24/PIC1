@@ -337,17 +337,21 @@ class IDM : public TheoCons,
     // void WriteElementToFile(string key, ofstream &file, int i); // Write parameters to run on experimental constraints 
     // void WriteMapToFile(const string &filename);
 
-    void SXT(int nPoints);
-    vector<pair<double,double>> GetParsSTU(int nPoints);
-    void OverlapSXT(const string& filename);
+    void SXT(int nPoints, bool Ubit);
+    vector<pair<double,double>> GetParsSTU(int nPoints, bool Ubit);
+    void OverlapSXT(const string& filename, bool Ubit);
 
-    void FinalPlots(const string& Title, const string& XAxis, const string& YAxis, int N_points);
+    void FinalPlots(const string& Title, const string& XAxis, double& valX, const string& YAxis, double& valY, int N_points);
+    void FinalTeoPlots(const string& Title, const string& XAxis, double& valX, const string& YAxis, double& valY, int N_points);
+
 
     // void IDMC_Test();
 
     const Parameters& GetPars() const ;
     vector<double> GetParMapVal(const string &name);
     const map<string, vector<double>>& GetParMap() const { return ParMap; }
+
+    void DecodeString(double& x, const string& xName);
 
 
     void TM_Test();

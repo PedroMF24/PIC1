@@ -188,7 +188,7 @@ int IDM::CheckTeoCons() {
     int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11            // OK
     // BFB && Pert && STU && TM && SMU
     // CheckResult(STU)
-    return (BFB && Pert && STU && TM && SMU);
+    return (BFB && Pert && STU && TM && SMU); // 
 
     /* =================================================================== */
 
@@ -349,7 +349,7 @@ void IDM::WriteMicrOMEGAs(const string& filename, int nPoints) {
     while (i < nPoints) {
         Pars.GenPars();
         // Check all constraints
-        if (CheckTeoCons()) { // 
+        if (CheckTeoCons()) { //  CheckTeoCons()
             // cout << i << endl;
             outfile << i << " "
             << Pars.GetMh() << " " 
@@ -365,20 +365,33 @@ void IDM::WriteMicrOMEGAs(const string& filename, int nPoints) {
     outfile.close();
 }
 
-vector<pair<double,double>> IDM::GetParsSTU(int nPoints) {
+vector<pair<double,double>> IDM::GetParsSTU(int nPoints, bool Ubit) {
     ClearParMap();
     cout << "Generating and storing Parameters that pass STU...\n";
     int i = 0;
     vector<pair<double, double>> STVals; // ST.first = S, ST.second = T;
-    Pars.SetScanBit(false);
-    while (i < nPoints) {
-        Pars.GenPars(); // 1
-        // Mudar para while. if (Check all constraints) {AddToMap}
-        double S, T, U;
-        if (ST(Pars.GetMh(), Pars.GetMH(), Pars.GetMA(), Pars.GetMC(), S, T, U)) {
-            AddToMap();
-            STVals.push_back(make_pair(S,T));
-            i++;
+    Pars.SetScanBit(true);
+    if (Ubit) {
+        while (i < nPoints) {
+            Pars.GenPars(); // 1
+            // Mudar para while. if (Check all constraints) {AddToMap}
+            double S, T, U;
+                if (STU(Pars)) {
+                    AddToMap();
+                    STVals.push_back(make_pair(S,T));
+                    i++;
+                }
+        }
+    } else {
+        while (i < nPoints) {
+            Pars.GenPars(); // 1
+            // Mudar para while. if (Check all constraints) {AddToMap}
+            double S, T, U;
+                if (ST(Pars.GetMh(), Pars.GetMH(), Pars.GetMA(), Pars.GetMC(), S, T, U)) {
+                    AddToMap();
+                    STVals.push_back(make_pair(S,T));
+                    i++;
+                }
         }
     }
     return STVals;
@@ -1339,7 +1352,21 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
 
 */
 
-void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAxis, int N_points) {
+void IDM::DecodeString(double& x, const string& xName) {
+    switch (xName[0]) {
+            case 'M':
+                if (xName == "MH") x = Pars.GetMH();
+                else if (xName == "MA") x = Pars.GetMA();
+                else if (xName == "MC") x = Pars.GetMC();
+                break;
+            case 'l':
+                if (xName == "laL") x = Pars.GetlaL();
+                break;
+            // add more cases for other variables if needed
+        }
+}
+
+void IDM::FinalPlots(const string& Title, const string& XAxis, double& valX, const string& YAxis, double& valY, int N_points) {
     // Graph* grInfo = ReadGraphData(filename, Title, X, Y);
     // cout << "Making " << grInfo->GetTitle() << " final graph...\n";
 
@@ -1389,19 +1416,19 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
         double S, T, U;
 
         double X, Y;
-        X = MA;
-        Y = MC;
+        DecodeString(X, XAxis);
+        DecodeString(Y, YAxis);
 
-        // if (!RelicDensity(MH)) {
-        //     //if (f < 300) {
-        //         grEXP->AddPoint(X, Y);
-        //         //f++;
-        //         //continue;
-        //     //}
-        // }
+        if (!RelicDensity(MH)) {
+            if (g < 500) {
+                grEXP->AddPoint(X, Y);
+                g++;
+            }
+            continue;
+        }
 
         // Other conditions implicit in number generation
-        int TMI = TwoMins_Test(la1, la2, Mh, m22Squared);
+        // int TMI = TwoMins_Test(la1, la2, Mh, m22Squared);
         int BFB = BFB_Test(la1, la2, la3, laL);                             // OK
         // if (!(BFB && TMI)) {
         //     if (a<300) {
@@ -1411,7 +1438,7 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
         //     }
         // }
 
-        // int PER = Perturbativity_Test(la1, la2, la3, la4, la5, laL);       // OK
+        int PER = Perturbativity_Test(la1, la2, la3, la4, la5, laL);       // OK
         int UNI = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
         // if (!(UNI && PER)) {
         //     //if (b<300) {
@@ -1451,7 +1478,7 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
 
         int HBS = HiggsBoundsSignals(MC, Mh, laL);
 
-        int EXP = LEP && LUX && HWD && EWB && HCL && WZD && HBS && EXT; // LUX ORD &&
+        int EXP = LEP && EWB && EXT && HWD && HCL && LUX && HBS && ORD && WZD; // HWD && LEP && EWB && HCL && WZD && HBS && EXT && LUX && ORD; // LUX  &&
 
         // if (!EXP) {
         //     //if (f < 300) {
@@ -1461,7 +1488,7 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
         //     //}
         // }
 
-        int GOOD = TMI && ORD && LEP && BFB && UNI && STU && LUX && HWD && EWB && HCL && WZD && HBS && EXT; // ; 
+        int GOOD = BFB && PER && UNI && STU && LEP && EWB && EXT && HWD && HCL && LUX && HBS && ORD && WZD; // HWD && TMI && LEP && BFB && UNI && STU &&  EWB && HCL && WZD && HBS && EXT && LUX && ORD; //  ; 
 
         // if (GOOD) {
         //     grOK->AddPoint(X, Y);
@@ -1475,14 +1502,14 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
             }
         }
 
-        if (BFB == 0 || TMI == 0) {
-            if (a<300) {
+        if (BFB == 0) { // || TMI == 0
+            if (a<500) {
                 grBFB->AddPoint(X, Y);
                 a++;
             }
         } 
         else if (STU == 0) {
-            if (c<300) {
+            if (c<500) {
                 grSTU->AddPoint(X, Y);
                 c++;
             }
@@ -1499,27 +1526,27 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
         //         e++;
         //     }
         // } 
-        else if (UNI == 0) {
-            if (b<300) {
+        else if (UNI == 0 || PER == 0) {
+            if (b<500) {
                 grUNI->AddPoint(X, Y);
                 b++;
             }
             // grUNI->AddPoint(X, Y);
         } 
         else if (EXP == 0) { // else
-            if (f<300) {
+            if (f<500) {
                 grEXP->AddPoint(X, Y);
                 f++;
             }
-        } 
+        }
         else if (GOOD) {
             grOK->AddPoint(X, Y);
-            
+            i++;
         } else {
             fprintf(stderr, "**Warning: FinalPlots, should never get here\n");
         }
 
-        i++;
+        
         
         if ( i%100 == 0 ) {
             if (do_first) {
@@ -1580,6 +1607,191 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
 
     root.MultiGraphPlot(Title, XAxis, YAxis);
 
+    
+
+    delete grBFB;
+    delete grUNI;
+    delete grSTU;
+    delete grTMI;
+    delete grPER;
+    delete grEXP;
+    delete grOK;
+}
+
+void IDM::FinalTeoPlots(const string& Title, const string& XAxis, double& valX, const string& YAxis, double& valY, int N_points) {
+    // Graph* grInfo = ReadGraphData(filename, Title, X, Y);
+    // cout << "Making " << grInfo->GetTitle() << " final graph...\n";
+
+    // StoreParsTest(N_points);
+
+
+    // RootClass root(grInfo);
+    Graph* grBFB = new Graph("BFB");
+    Graph* grSTU = new Graph("STU");
+    Graph* grUNI = new Graph("UNI");
+    Graph* grPER = new Graph("PER");
+    Graph* grTMI = new Graph("TMI");
+    Graph* grEXP = new Graph("EXP");
+
+    Graph* grOK = new Graph("OK");
+
+    double Mh = Pars.GetMh();
+    double v = Pars.Getv();
+    double la1 = Pars.Getla1(); // (Mh/v)**2
+
+    // int max = ParMap["MH"].size();
+
+    // for (int i = 0; i < max; i++) {
+    ClearParMap();
+    cout << "Generating Parameters of final plots...\n";
+    Pars.SetScanBit(true);
+    bool do_first = true;
+    int i = 0;
+    int a, b, c, d, e, f, g;
+    a = b = c = d = e = f = g = 0;
+    while (i < N_points) {
+        Pars.GenPars();
+
+        double la2 = Pars.Getla2();
+        double la3 = Pars.Getla3();
+        double la4 = Pars.Getla4();
+        double la5 = Pars.Getla5();
+        double laL = Pars.GetlaL();
+        double m22Squared = Pars.Getm22Squared();
+        double MH = Pars.GetMH(); // MHX CDM
+        double MA = Pars.GetMA(); // MH3 It is A in IDM paper
+        double MC = Pars.GetMC(); // MHC Charged Higgs
+
+
+
+        // S T U Oblique parameters
+        double S, T, U;
+
+        double X, Y;
+        DecodeString(X, XAxis);
+        DecodeString(Y, YAxis);
+
+        // Other conditions implicit in number generation
+        int TMI = TwoMins_Test(la1, la2, Mh, m22Squared);
+        int BFB = BFB_Test(la1, la2, la3, laL);                             // OK
+        if (!(BFB && TMI)) {
+            if (a<500) {
+                grBFB->AddPoint(X, Y);
+                a++;
+                continue;
+            }
+        }
+
+        int PER = Perturbativity_Test(la1, la2, la3, la4, la5, laL);       // OK
+        int UNI = ScatteringMatrixUnitary_Test(la1, la2, la3, la4, la5);
+        if (!(UNI && PER)) {
+            if (b<500) {
+                grUNI->AddPoint(X, Y);
+                b++;
+                continue;
+            }
+            // grUNI->AddPoint(X, Y);
+        } 
+
+        int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11            // OK
+        if (!STU) {
+            if (c<500) {
+                grSTU->AddPoint(X, Y);
+                c++;
+                continue;
+            }
+        } 
+
+        
+
+        int GOOD = BFB && PER && UNI && STU && TMI;
+
+        if (GOOD) {
+            grOK->AddPoint(X, Y);
+            i++;
+        }
+        
+
+        if ( i%100 != 0 ) {
+            if (!do_first) {
+                // cout << "Done " << i << " points" << endl;
+                do_first = true;
+            }
+        }
+
+        // if (BFB == 0 || TMI == 0) { // 
+        //     if (a<500) {
+        //         grBFB->AddPoint(X, Y);
+        //         a++;
+        //     }
+        // } 
+        // else if (STU == 0) {
+        //     if (c<500) {
+        //         grSTU->AddPoint(X, Y);
+        //         c++;
+        //     }
+        // } 
+        // // else if (PER == 0) {
+        // //     if (d<300) {
+        // //         grPER->AddPoint(X, Y);
+        // //         d++;
+        // //     }
+        // // } 
+        // // else if (TMI == 0) {
+        // //     if (e<300) {
+        // //         grTMI->AddPoint(X, Y);
+        // //         e++;
+        // //     }
+        // // } 
+        // else if (UNI == 0 || PER == 0) {
+        //     if (b<500) {
+        //         grUNI->AddPoint(X, Y);
+        //         b++;
+        //     }
+        //     // grUNI->AddPoint(X, Y);
+        // } 
+        // else if (GOOD) {
+        //     grOK->AddPoint(X, Y);
+        //     i++;
+        // } else {
+        //     fprintf(stderr, "**Warning: FinalPlots, should never get here\n");
+        // }
+
+        
+        
+        if ( i%100 == 0 ) {
+            if (do_first) {
+                cout << "Done " << i << " points" << endl;
+                do_first = false;
+            }
+        }
+    }
+
+    const int Marker = 20;
+
+    RootClass root(grBFB); // 
+    root.ScatterPlot(4, true, Marker);
+    grBFB->SetLegendBit(true);
+    grBFB->SetSaveOutputBit(true);
+
+    root.SetNewGraph(grUNI);
+    root.ScatterPlot(6, true, Marker);
+
+    root.SetNewGraph(grSTU);
+    root.ScatterPlot(3, true, Marker);
+
+    // root.SetNewGraph(grPER);
+    // root.ScatterPlot(877, true, Marker);
+
+    // root.SetNewGraph(grTMI);
+    // root.ScatterPlot(806, true, Marker);
+
+    root.SetNewGraph(grOK);
+    root.ScatterPlot(2, true, Marker);
+
+    root.MultiGraphPlot(Title, XAxis, YAxis);
+
+
     delete grBFB;
     delete grUNI;
     delete grSTU;
@@ -1591,7 +1803,12 @@ void IDM::FinalPlots(const string& Title, const string& XAxis, const string& YAx
 
 
 
-void IDM::SXT(int nPoints) {
+
+
+
+
+
+void IDM::SXT(int nPoints, bool Ubit) {
 cout << "Making SXT graph...\n";
     TApplication app("app", nullptr, nullptr);
     TCanvas *c = new TCanvas("c", "SXT", 800, 800);
@@ -1652,7 +1869,7 @@ cout << "Making SXT graph...\n";
     }
     */
 
-    vector<pair<double, double>> Values = GetParsSTU(nPoints);
+    vector<pair<double, double>> Values = GetParsSTU(nPoints, false);
     WriteSTUPars(Values, "data/STU/STU_Points.dat");
     WriteDat("data/STU/STU_PointsPars.dat", ParMap);
 
@@ -1667,13 +1884,13 @@ cout << "Making SXT graph...\n";
     TGraph *gr = new TGraph(Npoints, &Svec[0], &Tvec[0]);
     // TGraph *gr = new TGraph(max, &ST[0][0], &ST[1][0]);
 
-    string name = "SXT_19-03";
+    string name = "SXT_20-05";
     gr->SetTitle(name.c_str());
     gr->GetXaxis()->SetTitle("S");
     gr->GetYaxis()->SetTitle("T");
     
 
-    gr->SetMarkerColor(4);
+    gr->SetMarkerColor(2);
     gr->SetMarkerStyle(20);
     
     gr->Draw("AP");
@@ -1694,14 +1911,16 @@ cout << "Making SXT graph...\n";
 
 
 
-void IDM::OverlapSXT(const string& filename) {
+void IDM::OverlapSXT(const string& filename, bool Ubit) {
     TApplication app("app", nullptr, nullptr);
     TCanvas *c = new TCanvas("c", "canvas", 1300, 800);
-    c->SetGrid();
+    // c->SetGrid();
+    c->SetMargin(0.125, 0.12, 0.12, 0.1);
+
 
     TMultiGraph *mg = new TMultiGraph();
-    string name = "S-T Plane";
-    mg->SetTitle(name.c_str());
+    string name = "S - T Plane";
+    // mg->SetTitle(name.c_str());
 
     vector<double> Svec, Tvec;
     Svec.clear();
@@ -1712,11 +1931,22 @@ void IDM::OverlapSXT(const string& filename) {
     // double Mh = 125.1; // Pars.GetMh();
     // double m11 = Mh*Mh;
 
-    // vector<pair<double, double>> Values = GetParsSTU(nPoints);
-
-    // WriteSTUPars(Values, "data/STU/STU_Points.dat");
-    // WriteDat("data/STU/STU_PointsPars.dat", ParMap);
     
+    if (!Ubit) {
+        /* Generate STU Parameters, false for U free, true for U restricted */
+        vector<pair<double, double>> Values = GetParsSTU(10000, Ubit);
+        /* Write S, T values to .dat file */
+        WriteSTUPars(Values, "data/STU/STU_Points.dat");
+        }
+
+    
+        
+
+    /* Write ParMap Parameters to .dat file */
+    // WriteDat(filename, ParMap);
+    
+    /* Store parameters that passed constraints directly */
+    // StoreCheckedPars(10000);
     ReadDAT(filename, ParMap);
     int N = 0;
     int max =  ParMap["MH"].size(); // ST[0].size(); // 
@@ -1726,17 +1956,27 @@ void IDM::OverlapSXT(const string& filename) {
     double Mh = Pars.GetMh();
 
     double S,T,U;
+    int count = 0;
 
     for (int i = 0; i < max; i++) {
         double MH = ParMap["MH"][i];
         double MA = ParMap["MA"][i];
         double MC = ParMap["MC"][i];
-        STU_Test(Mh, MH, MA, MC, S, T, U);
-        Svec.push_back(S);
-        Tvec.push_back(T);
+        if (Ubit) {
+            STU_Test(Mh, MH, MA, MC, S, T, U); 
+            Svec.push_back(S);
+            Tvec.push_back(T);
+            count++;
+        } else {
+            if (ST(Mh, MH, MA, MC, S, T, U)) {
+                Svec.push_back(S);
+                Tvec.push_back(T);
+                count++;
+            }
+        }
     }
-    
 
+    cout << "Count = " << count << endl;
     // for (int i = 0; i < nPoints; i++)
     // {
     //     Svec.push_back(Values[i].first);
@@ -1747,8 +1987,8 @@ void IDM::OverlapSXT(const string& filename) {
     TGraph *gr = new TGraph(Npoints, &Svec[0], &Tvec[0]);
     // TGraph *gr = new TGraph(max, &ST[0][0], &ST[1][0]);
     gr->SetTitle("SXT");
-    gr->SetMarkerColor(4);
-    gr->SetMarkerStyle(10);
+    gr->SetMarkerColor(2);
+    gr->SetMarkerStyle(20);
 
     Svec.clear();
     Tvec.clear();
@@ -1764,14 +2004,18 @@ void IDM::OverlapSXT(const string& filename) {
     
     TGraph *grprof = new TGraph(Svec.size(), &Svec[0], &Tvec[0]);
     grprof->SetTitle("Elipse");
-    grprof->SetMarkerColor(2);
-    grprof->SetMarkerStyle(10);
+    grprof->SetMarkerColor(800);
+    grprof->SetMarkerStyle(20);
 
-    mg->Add(gr);
     mg->Add(grprof);
+    mg->Add(gr);
 
     c->Update();
 
+    mg->GetXaxis()->SetTitleSize(0.045);
+    mg->GetYaxis()->SetTitleSize(0.045);
+    mg->GetXaxis()->SetLabelSize(0.045);
+    mg->GetYaxis()->SetLabelSize(0.045);
     mg->GetXaxis()->SetTitle("S");
     mg->GetXaxis()->CenterTitle();
     mg->GetYaxis()->SetTitle("T");
@@ -1779,15 +2023,22 @@ void IDM::OverlapSXT(const string& filename) {
 
     // c->BuildLegend();
 
-    TLegend *leg = new TLegend(0.9, 0.7, 0.99, 0.9);
-    leg->SetHeader("Constraints", "C");
-    leg->AddEntry(grprof, "Allowed", "p");
-    leg->AddEntry(gr, "Results", "p");
-    leg->Draw();
+    if (Ubit) {
+        TLegend *leg = new TLegend(0.88,0.6,0.99,0.9); // 0.9, 0.7, 0.99, 0.9
+        // leg->SetHeader("Legend", "C");
+        leg->AddEntry(grprof, "Good", "p");
+        leg->AddEntry(gr, "OK", "p");
+        leg->Draw();
+    }
 
     c->Update();
 
     string dir = "bin/Plots/";
+    if (Ubit) {
+        name.append("_U");
+    } else {
+        name.append("_UFree");
+    }
     name.append(".png");
     dir.append(name);
     c->SaveAs(dir.c_str());

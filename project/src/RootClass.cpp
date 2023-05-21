@@ -15,7 +15,7 @@ void RootClass::SetNewGraph(Graph* newGraph) {
     graph = newGraph;
 }
 
-void RootClass::SaveOutput(TCanvas *c) {
+void RootClass::SaveOutput(TCanvas *c, const string& Name) {
     string OutputPath = outDir;
     // OutputPath.append(Title.c_str());
     if (grVec.empty()) {
@@ -23,7 +23,7 @@ void RootClass::SaveOutput(TCanvas *c) {
         OutputPath.append(outFileExt.c_str());
         cout << "Saving " << graph->GetTitle() << " in " << OutputPath << endl;
     } else {    
-        OutputPath.append("Multigraph");
+        OutputPath.append(Name);
         OutputPath.append(outFileExt.c_str());
         cout << "Saving " << "Multigraph" << " in " << OutputPath << endl;
     }
@@ -74,6 +74,13 @@ void RootClass::MultiGraphPlot(const string& Title, const string& X, const strin
         app = new TApplication("app", nullptr, nullptr);
 
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+    c->SetMargin(0.125, 0.12, 0.12, 0.1);
+    // c->SetFillColor(0);
+    // c->SetBorderMode(0);
+    // c->SetBorderSize(2);
+    // c->SetFrameBorderSize(3);
+    // c->SetFrameBorderMode(2);
+    // c->SetBottomMargin(-2);
 
     TMultiGraph *mg = new TMultiGraph();
     // mg->SetTitle(Title.c_str());
@@ -95,13 +102,16 @@ void RootClass::MultiGraphPlot(const string& Title, const string& X, const strin
         //     if (val < 0) cout << val << endl;
         // }
     }
-    mg->GetXaxis()->SetTitle(X.c_str());
+    mg->GetXaxis()->SetTitleSize(0.045);
+    mg->GetYaxis()->SetTitleSize(0.045);
+    mg->GetXaxis()->SetLabelSize(0.045);
+    mg->GetYaxis()->SetLabelSize(0.045);
+    mg->GetXaxis()->SetTitleOffset(1.3);
+    mg->GetXaxis()->SetTitle((Decode2Latex(X)).c_str());
     mg->GetXaxis()->CenterTitle();
-    mg->GetYaxis()->SetTitle(Y.c_str());
+    mg->GetYaxis()->SetTitle((Decode2Latex(Y)).c_str());
 
 
-    
-    
 
     // Debug
     // cout << "Min Y value: " << mg->GetYaxis()->GetXmin() << endl;
@@ -129,16 +139,16 @@ if (LogScale) {
     cout << "Is log scale enabled? " << c->GetLogy() << endl;
 }
 
-    c->SetLogy();
+    // c->SetLogy();
     mg->Draw(grExample->GetDrawOpt().c_str()); // DrawOpt.c_str()
-    c->Update();
+    // c->Update();
 
     if (1) {
-        MakeLegend(leg, LegendPos[4], legend_entries, "p");
+        MakeLegend(leg, LegendPos[5], legend_entries, "p");
     }
 
     if (grExample->GetSaveOutputBit())
-        SaveOutput(c);
+        SaveOutput(c, Title);
 
     if (grExample->GetOpenWindowBit()) { // OpenWindowBit
         ShowPlot(c, app);
@@ -314,7 +324,7 @@ void RootClass::GraphPlot(bool DrawBit, int ColorKey, int MarkerStyle, bool Add2
     // }
 
     if (graph->GetSaveOutputBit())
-        SaveOutput(c);
+        SaveOutput(c, graph->GetTitle());
 
     // if (OpenWindowBit) {
     //     TRootCanvas *rc = (TRootCanvas *)c->GetCanvasImp();
@@ -368,12 +378,13 @@ void RootClass::DeleteApp(TApplication *app) {
 void RootClass::MakeLegend(TLegend *leg, const double* LegendPos, vector<pair<TGraph *, string>> legend_entries, string opt) {
     if (!leg)
         leg = new TLegend(LegendPos[0], LegendPos[1], LegendPos[2], LegendPos[3]); // 0.1,0.7,0.48,0.9
-    leg->SetHeader("Legend", "C"); // option "C" allows to center the header , graph->GetTitle().c_str()
+    // leg->SetHeader("Legend", "C"); // option "C" allows to center the header , graph->GetTitle().c_str()
     // leg->AddEntry(h1,"Histogram filled with random numbers","f");
     // leg->AddEntry("f1","Function abs(#frac{sin(x)}{x})","l");
     // leg->AddEntry("gr","Graph with error bars","lep");
+    leg->SetTextSize(0.04*1.1);
     for (auto &leg_entry : legend_entries) // leg_entry.first
-        leg->AddEntry(leg_entry.first, leg_entry.second.c_str(), opt.c_str());
+        leg->AddEntry(leg_entry.first,leg_entry.second.c_str(), opt.c_str());
     // leg->AddEntry(gr, "ola", opt.c_str());
     leg->Draw();
 }
@@ -453,7 +464,7 @@ cout << "Making " << graph->GetTitle() << " scatter plot..." << endl;
     }
 
     if (graph->GetSaveOutputBit())
-        SaveOutput(c);
+        SaveOutput(c, graph->GetTitle());
 
     // cout << "gets here" << endl;
     if (graph->GetOpenWindowBit()) 
@@ -463,6 +474,25 @@ cout << "Making " << graph->GetTitle() << " scatter plot..." << endl;
     // DeleteApp(app);
 
 }
+
+string RootClass::Decode2Latex(string name) {
+    switch (name[0]) {
+            case 'M':
+                if (name == "MH") return "#font[12]{M_{H} [GeV]}";
+                else if (name == "MA") return "#font[12]{M_{A} [GeV]}";
+                else if (name == "MC") return "#font[12]{M_{H^{+}} [GeV]}";
+                break;
+            case 'l':
+                if (name == "laL") return "#lambda_{345}";
+                else if (name == "la2") return "#lambda_{2}";
+                break;
+            default:
+                return name;
+                break;
+        }
+    return name;
+}
+
 
 // vector<double> x,y;
 

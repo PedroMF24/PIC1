@@ -124,6 +124,7 @@ void WriteMapToFile(const string &filename, map<string, vector<double>> &ParMap,
 }
 
 void ReadDAT(const string &filename, map<string, vector<double>> &ParMap) {
+    ParMap.clear(); printf("Clearing map to read parameters...\n");
     printf("Reading %s into Parameter Map\n", filename.c_str());
 
     ifstream input(filename);
