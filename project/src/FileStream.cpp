@@ -325,6 +325,43 @@ void ReadWriteSTU(const string& filename, map<string, vector<double>> &ParMap) {
     outfile << endl;
 }
 
+// vector<double>
+void ReadMicrOMEGAsOutput(const string &filename) {
+printf("Reading %s, MicrOMEGAs output\n", filename.c_str());
+
+    ifstream input(filename);
+
+    if (!input.is_open()) {
+        fprintf(stderr, "**Can not open DAT file to read\n");
+        exit(0);
+    }
+
+	string line, col;
+	vector<string> header;
+
+    getline(input, line);
+	stringstream ss(line);
+	while (getline(ss, col, ' ')) {
+		header.push_back(col);
+	}
+    
+	// Read values
+	while (getline(input, line)) {
+		stringstream ss(line);
+		int i = 0;
+        string BP;
+		while (getline(ss, col, ' ')) { // ; para prof data
+            if (header[i] == "BP") BP = col;
+			if (header[i] == "Omega") {
+                cout << col;
+            }
+            // cout << "header " << header[i] << " Value " << ParMap[header[i]][i] << endl; 
+			i++;
+		}
+        cout << endl;
+	}
+}
+
 /*
 Graph ReadGraphData(const string& filename, const string& X, const string& Y) {
     ifstream file(filename);

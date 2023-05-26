@@ -432,6 +432,8 @@ cout << "Making " << graph->GetTitle() << " scatter plot..." << endl;
         app = new TApplication("app", nullptr, nullptr);
 
     TCanvas *c = new TCanvas("c", "canvas", 1200, 800);
+    c->SetMargin(0.125, 0.12, 0.12, 0.1);
+
     int nPoints = graph->GetX().size();
 
     vector<double> x = graph->GetX();
@@ -441,14 +443,22 @@ cout << "Making " << graph->GetTitle() << " scatter plot..." << endl;
 
     gr->SetTitle(""); // graph->GetTitle().c_str()
     gr->GetXaxis()->CenterTitle();
-    gr->GetXaxis()->SetTitle(graph->GetXAxisTitle().c_str());
-    gr->GetYaxis()->SetTitle(graph->GetYAxisTitle().c_str());
+    // gr->GetXaxis()->SetTitle(graph->GetXAxisTitle().c_str());
+    // gr->GetYaxis()->SetTitle(graph->GetYAxisTitle().c_str());
     gr->SetMarkerStyle(Marker); // 20
     // gr->SetMarkerSize(10);
     gr->SetMarkerColor(ColorKey);
 
     gr->SetMinimum(gr->GetYaxis()->GetXmin());
     gr->SetMaximum(gr->GetYaxis()->GetXmax());
+
+    gr->GetXaxis()->SetTitleSize(0.045);
+    gr->GetYaxis()->SetTitleSize(0.045);
+    gr->GetXaxis()->SetLabelSize(0.045);
+    gr->GetYaxis()->SetLabelSize(0.045);
+    gr->GetXaxis()->SetTitleOffset(1.3);
+    gr->GetXaxis()->SetTitle((Decode2Latex(graph->GetXAxisTitle())).c_str());
+    gr->GetYaxis()->SetTitle((Decode2Latex(graph->GetYAxisTitle())).c_str());
 
     
     if (Add2Vec)
@@ -481,6 +491,9 @@ string RootClass::Decode2Latex(string name) {
                 if (name == "MH") return "#font[12]{M_{H} [GeV]}";
                 else if (name == "MA") return "#font[12]{M_{A} [GeV]}";
                 else if (name == "MC") return "#font[12]{M_{H^{+}} [GeV]}";
+                else if (name == "MC - MH") return "#font[12]{M_{H^{+}} - M_{H} [GeV]}";
+                else if (name == "MA - MH") return "#font[12]{M_{A} - M_{H} [GeV]}";
+                else if (name == "MC - MA") return "#font[12]{M_{H^{+}} - M_{A} [GeV]}";
                 break;
             case 'l':
                 if (name == "laL") return "#lambda_{345}";

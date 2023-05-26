@@ -121,8 +121,12 @@ void IDM::StoreCheckedPars(int nPoints) {
     WriteMapToFile("data/PassedTeoCons/PassedTeoCons.dat", ParMap, Pars);
 }
 
-void IDM::GenWriteCheckedPars(const string& filename, int nPoints) {
-    cout << "Generating and Writting " << nPoints << " Parameters" << " to " << filename << endl;
+void IDM::GenWriteCheckedPars(const string& filename, int nPoints, bool OnlyTeoBit) {
+    string TeoOrAll = "all";
+    if (OnlyTeoBit) TeoOrAll = "theoretical";
+    cout << "Generating and Writting " << nPoints;
+    cout << " Parameters" << " to " << filename ;
+    cout << " that pass "  << TeoOrAll << " constraints" << endl;
     // Create or open file
     ofstream outfile(filename);
     // Check if file was created or opened successfully
@@ -148,9 +152,16 @@ void IDM::GenWriteCheckedPars(const string& filename, int nPoints) {
     while (i < nPoints) {
         Pars.GenPars();
         // Check all constraints
-        if (CheckTeoCons()) { // CheckTeoCons()
+        if (OnlyTeoBit) {
+            if (CheckTeoCons()) { // CheckTeoCons()
             outfile << Pars << endl;
             i++;
+            }
+        } else {
+            if (CheckallCons()) {
+            outfile << Pars << endl;
+            i++;
+            }
         }
     }
     // Close the file
@@ -188,7 +199,7 @@ int IDM::CheckTeoCons() {
     int STU = STU_Test(Mh, MH, MA, MC, S, T, U); // Mh = m11            // OK
     // BFB && Pert && STU && TM && SMU
     // CheckResult(STU)
-    return (BFB && Pert && STU && TM && SMU); // 
+    return (BFB && Pert && STU  && TM && SMU); //  
 
     /* =================================================================== */
 
@@ -216,6 +227,10 @@ int IDM::CheckallCons() {
     double la5 = Pars.Getla5();
 
     double S, T, U;
+
+    if (!RelicDensity(MH)) {
+        return 0;
+    }
 
     if (!BFB_Test(la1, la2, la3, laL)) {
         return 0;
@@ -1911,7 +1926,7 @@ cout << "Making SXT graph...\n";
 
 
 
-void IDM::OverlapSXT(const string& filename, bool Ubit) {
+void IDM::OverlapSXT(const string& filename, bool Ubit, bool ScanBit) {
     TApplication app("app", nullptr, nullptr);
     TCanvas *c = new TCanvas("c", "canvas", 1300, 800);
     // c->SetGrid();
@@ -1932,22 +1947,24 @@ void IDM::OverlapSXT(const string& filename, bool Ubit) {
     // double m11 = Mh*Mh;
 
     
-    if (!Ubit) {
-        /* Generate STU Parameters, false for U free, true for U restricted */
-        vector<pair<double, double>> Values = GetParsSTU(10000, Ubit);
-        /* Write S, T values to .dat file */
-        WriteSTUPars(Values, "data/STU/STU_Points.dat");
-        }
-
-    
-        
+    if (!ScanBit) {
+        if (!Ubit) {
+            /* Generate STU Parameters, false for U free, true for U restricted */
+            vector<pair<double, double>> Values = GetParsSTU(10000, Ubit);
+            /* Write S, T values to .dat file */
+            WriteSTUPars(Values, "data/STU/STU_Points.dat");
+            }
+    }
 
     /* Write ParMap Parameters to .dat file */
     // WriteDat(filename, ParMap);
     
     /* Store parameters that passed constraints directly */
     // StoreCheckedPars(10000);
-    ReadDAT(filename, ParMap);
+    if (ScanBit) StoreParsTest(10000);
+    TGraph *gr3 = new TGraph();
+
+    // ReadDAT(filename, ParMap);
     int N = 0;
     int max =  ParMap["MH"].size(); // ST[0].size(); // 
     cout << "Max " << max << endl;
@@ -1962,18 +1979,35 @@ void IDM::OverlapSXT(const string& filename, bool Ubit) {
         double MH = ParMap["MH"][i];
         double MA = ParMap["MA"][i];
         double MC = ParMap["MC"][i];
-        if (Ubit) {
-            STU_Test(Mh, MH, MA, MC, S, T, U); 
-            Svec.push_back(S);
-            Tvec.push_back(T);
-            count++;
-        } else {
-            if (ST(Mh, MH, MA, MC, S, T, U)) {
+        if (!ScanBit) {
+            if (Ubit) {
+                STU_Test(Mh, MH, MA, MC, S, T, U); 
                 Svec.push_back(S);
                 Tvec.push_back(T);
                 count++;
+            } else {
+                if (ST(Mh, MH, MA, MC, S, T, U)) {
+                    Svec.push_back(S);
+                    Tvec.push_back(T);
+                    count++;
+                }
             }
+        } else {
+            if (STU_Test(Mh, MH, MA, MC, S, T, U)) {Svec.push_back(S); Tvec.push_back(T);}
+            else gr3->AddPoint(S, T);
         }
+        // if (Ubit) {
+        //     STU_Test(Mh, MH, MA, MC, S, T, U); 
+        //     Svec.push_back(S);
+        //     Tvec.push_back(T);
+        //     count++;
+        // } else {
+        //     if (ST(Mh, MH, MA, MC, S, T, U)) {
+        //         Svec.push_back(S);
+        //         Tvec.push_back(T);
+        //         count++;
+        //     }
+        // }
     }
 
     cout << "Count = " << count << endl;
@@ -1989,6 +2023,12 @@ void IDM::OverlapSXT(const string& filename, bool Ubit) {
     gr->SetTitle("SXT");
     gr->SetMarkerColor(2);
     gr->SetMarkerStyle(20);
+
+    if (ScanBit) {
+        gr3->SetTitle("STU");
+        gr3->SetMarkerColor(3);
+        gr3->SetMarkerStyle(20);
+    }
 
     Svec.clear();
     Tvec.clear();
@@ -2007,6 +2047,7 @@ void IDM::OverlapSXT(const string& filename, bool Ubit) {
     grprof->SetMarkerColor(800);
     grprof->SetMarkerStyle(20);
 
+    mg->Add(gr3);
     mg->Add(grprof);
     mg->Add(gr);
 
@@ -2023,9 +2064,18 @@ void IDM::OverlapSXT(const string& filename, bool Ubit) {
 
     // c->BuildLegend();
 
-    if (Ubit) {
+    if (Ubit && !ScanBit) {
         TLegend *leg = new TLegend(0.88,0.6,0.99,0.9); // 0.9, 0.7, 0.99, 0.9
         // leg->SetHeader("Legend", "C");
+        leg->AddEntry(grprof, "Good", "p");
+        leg->AddEntry(gr, "OK", "p");
+        leg->Draw();
+    }
+
+    if (ScanBit && !Ubit) {
+        TLegend *leg = new TLegend(0.88,0.6,0.99,0.9); // 0.9, 0.7, 0.99, 0.9
+        // leg->SetHeader("Legend", "C");
+        leg->AddEntry(gr3, "STU", "p");
         leg->AddEntry(grprof, "Good", "p");
         leg->AddEntry(gr, "OK", "p");
         leg->Draw();
@@ -2242,6 +2292,33 @@ void IDM::OverlapSXT(int nPoints) {
 }
 */
 
+int IDM::InSTUEllipsis(const string& filename, int nPoints) {
+    cout << "Check how many points pass STU..." << endl;
+    StoreParsTest(nPoints);
+    // ReadDAT(filename, ParMap);
+    int max =  ParMap["MH"].size(); // ST[0].size(); // 
+    cout << "Max points: " << max << endl;
+
+    double la1 = Pars.Getla1();
+    double Mh = Pars.GetMh();
+
+    double S,T,U;
+    int passed_count = 0;
+
+    for (int i = 0; i < max; i++) {
+        double MH = ParMap["MH"][i];
+        double MA = ParMap["MA"][i];
+        double MC = ParMap["MC"][i];
+        if (STU_Test(Mh, MH, MA, MC, S, T, U)) {
+            passed_count++;
+        } 
+    }
+    cout << "Passed STU: " << passed_count << endl;
+    float percentage = (static_cast<float>(passed_count)/max)*100;
+    cout << "Percentage passed: " << percentage << "%" << endl; // float((passed_count/max)*100)
+    return passed_count;
+}
+
 void IDM::STU_BAD() {
     /* See values from professor */
     // ReadCSV("data/STU/check/STU-Bad.csv", ParMap);
@@ -2271,6 +2348,114 @@ void IDM::ParsGraph(const string& path, const string& Title, const string& xName
     
     // root.MultiGraphPlot("MultiName");
 }
+
+void IDM::MassDiff(const string& filename, bool MultiPlot) {
+
+    if (!MultiPlot) {
+    Graph *gr1 = ReadGraphData(filename, "", "MA", "MC");
+    Graph *gr2 = ReadGraphData(filename, "", "MH", "MH");
+
+    Graph* gr = new Graph();
+    *gr = *gr1 - *gr2;
+    gr->SetOpenWindowBit(true);
+    gr->SetSaveOutputBit(true);
+    RootClass* root = new RootClass(gr);
+    root->ScatterPlot(2, true, 20);
+    delete gr;
+    delete gr1; 
+    delete gr2;
+    delete root;
+    } else {
+        ReadDAT(filename, ParMap);
+        Graph *gr1 = new Graph("OK");
+        Graph *gr2 = new Graph("EXP");
+        double la1 = Pars.Getla1();
+        double mh = Pars.GetMh();
+        int N = ParMap["MH"].size();
+        for (int i = 0; i < N; i++) {
+            double MH = ParMap["MH"][i];
+            double MA = ParMap["MA"][i];
+            double MC = ParMap["MC"][i];
+            double laL = ParMap["laL"][i];
+            if (CheckAllExpCons(mh, MH, MA, MC, laL)) {
+                // If it also passes all exp cons
+                gr1->AddPoint(MA-MH, MC-MH);
+            } else {
+                // if it does not pass all exp cons
+                if (gr2->Size() <= 2000) gr2->AddPoint(MA-MH, MC-MH);
+            }
+        }
+        RootClass* root = new RootClass(gr2);
+        root->ScatterPlot(7, true, 20);
+        gr2->SetOpenWindowBit(true);
+        gr2->SetSaveOutputBit(true);
+        root->SetNewGraph(gr1);
+        root->ScatterPlot(2, true, 20);
+        root->MultiGraphPlot("MA-MH vs MC-MH", "MC - MH", "MA - MH");
+        delete gr1; 
+        delete gr2;
+        delete root;
+    }
+
+
+}
+
+/* MC - MA VS MC - MH Plane */
+void IDM::MC_STU(const string& filename, int nPoints, bool ExpBit) {
+
+    StoreParsTest(nPoints);
+
+    Graph *gr = new Graph("OK");
+    Graph *grOut = new Graph("STU");
+    Graph *grExp = new Graph("EXP");
+
+    double la1 = Pars.Getla1();
+    double mh = Pars.GetMh();
+    int N = ParMap["MH"].size();
+    for (int i = 0; i < N; i++)
+    {
+        double MH = ParMap["MH"][i];
+        double MA = ParMap["MA"][i];
+        double MC = ParMap["MC"][i];
+        double S, T, U;
+        if (ExpBit) {
+            double laL = ParMap["laL"][i];
+            short STU = STU_Test(mh, MH, MA, MC, S, T, U);
+            short Exp = CheckAllExpCons(mh, MH, MA, MC, laL);
+            if (STU == 1) {
+                if (Exp == 0) grExp->AddPoint(MC-MA, MC-MH);
+                else if (Exp == 1) gr->AddPoint(MC-MA, MC-MH);
+                else fprintf(stderr, "**Error, should never get here in MC_STU");
+            } else {
+                grOut->AddPoint(MC-MA, MC-MH);
+            }
+        } else {
+            if (STU_Test(mh, MH, MA, MC, S, T, U)) {
+                gr->AddPoint(MC-MA, MC-MH);
+            } else {
+                grOut->AddPoint(MC-MA, MC-MH);
+            }
+        }
+    }
+
+    RootClass* root = new RootClass(grOut);
+    root->ScatterPlot(3, true, 20);
+
+    grOut->SetOpenWindowBit(true);
+    grOut->SetSaveOutputBit(true);
+
+    if (ExpBit) {
+        root->SetNewGraph(grExp);
+        root->ScatterPlot(7, true, 20);
+    }
+
+    root->SetNewGraph(gr);
+    root->ScatterPlot(2, true, 20);
+
+    root->MultiGraphPlot("", "MC - MA", "MC - MH");
+}
+
+
 
 void IDM::Omegas(const string& filename) {
 

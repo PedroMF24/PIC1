@@ -33,13 +33,24 @@ int main(int argc, char **argv)
     // TEST_GenParsSTUValues();
     // TEST_Multigraph();
     // TEST_FirstPlot();
+    // TEST_laL();
+    // TEST_Passed_U_STU(10000);
 
     IDM pic;
+
+    /* GENERATE PARS AND SEE MASS DIFFERENCE */
+    pic.GenWriteCheckedPars("data/PassedTeoCons/PassedCons.dat", 10000, true);
+    pic.MassDiff("data/PassedTeoCons/PassedCons.dat", true);
+
+    // pic.MC_STU("data/STU/MC_STU.dat", 10000, false);
+
     // pic.StorePars(10000);
     // pic.SXT();
-    /* ======================================================================================== */
     
-    // pic.WriteMicrOMEGAs("data/input-mO.dat", 5000);
+    /* ======================================================================================== */
+    /* MIN CHANGED TO 600 */
+    // pic.WriteMicrOMEGAs("data/input-mO.dat", 7000);
+    // ReadMicrOMEGAsOutput("data/micrOMEGAs/output-mO.dat");
     // Graph* gr = ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "MH-MA", "MH", "MA");
     // gr = ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "", "MH", "MC");
     // ReadGraphData("data/PassedTeoCons/Good/PassedTeoCons.dat", "", "MH", "laL");
@@ -110,7 +121,7 @@ int main(int argc, char **argv)
     // pic.GenWriteCheckedPars("data/PassedTeoCons/PassedTeoCons.dat", 10000);
     //  "data/PassedTeoCons/PassedTeoCons.dat"
     // pic.OverlapSXT("data/STU/STU_PointsPars.dat", false);
-    // pic.OverlapSXT("data/STU/STU_PointsPars.dat", true);
+    // pic.OverlapSXT("data/STU/STU_PointsPars.dat", false, true);
 
 
 

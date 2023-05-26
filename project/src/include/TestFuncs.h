@@ -19,4 +19,12 @@ void TEST_STU();
 /* Test lambda parameters generation by checking if la3+la4+la5 = laL */
 void TEST_ParameterGeneration();
 
+/* Test if laL >= -1 */
+void TEST_laL();
+
+/* Test if point pass STU constraint */
+void TEST_PassedSTU();
+
+void TEST_Passed_U_STU(int nPoints);
+
 #endif

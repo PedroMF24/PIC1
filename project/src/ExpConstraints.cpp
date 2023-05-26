@@ -87,7 +87,7 @@ double probability(double x) {
 
 
 int ExpCons::LUXDMData(double MH, double Mh, double laL) {
-    if (MH >= Mh/2) { // 
+    if (1) { // MH >= Mh/2
         double limit_L = 0.03985 - 6.786e-4*MH - 4.828e-7*MH*MH; 
         double limit_U = - 0.03985 + 6.786e-4*MH + 4.828e-7*MH*MH; 
 
@@ -204,6 +204,21 @@ int ExpCons::Extras(double MC, double MA) {
         return 0;
     }
 }
+
+int ExpCons::CheckAllExpCons(double Mh, double MH, double MA, double MC, double laL) {
+    if (RelicDensity(MH) == 0) return 0;
+    if (Extras(MC, MA) == 0) return 0;
+    if (LUXDMData(MH, Mh, laL) == 0) return 0;
+    if (WZDecayWidths(MH, MA) == 0) return 0;
+    if (HChargedLifetime(MH, MA, MC) == 0) return 0;
+    if (HiggsWidth(MH, laL) == 0) return 0;
+    if (EWBosons(MH, MA, MC) == 0) return 0;
+    if (LEPAnalysis(MH, MA, MC) == 0) return 0;
+    if (HiggsBoundsSignals(MC, Mh, laL) == 0) return 0;
+    
+    return 1;  // All constraints passed
+}
+
 
 
 // ==========================================================================

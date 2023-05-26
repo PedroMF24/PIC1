@@ -137,6 +137,19 @@ ostream& operator<< (std::ostream& s, const Graph& p) {
     return s;
 }
 
+void Graph::Clear() {
+    X.clear();
+    Y.clear();
+}
+
+int Graph::Size() {
+    if (X.size() == Y.size()) return X.size();
+    else {
+        fprintf(stderr, "**Error, Graph X and Y are not the same size");
+        exit(0);
+    }
+}
+
 void Graph::AddToX(double x) {
     X.push_back(x);
 }

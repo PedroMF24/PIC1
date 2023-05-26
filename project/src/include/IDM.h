@@ -311,7 +311,7 @@ class IDM : public TheoCons,
     void GenNewPars();
     void StoreParsTest(int nPoints);
     void StoreCheckedPars(int nPoints);
-    void GenWriteCheckedPars(const string& filename, int nPoints);
+    void GenWriteCheckedPars(const string& filename, int nPoints, bool OnlyTeoBit);
     void WriteMicrOMEGAs(const string& filename, int nPoints);
 
     void FilterParMap(vector<int> keepIndex);
@@ -339,7 +339,11 @@ class IDM : public TheoCons,
 
     void SXT(int nPoints, bool Ubit);
     vector<pair<double,double>> GetParsSTU(int nPoints, bool Ubit);
-    void OverlapSXT(const string& filename, bool Ubit);
+    void OverlapSXT(const string& filename, bool Ubit, bool ScanBit);
+    int InSTUEllipsis(const string& filename, int nPoints);
+    void MC_STU(const string& filename, int nPoints, bool ExpBit);
+
+    void MassDiff(const string& filename, bool MultiPlot);
 
     void FinalPlots(const string& Title, const string& XAxis, double& valX, const string& YAxis, double& valY, int N_points);
     void FinalTeoPlots(const string& Title, const string& XAxis, double& valX, const string& YAxis, double& valY, int N_points);

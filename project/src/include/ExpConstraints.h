@@ -20,6 +20,8 @@ class ExpCons { // : public StandardModel
     int RelicDensity(double MH);
     int Extras(double MC, double MA);
 
+    int CheckAllExpCons(double Mh, double MH, double MA, double MC, double laL);
+
 //     def EWBosons(MHX, MHC, MH3):
 //     MW = 80.433 # W boson mass
 //     MZ = 91.19  # Z boson mass

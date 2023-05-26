@@ -45,6 +45,8 @@ public:
     // void SumX2Vec(vector<double> vec);
     void  DivYVec(vector<double> vec);
 
+    void Clear();
+    int Size();
 
     void AddToX(double x);
     void AddToY(double y);
